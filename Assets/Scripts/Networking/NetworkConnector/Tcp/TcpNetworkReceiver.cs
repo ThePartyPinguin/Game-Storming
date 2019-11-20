@@ -1,29 +1,27 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
-using UnityEngine;
+using GameFrame.Networking.Messaging.MessageHandling;
+using GameFrame.Networking.NetworkConnector;
 
-public class TcpNetworkReceiver : NetworkReceiver
+sealed class TcpNetworkReceiver<TEnum> : NetworkReceiver<TEnum> where TEnum : Enum
 {
     private readonly TcpClient _tcpClient;
 
-    private readonly NetworkStream _networkStream;
+    private NetworkStream _networkStream;
 
-    public TcpNetworkReceiver(ISerializer serializer, TcpClient tcpClient) : base(serializer)
+    public TcpNetworkReceiver(TcpClient tcpClient)
     {
         _tcpClient = tcpClient;
-        _networkStream = _tcpClient.GetStream();
     }
 
     protected override byte[] ReceiveData()
     {
+        if (_networkStream == null)
+            _networkStream = _tcpClient.GetStream();
         try
         {
             int dataAvailable = _tcpClient.Available;
-            
+
             if (dataAvailable > 0)
             {
                 byte[] buffer = new byte[dataAvailable];

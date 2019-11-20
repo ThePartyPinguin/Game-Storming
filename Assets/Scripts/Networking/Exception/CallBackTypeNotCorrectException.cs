@@ -1,10 +1,10 @@
 ﻿namespace GameFrame.Networking.Exception
 {
-    public sealed class MessageTypeAlreadyRegisteredException : System.Exception
+    public sealed class CallBackTypeNotCorrectException : System.Exception
     {
         public override string Message { get; }
 
-        public MessageTypeAlreadyRegisteredException(string message)
+        public CallBackTypeNotCorrectException(string message)
         {
             Message = message;
         }

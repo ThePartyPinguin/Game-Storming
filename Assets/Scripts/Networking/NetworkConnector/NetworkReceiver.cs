@@ -1,76 +1,107 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
+using GameFrame.Networking.Exception;
+using GameFrame.Networking.Messaging.MessageHandling;
 
-public abstract class NetworkReceiver
+namespace GameFrame.Networking.NetworkConnector
 {
-    protected NetworkMessageHandler _messageHandler;
-
-    private ISerializer _serializer;
-
-    private Task _receiverTask;
-
-    private ManualResetEvent _waitUntilTaskFinished;
-
-    private bool _running;
-    protected NetworkReceiver(ISerializer serializer)
+    abstract class NetworkReceiver<TEnum> where TEnum : Enum
     {
-        _messageHandler = new NetworkMessageHandler();
-        _serializer = serializer;
-        _receiverTask = new Task(Receive);
-        _receiverTask.GetAwaiter().OnCompleted(ReleaseWaitUntilFinished);
-        _waitUntilTaskFinished = new ManualResetEvent(true);
-    }
+        protected NetworkMessageHandler<TEnum> RegisteredMessageHandler;
 
-    private void ReleaseWaitUntilFinished()
-    {
-        _waitUntilTaskFinished.Reset();
-    }
+        private Task _receiverTask;
 
-    public void StopReceiving()
-    {
-        _running = false;
-        _waitUntilTaskFinished.WaitOne();
-    }
-    
-    private async void Receive()
-    {
-        while (_running)
+        private ManualResetEvent _waitUntilTaskFinished;
+
+        private bool _running;
+        protected NetworkReceiver()
         {
-            byte[] data = ReceiveData();
+            _receiverTask = new Task(Receive);
 
-            if (data != null && data.Length > 0)
+            _receiverTask.GetAwaiter().OnCompleted(ReleaseWaitUntilFinished);
+
+            _waitUntilTaskFinished = new ManualResetEvent(true);
+        }
+
+        /// <summary>
+        /// If the receiver task hasn't been started yet, start it
+        /// </summary>
+        public virtual void StartReceiving()
+        {
+            if(RegisteredMessageHandler == null)
+                throw new NoMessageHandlerRegisteredException("No message handler had been registered in: " + this.GetType() + " please use RegisterNewMessageHandler before starting");
+
+            if (!_running)
+                _receiverTask.Start();
+        }
+
+        /// <summary>
+        /// if the receiverTask is running stop it, then wait until it has finished
+        /// </summary>
+        public void StopReceiving()
+        {
+            if (_running)
             {
-                HandleData(data);
-            }
-            else
-            {
-                await Task.Delay(100);
+                _running = false;
+                _waitUntilTaskFinished.WaitOne();
             }
         }
 
-        _waitUntilTaskFinished.Reset();
+        /// <summary>
+        /// This method gets called when the task has stopped receiving and released the manualResetEvent
+        /// </summary>
+        private void ReleaseWaitUntilFinished()
+        {
+            _waitUntilTaskFinished.Reset();
+        }
+
+        /// <summary>
+        /// The method the receiver task continuously runs when it has started
+        /// </summary>
+        private async void Receive()
+        {
+            _waitUntilTaskFinished.Set();
+            while (_running)
+            {
+                byte[] data = ReceiveData();
+
+                if (data != null && data.Length > 0)
+                {
+                    HandleData(data);
+                }
+                else
+                {
+                    await Task.Delay(100);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Overridable method that handled the data reading from the incoming dataStream, depending on Tcp or Udp
+        /// </summary>
+        /// <returns></returns>
+        protected abstract byte[] ReceiveData();
+
+        /// <summary>
+        /// Register a new Messagehandler that handles the incoming messages
+        /// </summary>
+        /// <param name="messageHandler"></param>
+        public void RegisterNewMessageHandler(NetworkMessageHandler<TEnum> messageHandler)
+        {
+            RegisteredMessageHandler = messageHandler;
+        }
+
+        /// <summary>
+        /// Handle the incomming data, and add it to the queue in the registered messagehandler
+        /// </summary>
+        /// <param name="data"></param>
+        protected void HandleData(byte[] data)
+        {
+            if(RegisteredMessageHandler == null)
+                throw new NoMessageHandlerRegisteredException("No message handler had been registered in: " + this.GetType());
+
+            RegisteredMessageHandler.AddMessageToQueue(data);
+        }
     }
-
-    protected abstract byte[] ReceiveData();
-
-    public void RegisterNewMessageHandler(NetworkMessageHandler messageHandler)
-    {
-        _messageHandler = messageHandler;
-    }
-
-    private NetworkMessage DeSerializeMessage(byte[] data)
-    {
-        return _serializer.DeSerialize(data);
-    }
-
-    protected void HandleData(byte[] data)
-    {
-        NetworkMessage message = DeSerializeMessage(data);
-        _messageHandler.AddMessageToQueue(message);
-    }
-
 }

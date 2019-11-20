@@ -1,44 +1,47 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
+using GameFrame.Networking.Messaging.Message;
 
-public abstract class NetworkSender
+namespace GameFrame.Networking.NetworkConnector
 {
-    private ISerializer _serializer;
-    private readonly Queue<NetworkMessage> _networkMessagesQueueToSend;
-
-    private Task _senderTask;
-    private bool _senderTaskRunning;
-
-    protected NetworkSender(ISerializer serializer)
+    abstract class NetworkSender<TEnum> where TEnum : Enum
     {
-        _serializer = serializer;
-        _networkMessagesQueueToSend = new Queue<NetworkMessage>();
-        _senderTask = new Task(Send);
-    }
+        private INetworkMessageSerializer<TEnum> _networkMessageSerializer;
+        private readonly Queue<NetworkMessage<TEnum>> _networkMessagesQueueToSend;
 
-    public void QueueNewMessageToSend(NetworkMessage message)
-    {
-        _networkMessagesQueueToSend.Enqueue(message);
+        private Task _senderTask;
+        private bool _senderTaskRunning;
 
-        if (!_senderTaskRunning)
+        protected NetworkSender(INetworkMessageSerializer<TEnum> networkMessageSerializer)
         {
-            _senderTaskRunning = true;
-            _senderTask.Start();
+            _networkMessageSerializer = networkMessageSerializer;
+            _networkMessagesQueueToSend = new Queue<NetworkMessage<TEnum>>();
+            _senderTask = new Task(Send);
         }
-    }
 
-    private void Send()
-    {
-        while (_networkMessagesQueueToSend.Count > 0)
+        public void QueueNewMessageToSend(NetworkMessage<TEnum> message)
         {
-            byte[] data = _serializer.Serialize(_networkMessagesQueueToSend.Dequeue());
+            _networkMessagesQueueToSend.Enqueue(message);
 
-            SendMessage(data);
+            if (!_senderTaskRunning)
+            {
+                _senderTaskRunning = true;
+                _senderTask.Start();
+            }
         }
-        _senderTaskRunning = false;
-    }
 
-    protected abstract void SendMessage(byte[] data);
+        private void Send()
+        {
+            while (_networkMessagesQueueToSend.Count > 0)
+            {
+                byte[] data = _networkMessageSerializer.Serialize(_networkMessagesQueueToSend.Dequeue());
+
+                SendMessage(data);
+            }
+            _senderTaskRunning = false;
+        }
+
+        protected abstract void SendMessage(byte[] data);
+    }
 }

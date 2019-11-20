@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
 
-public abstract class NetworkMessage
+namespace GameFrame.Networking.Messaging.Message
 {
-    public MessageType messageType => _messageType;
-
-    private readonly MessageType _messageType;
-
-    protected NetworkMessage(MessageType messageType)
+    public abstract class NetworkMessage<TEnum> where TEnum : Enum
     {
-        _messageType = messageType;
+        public TEnum MessageEventType => _messageEventType;
+
+        private readonly TEnum _messageEventType;
+
+        protected NetworkMessage(TEnum messageEventType)
+        {
+            _messageEventType = messageEventType;
+        }
     }
 }
