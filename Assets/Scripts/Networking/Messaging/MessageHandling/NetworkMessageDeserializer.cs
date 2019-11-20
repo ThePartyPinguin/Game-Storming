@@ -6,7 +6,7 @@ using GameFrame.Networking.Messaging.Message;
 
 namespace GameFrame.Networking.Messaging.MessageHandling
 {
-    sealed class NetworkMessageHandler<TEnum> where TEnum : Enum
+    sealed class NetworkMessageDeserializer<TEnum> where TEnum : Enum
     {
         public readonly Action<TEnum, NetworkMessage<TEnum>> OnMessageHandledCallback;
 
@@ -21,9 +21,10 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         
         private Dictionary<byte, TEnum> _byteEnumValues;
 
+
         #region Init
 
-        public NetworkMessageHandler(NetworkMessageCallbackDatabase<TEnum> messageCallbackDatabase, INetworkMessageSerializer<TEnum> serializer)
+        public NetworkMessageDeserializer(NetworkMessageCallbackDatabase<TEnum> messageCallbackDatabase, INetworkMessageSerializer<TEnum> serializer)
         {
             _messageCallbackDatabase = messageCallbackDatabase;
             _networkMessageSerializer = serializer;
@@ -36,6 +37,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
 
             _messageHandlingTask = new Task(Run);
         }
+
 
         /// <summary>
         /// Setup a dictionary that contains the enum value and the byte value representing the enum value
@@ -97,9 +99,9 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             {
                 byte[] messageData = _messagesToHandleQueue.Dequeue();
 
-                if (DeserializeMessage(messageData, out var message))
+                if (DeserializeMessage(messageData, out var message, out var wrapper))
                 {
-                    CallOnMessageDeserialized(message);
+                    CallMessageDeserializedCallback(message, wrapper);
                 }
             }
             _taskRunning = false;
@@ -116,7 +118,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// <param name="messageEventType">gives the messageEventType enum value from data[0]</param>
         /// <param name="message">gives back the deserialized message from data</param>
         /// <returns></returns>
-        private bool DeserializeMessage(byte[] data, out NetworkMessage<TEnum> message)
+        private bool DeserializeMessage(byte[] data, out NetworkMessage<TEnum> message, out NetworkMessageCallbackWrapper<TEnum> wrapper)
         {
             try
             {
@@ -125,11 +127,9 @@ namespace GameFrame.Networking.Messaging.MessageHandling
 
                 var messageEventType = _byteEnumValues[data[0]];
 
-                var wrapper = _messageCallbackDatabase.GetCallbackWrapper(messageEventType);
+                wrapper = _messageCallbackDatabase.GetCallbackWrapper(messageEventType);
 
                 message = _networkMessageSerializer.DeSerializeWithOffset(data, 1, data.Length - 1, wrapper.MessageType);
-
-                wrapper.Callback.Invoke(message);
                 return true;
             }
             catch (System.Exception e)
@@ -148,9 +148,9 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// After a message has been DeSerialized this method gets called after which the OnMessageHandledCallback gets called
         /// </summary>
         /// <param name="message">The deserialized message</param>
-        private void CallOnMessageDeserialized(NetworkMessage<TEnum> message)
+        private void CallMessageDeserializedCallback(NetworkMessage<TEnum> message, NetworkMessageCallbackWrapper<TEnum> wrapper)
         {
-            //OnMessageHandledCallback?.Invoke(message.MessageEventType, message);
+            OnMessageHandledCallback?.Invoke(message.MessageEventType, message);
         }
 
         #endregion
