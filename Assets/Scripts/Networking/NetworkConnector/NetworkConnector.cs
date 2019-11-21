@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using GameFrame.Networking.Exception;
+using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.Serialization;
 
@@ -45,7 +46,7 @@ namespace GameFrame.Networking.NetworkConnector
         /// </summary>
         /// <param name="initialMessageCallbackDatabase">Initial set of callback that can be handled after connecting</param>
         /// <param name="serializationType">The used serializationType</param>
-        public void Setup(NetworkMessageCallbackDatabase<TEnum> initialMessageCallbackDatabase, SerializationType serializationType, bool useDatabaseCallbacks)
+        public void Setup(Action<NetworkMessage<TEnum>, Type> onMessageReceived, SerializationType serializationType)
         {
             if(_setupComplete)
                 throw new AlreadySetupExcpetion("The: " + this.GetType() + " has already been setup");
@@ -60,7 +61,8 @@ namespace GameFrame.Networking.NetworkConnector
             }
 
             _receiver = new TcpNetworkReceiver<TEnum>(_tcpClient);
-            _receiver.RegisterNewMessageHandler(new NetworkMessageDeserializer<TEnum>(initialMessageCallbackDatabase, _networkMessageSerializer, useDatabaseCallbacks));
+
+            _receiver.RegisterNewMessageHandler(new NetworkMessageDeserializer<TEnum>(onMessageReceived, _networkMessageSerializer));
 
             _sender = new TcpNetworkSender<TEnum>(_networkMessageSerializer, _tcpClient);
 

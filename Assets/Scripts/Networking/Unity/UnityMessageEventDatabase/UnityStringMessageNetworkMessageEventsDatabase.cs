@@ -14,10 +14,10 @@ public class UnityStringMessageNetworkMessageEventsDatabase : UnityNetworkMessag
     [Serializable]
     public class StringCallbackWrapper : CallbackWrapper<StringNetworkMessage, StringMessageCallback>
     {
-        public override MessageEventType EventType => _eventType;
+        public override NetworkEvent EventType => _eventType;
 
         [SerializeField]
-        private MessageEventType _eventType;
+        private NetworkEvent _eventType;
 
         public override StringMessageCallback Callback => _callback;
 

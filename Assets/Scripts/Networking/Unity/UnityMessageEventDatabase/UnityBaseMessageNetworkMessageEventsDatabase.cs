@@ -13,10 +13,10 @@ public class UnityBaseMessageNetworkMessageEventsDatabase : UnityNetworkMessageE
     [Serializable]
     public class BaseCallbackWrapper : CallbackWrapper<BaseNetworkMessage, BaseMessageCallback>
     {
-        public override MessageEventType EventType => _eventType;
+        public override NetworkEvent EventType => _eventType;
 
         [SerializeField]
-        private MessageEventType _eventType;
+        private NetworkEvent _eventType;
 
         public override BaseMessageCallback Callback => _callback;
 

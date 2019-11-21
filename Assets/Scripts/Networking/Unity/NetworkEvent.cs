@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MessageEventType
+public enum NetworkEvent
 {
-    CLIENT_TO_SERVER_HANDSHAKE
+    
 }
