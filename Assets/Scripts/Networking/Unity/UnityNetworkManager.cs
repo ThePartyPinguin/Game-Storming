@@ -19,12 +19,14 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
     [SerializeField]
     private SerializationType _serializationType;
 
-    //private NetworkMessageDeserializer<BaseNetworkMessage, NetworkEvent> _messageDeserializer;
+    private UnityNetworkMessageHandler _messageHandler;
     private NetworkConnector<NetworkEvent> _networkConnector;
 
     // Start is called before the first frame update
     void Start()
     {
-        //_networkConnector.Setup<StringNetworkMessage>(new UnityStringMessageEventHandler().MessageHandled, SerializationType.JSON);   
+        _messageHandler = UnityNetworkMessageHandler.Instance;
+        _networkConnector.Setup(_messageHandler.MessageHandled, SerializationType.JSON);   
+
     }
 }

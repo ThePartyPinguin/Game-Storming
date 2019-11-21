@@ -8,7 +8,7 @@ using System.Linq;
 /// <typeparam name="K">Key, must inherit from Enum</typeparam>
 /// <typeparam name="V">Value, can be anything</typeparam>
 /// <typeparam name="T">Must inherit from MemoryDataBase</typeparam>
-public abstract class MemoryDatabase<K, V, T> : Singleton<T> where T : MemoryDatabase<K, V, T>, new() where K : Enum
+public abstract class MemoryDatabase<K, V, T> : Singleton<T> where T : MemoryDatabase<K, V, T>, new()
 {
     private readonly Dictionary<K, V> _databaseCollection;
 

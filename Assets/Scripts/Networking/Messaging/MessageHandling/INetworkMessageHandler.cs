@@ -7,6 +7,6 @@ namespace GameFrame.Networking.Messaging.MessageHandling
 {
     public interface INetworkMessageHandler<TMessage, TEnum> where TMessage : NetworkMessage<TEnum> where TEnum : Enum
     {
-        void MessageHandled(TMessage message);
+        void MessageHandled(TMessage message, Type type);
     }
 }
