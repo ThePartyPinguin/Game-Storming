@@ -8,16 +8,19 @@ using UnityEngine.Experimental.XR;
 
 public class UnityNetworkMessageHandler : MonoSingleton<UnityNetworkMessageHandler>, INetworkMessageHandler<NetworkMessage<NetworkEvent>, NetworkEvent>
 {
+    public UnityStringMessageEventDatabase StringMessageEvents;
+    public UnityImageMessageEventDatabase ImageMessageEvent;
 
     private Queue<KeyValuePair<Type, NetworkMessage<NetworkEvent>>> _messagesToHandleQueue;
     private bool _coRoutineRunning;
     void Start()
     {
-        //Debug.Log(StringMessageNetworkMessageEventsDatabase.GetDatabaseMessageType());
+        Debug.Log(FindObjectsOfType<UnityBaseMessageEventsDatabase<BaseNetworkMessage, BaseMessageCallbackWrapper<BaseNetworkMessage, BaseMessageCallback<BaseNetworkMessage>>, BaseMessageCallback<BaseNetworkMessage>>>().Length);
+        
         _messagesToHandleQueue = new Queue<KeyValuePair<Type, NetworkMessage<NetworkEvent>>>();
         _coRoutineRunning = false;
     }
-
+    
     public void MessageHandled(NetworkMessage<NetworkEvent> message, Type type)
     {
         _messagesToHandleQueue.Enqueue(new KeyValuePair<Type, NetworkMessage<NetworkEvent>>(type, message));
@@ -47,4 +50,5 @@ public class UnityNetworkMessageHandler : MonoSingleton<UnityNetworkMessageHandl
         }
         _coRoutineRunning = false;
     }
+
 }

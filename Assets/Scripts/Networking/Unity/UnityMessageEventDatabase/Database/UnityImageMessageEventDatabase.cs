@@ -2,7 +2,7 @@
 using System;
 using UnityEngine.Events;
 
-public class UnityImageMessageEventsDatabase : UnityBaseMessageEventsDatabase<ImageNetworkMessage, UnityImageMessageEventsDatabase.ImageCallbackWrapper, UnityImageMessageEventsDatabase.ImageMessageCallback>
+public class UnityImageMessageEventDatabase : UnityBaseMessageEventsDatabase<ImageNetworkMessage, UnityImageMessageEventDatabase.ImageCallbackWrapper, UnityImageMessageEventDatabase.ImageMessageCallback>
 {
     [Serializable]
     public class ImageCallbackWrapper : BaseMessageCallbackWrapper<ImageNetworkMessage, ImageMessageCallback>
