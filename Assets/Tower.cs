@@ -6,13 +6,13 @@ public class Tower : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    string idea;
+    private string idea;
     [SerializeField]
-    int height;
+    private int height;
     [SerializeField]
-    int breakingHeight;
+    private int breakingHeight;
     [SerializeField]
-    List<Block> blocks;
+    private List<Block> blocks;
     #endregion
 
     #region methods

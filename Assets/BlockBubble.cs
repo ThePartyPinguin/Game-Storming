@@ -6,7 +6,7 @@ public class BlockBubble : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    Block block;
+    private Block block;
     #endregion
 
     #region methods

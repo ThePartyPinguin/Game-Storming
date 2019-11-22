@@ -6,11 +6,11 @@ public class BlockGenerator : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    Vector2 spawnPosMinMaxX;
+    private Vector2 spawnPosMinMaxX;
     [SerializeField]
-    Vector2 spawnPosMinMaxY;
+    private Vector2 spawnPosMinMaxY;
     [SerializeField]
-    GameObject prefab;
+    private GameObject prefab;
     #endregion
 
     #region methods

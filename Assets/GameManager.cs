@@ -6,11 +6,11 @@ public class GameManager : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    float buildingTime;
+    public float buildingTime;
 
-    List<Participant> participants;
-    Participant currentBuilder;
-    float timer;
+    private List<Participant> participants;
+    private Participant currentBuilder;
+    private float timer;
     #endregion
 
     #region methods

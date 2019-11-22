@@ -6,7 +6,7 @@ public class TextInput : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    bool isFocused;
+    private bool isFocused;
     #endregion
 
     #region methods

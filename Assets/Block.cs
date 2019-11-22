@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Block : MonoBehaviour, IDraggable
+public class Block : Draggable
 {
     #region fields
     [SerializeField]
-    string idea;
+    private string idea;
     [SerializeField]
-    Tower tower;
+    private Tower tower;
 
     Participant owner;
 
@@ -18,7 +18,7 @@ public class Block : MonoBehaviour, IDraggable
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame

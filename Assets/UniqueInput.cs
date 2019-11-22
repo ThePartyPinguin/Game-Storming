@@ -6,11 +6,11 @@ public class UniqueInput : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    Vector2 position;
+    private Vector2 position;
     [SerializeField]
-    int inputId;
+    private int inputId;
     [SerializeField]
-    IDraggable dragObject;
+    private Draggable dragObject;
     #endregion
 
     #region methods
@@ -27,7 +27,7 @@ public class UniqueInput : MonoBehaviour
     }
 
     // OnDestroy is called before the destruction of an object
-    void OnDestroy()
+    public void OnDestroy()
     {
         
     }

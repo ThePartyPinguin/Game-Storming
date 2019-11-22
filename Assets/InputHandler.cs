@@ -6,11 +6,11 @@ public class InputHandler : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    Vector2[] mousePosition;
+    private Vector2[] mousePosition;
     [SerializeField]
-    bool mouseDown;
+    private bool mouseDown;
     [SerializeField]
-    List<UniqueInput> inputs;
+    private List<UniqueInput> inputs;
     #endregion
 
     #region methods

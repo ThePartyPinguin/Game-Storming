@@ -9,11 +9,11 @@ using UnityEngine;
 public class Participant
 {
     #region fields
-    int id;
-    string name;
-    Color color;
-    int score;
-    List<Block> blocks;
+    private int id;
+    private string name;
+    private Color color;
+    private int score;
+    private List<Block> blocks;
     #endregion
 
     #region methods

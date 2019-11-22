@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
-interface IDraggable
+public abstract class Draggable : MonoBehaviour
 {
-    Boolean isDragged();
-    int dragId();
+    private bool isDragged;
+    private int dragId;
+
 }
