@@ -17,7 +17,22 @@ public class Participant
     #endregion
 
     #region methods
+    public Participant(int _id, string _name)
+    {
+        blocks = new List<Block>();
+        this.id = _id;
+        this.name = _name;
+    }
 
+    public void addBlock(Block b)
+    {
+        blocks.Add(b);
+    }
+
+    public override string ToString()
+    {
+        return name;
+    }
     #endregion
 }
 
