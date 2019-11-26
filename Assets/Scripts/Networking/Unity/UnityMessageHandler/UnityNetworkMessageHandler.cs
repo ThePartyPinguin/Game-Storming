@@ -8,31 +8,33 @@ using UnityEngine.Experimental.XR;
 
 public class UnityNetworkMessageHandler : MonoSingleton<UnityNetworkMessageHandler>, INetworkMessageHandler<NetworkMessage<NetworkEvent>, NetworkEvent>
 {
-    public UnityStringMessageEventDatabase StringMessageEvents;
-    public UnityImageMessageEventDatabase ImageMessageEvent;
+    public int MaxMessagesPerFrame;
 
-    private Queue<KeyValuePair<Type, NetworkMessage<NetworkEvent>>> _messagesToHandleQueue;
+    public UnityEventOnlyMessageEventDatabase EventsOnlyMessageEvents;
+    public UnityStringMessageEventDatabase StringMessageEvents;
+    public UnityImageMessageEventDatabase ImageMessageEvents;
+
+    private Queue<NetworkMessage<NetworkEvent>> _messagesToHandleQueue;
     private bool _coRoutineRunning;
     void Start()
     {
         Debug.Log(FindObjectsOfType<UnityBaseMessageEventsDatabase<BaseNetworkMessage, BaseMessageCallbackWrapper<BaseNetworkMessage, BaseMessageCallback<BaseNetworkMessage>>, BaseMessageCallback<BaseNetworkMessage>>>().Length);
         
-        _messagesToHandleQueue = new Queue<KeyValuePair<Type, NetworkMessage<NetworkEvent>>>();
+        _messagesToHandleQueue = new Queue<NetworkMessage<NetworkEvent>>();
         _coRoutineRunning = false;
     }
-    
-    public void MessageHandled(NetworkMessage<NetworkEvent> message, Type type)
+
+    public void MessageHandled(NetworkMessage<NetworkEvent> message)
     {
-        _messagesToHandleQueue.Enqueue(new KeyValuePair<Type, NetworkMessage<NetworkEvent>>(type, message));
+        _messagesToHandleQueue.Enqueue(message);
     }
 
     void Update()
     {
-        if(!QueueHasMessages())
+        if(!QueueHasMessages() || _coRoutineRunning)
             return;
 
-        if (!_coRoutineRunning)
-            StartCoroutine(HandleMessages());
+        StartCoroutine(HandleMessages());
     }
 
     private bool QueueHasMessages()
@@ -45,10 +47,45 @@ public class UnityNetworkMessageHandler : MonoSingleton<UnityNetworkMessageHandl
         _coRoutineRunning = true;
         while (QueueHasMessages())
         {
-            
+            if (_messagesToHandleQueue.Count > MaxMessagesPerFrame)
+            {
+                HandleAmountOfMessages(MaxMessagesPerFrame);
+                yield return new WaitForEndOfFrame();
+            }
+            else
+            {
+                HandleAmountOfMessages(_messagesToHandleQueue.Count);
+            }
             yield return new WaitForEndOfFrame();
         }
         _coRoutineRunning = false;
+    }
+
+    private void HandleAmountOfMessages(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            var message = _messagesToHandleQueue.Dequeue();
+
+            HandleSingleMessage(message);
+        }
+    }
+
+    private void HandleSingleMessage(NetworkMessage<NetworkEvent> message)
+    {
+        switch (message)
+        {
+            case EventOnlyNetworkMessage eventsOnlyMessage:
+                EventsOnlyMessageEvents.CallMessageCallback(eventsOnlyMessage);
+                break;
+            case StringNetworkMessage stringMessage:
+                StringMessageEvents.CallMessageCallback(stringMessage);
+                break;
+
+            case ImageNetworkMessage imageMessage:
+                ImageMessageEvents.CallMessageCallback(imageMessage);
+                break;
+        }
     }
 
 }

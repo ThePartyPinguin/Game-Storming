@@ -44,4 +44,9 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
     {
         return _messageCallbackCollection[networkEvent];
     }
+
+    public void CallMessageCallback(TBaseMessage message)
+    {
+        _messageCallbackCollection[message.MessageEventType].Invoke(message);
+    }
 }
