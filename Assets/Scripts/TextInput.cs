@@ -7,15 +7,11 @@ public class TextInput : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    private bool isFocused;
-    [SerializeField]
     InputField textField;
     [SerializeField]
     Dropdown playerSelection;
     [SerializeField]
-    GameObject blockPrefab;
-    [SerializeField]
-    Transform spawnLocation;
+    BlockGenerator generator;
 
     Participant[] mockParticipants = new Participant[5];
     #endregion
@@ -24,11 +20,11 @@ public class TextInput : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        mockParticipants[0] = new Participant(1, "Player 1");
-        mockParticipants[1] = new Participant(2, "Player 2");
-        mockParticipants[2] = new Participant(3, "Player 3");
-        mockParticipants[3] = new Participant(4, "Player 4");
-        mockParticipants[4] = new Participant(5, "Player 5");
+        mockParticipants[0] = new Participant(1, "Player 1", Color.red);
+        mockParticipants[1] = new Participant(2, "Player 2", Color.green);
+        mockParticipants[2] = new Participant(3, "Player 3", Color.blue);
+        mockParticipants[3] = new Participant(4, "Player 4", Color.yellow);
+        mockParticipants[4] = new Participant(5, "Player 5", Color.magenta);
     }
 
     // Update is called once per frame
@@ -45,12 +41,7 @@ public class TextInput : MonoBehaviour
 
     public void SendIdea(int playerId, string ideaTitle)
     {
-        GameObject block = Instantiate(blockPrefab, spawnLocation);
-
-        block.GetComponent<Block>().setParticipant(mockParticipants[playerSelection.value]);
-        block.GetComponent<Block>().setIdea(ideaTitle);
-        mockParticipants[playerSelection.value].addBlock(block.GetComponent<Block>());
-        Debug.Log("Block Created: [Owner: " + mockParticipants[playerSelection.value].ToString() + "] [BlockTitle: " + ideaTitle + "]");
+        generator.SpawnBlock(mockParticipants[playerId-1], ideaTitle);
     }
     #endregion
 }

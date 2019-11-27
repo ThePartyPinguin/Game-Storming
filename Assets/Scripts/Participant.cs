@@ -17,16 +17,22 @@ public class Participant
     #endregion
 
     #region methods
-    public Participant(int _id, string _name)
+    public Participant(int _id, string _name, Color _color)
     {
         blocks = new List<Block>();
         this.id = _id;
         this.name = _name;
+        this.color = _color;
     }
 
     public void addBlock(Block b)
     {
         blocks.Add(b);
+    }
+
+    public Color GetColor()
+    {
+        return this.color;
     }
 
     public override string ToString()
