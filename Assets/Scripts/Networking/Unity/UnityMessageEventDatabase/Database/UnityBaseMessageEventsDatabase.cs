@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameFrame.Networking.Messaging.MessageHandling;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -29,6 +30,7 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
                 continue;
             }
             _messageCallbackCollection.Add(callbackWrapper.EventType, callbackWrapper.Callback);
+            NetworkMessageTypeDataBase<NetworkEvent>.Instance.RegisterType(callbackWrapper.EventType, typeof(TBaseMessage));
         }
 
         MessageCallbackWrappers.Clear();

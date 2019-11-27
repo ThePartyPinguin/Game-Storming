@@ -39,11 +39,14 @@ public class UnityNetworkMessageHandler : MonoSingleton<UnityNetworkMessageHandl
 
     private bool QueueHasMessages()
     {
+        if(_messagesToHandleQueue == null)
+            _messagesToHandleQueue = new Queue<NetworkMessage<NetworkEvent>>();
         return _messagesToHandleQueue.Count > 0;
     }
 
     private IEnumerator HandleMessages()
     {
+        Debug.Log("Started handling messages");
         _coRoutineRunning = true;
         while (QueueHasMessages())
         {

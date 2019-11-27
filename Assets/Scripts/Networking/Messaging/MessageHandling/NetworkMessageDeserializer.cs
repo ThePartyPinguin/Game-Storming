@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameFrame.Networking.Exception;
 using GameFrame.Networking.Messaging.Message;
+using UnityEngine;
 
 namespace GameFrame.Networking.Messaging.MessageHandling
 {
     sealed class NetworkMessageDeserializer<TEnum> where TEnum : Enum
     {
-        public readonly Action<NetworkMessage<TEnum>> OnMessageHandledCallback;
+        public Action<NetworkMessage<TEnum>> OnMessageHandledCallback { get; private set; }
 
-        private readonly NetworkMessageTypeDataBase<TEnum, NetworkMessage<TEnum>> _messageTypeDatabase; 
+        private readonly NetworkMessageTypeDataBase<TEnum> _messageTypeDatabase; 
         private readonly Queue<byte[]> _messagesToHandleQueue;
         private readonly object _isRunningLock;
         private readonly Task _messageHandlingTask;
@@ -27,7 +28,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             _networkMessageSerializer = serializer;
             OnMessageHandledCallback = onMessageHandledCallback;
 
-            _messageTypeDatabase = NetworkMessageTypeDataBase<TEnum, NetworkMessage<TEnum>>.Instance;
+            _messageTypeDatabase = NetworkMessageTypeDataBase<TEnum>.Instance;
             SetupByteDictionary();
 
             _messagesToHandleQueue = new Queue<byte[]>();
@@ -35,6 +36,11 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             _isRunningLock = new object();
 
             _messageHandlingTask = new Task(Run);
+        }
+
+        public void SetNewOnMessageHandledCallback(Action<NetworkMessage<TEnum>> onMessageHandledCallback)
+        {
+            OnMessageHandledCallback = onMessageHandledCallback;
         }
 
         /// <summary>
@@ -96,9 +102,11 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             while (QueueContainsMessages())
             {
                 byte[] messageData = _messagesToHandleQueue.Dequeue();
+                Debug.Log("Starting deserialization of messagedata: " + messageData.Length);
 
                 if (DeserializeMessage(messageData, out var message))
                 {
+                    Debug.Log("Message deserialized: " + message.MessageEventType);
                     CallOnMessageDeserialized(message);
                 }
             }
@@ -118,16 +126,21 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// <returns></returns>
         private bool DeserializeMessage(byte[] data, out NetworkMessage<TEnum> message)
         {
+            Debug.Log(data.Length);
             try
             {
-                if (_byteEnumValues.ContainsKey(data[0]))
+                Debug.Log(_byteEnumValues.ContainsKey(data[0]));
+                if (!_byteEnumValues.ContainsKey(data[0]))
                     throw new MessageEventTypeNotValid("The received messageEventType identifier: " + data[0] + " could not be found in the given typeParameter enum: " + typeof(TEnum));
 
                 var messageEventType = _byteEnumValues[data[0]];
 
-                var messageType = _messageTypeDatabase.GetTypeForKey(messageEventType);
+                Debug.Log(messageEventType);
+                var type = _messageTypeDatabase.GetTypeForKey(messageEventType);
 
-                message = _networkMessageSerializer.DeSerializeWithOffset(data, 1, data.Length - 1, messageType);
+                Debug.Log(type);
+
+                message = _networkMessageSerializer.DeSerializeWithOffset(data, 1, data.Length - 1, type);
                 return true;
             }
             catch (System.Exception e)
@@ -135,7 +148,6 @@ namespace GameFrame.Networking.Messaging.MessageHandling
                 Console.WriteLine(e);
                 throw;
             }
-
         }
 
         #endregion

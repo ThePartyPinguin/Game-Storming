@@ -43,8 +43,10 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
         var ipAddress = ParseIpAddress();
 
         _networkConnector = new NetworkConnector<NetworkEvent>(ipAddress, _port);
-        _networkConnector.Setup(_messageHandler.MessageHandled, SerializationType.JSON, CallOnConnectionInterrupted);  
-        _networkConnector.Connect(CallOnConnected, CallOnConnectFailed);
+        _networkConnector.Setup(SerializationType.JSON);  
+        _networkConnector.SetupCallbacks(_messageHandler.MessageHandled, CallOnConnected, CallOnConnectFailed, CallOnConnectionInterrupted);
+        _networkConnector.Connect();
+        _networkConnector.Start();
     }
 
     private IPAddress ParseIpAddress()
@@ -70,14 +72,14 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
         _onConnectFailed?.Invoke();
     }
 
-    private void CallOnConnectionInterrupted()
+    private void CallOnConnectionInterrupted(NetworkConnector<NetworkEvent> connector)
     {
         _onConnectionInterrupted?.Invoke();
     }
 
     void OnApplicationQuit()
     {
+        _networkConnector.Stop();
         Debug.Log("quit");
-        _networkConnector.Close();
     }
 }
