@@ -14,9 +14,11 @@ GameObject:
   - component: {fileID: 4683487841430045390}
   - component: {fileID: 4683487841430045385}
   - component: {fileID: 4683487841430045384}
+  - component: {fileID: 830926706211139985}
+  - component: {fileID: 505925938}
   m_Layer: 0
   m_Name: Block
-  m_TagString: Untagged
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -74,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 840107282fe21be42a8e19fa48b5d153, type: 3}
-  m_Color: {r: 0, g: 0.054634456, b: 0.99215686, a: 1}
+  m_Color: {r: 0.99215686, g: 0.1439447, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -96,8 +98,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ceca508a78b38c4db656777cf771469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onDragDown:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4683487841430045391}
+        m_MethodName: DetachFromTower
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onDrag:
+    m_PersistentCalls:
+      m_Calls: []
+  onDragUp:
+    m_PersistentCalls:
+      m_Calls: []
   idea: Idea
-  tower: {fileID: 0}
 --- !u!61 &4683487841430045390
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -164,3 +185,41 @@ TargetJoint2D:
   m_MaxForce: 10000
   m_DampingRatio: 1
   m_Frequency: 5
+--- !u!231 &830926706211139985
+SpringJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4683487841430045387}
+  m_Enabled: 0
+  serializedVersion: 4
+  m_EnableCollision: 1
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 1
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 3.17, y: -0.93}
+  m_AutoConfigureDistance: 1
+  m_Distance: 0.005
+  m_DampingRatio: 0
+  m_Frequency: 0.1
+--- !u!255 &505925938
+FixedJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4683487841430045387}
+  m_Enabled: 0
+  serializedVersion: 4
+  m_EnableCollision: 1
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 1
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0.64861447, y: 0.090000965}
+  m_DampingRatio: 0
+  m_Frequency: 0

@@ -9,22 +9,44 @@ public class Block : Draggable
     private string idea;
     [SerializeField]
     private Tower tower;
+    private SpringJoint2D blockJoint;
 
     Participant owner;
 
     #endregion
 
     #region methods
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-
+        blockJoint = GetComponent<SpringJoint2D>();
+        tower = null;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        if (collision.gameObject.CompareTag("Foundation") && tower == null)
+        {
+            Tower newTower = new Tower(this);
+            this.tower = newTower;
+            //FixedJoint2D towerJoint = gameObject.AddComponent<FixedJoint2D>();
+            blockJoint.enabled = true;
+            blockJoint.connectedBody = collision.rigidbody;
+        }
+        else if (collision.gameObject.CompareTag("Block") && false)
+        {
+            blockJoint.enabled = true;
+            blockJoint.connectedBody = collision.rigidbody;
+        }
+    }
+
+    public string GetIdea()
+    {
+        return this.idea;
+    }
+
+    public void DetachFromTower()
+    {
+        tower = null;
     }
 
     public int CalculateScore()
