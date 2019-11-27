@@ -27,6 +27,16 @@ public class Block : Draggable
         
     }
 
+    public void setParticipant(Participant p )
+    {
+        this.owner = p;
+    }
+
+    public void setIdea(string _idea)
+    {
+        this.idea = _idea;
+    }
+
     public int CalculateScore()
     {
         throw new System.NotImplementedException();
