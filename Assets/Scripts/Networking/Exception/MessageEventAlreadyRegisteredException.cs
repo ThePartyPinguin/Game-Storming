@@ -1,10 +1,10 @@
 ﻿namespace GameFrame.Networking.Exception
 {
-    public sealed class MessageTypeNotRegisteredException : System.Exception
+    public sealed class MessageEventAlreadyRegisteredException : System.Exception
     {
         public override string Message { get; }
 
-        public MessageTypeNotRegisteredException(string message)
+        public MessageEventAlreadyRegisteredException(string message)
         {
             Message = message;
         }

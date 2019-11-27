@@ -7,9 +7,12 @@ sealed class TcpNetworkSender<TEnum> : NetworkSender<TEnum> where TEnum : Enum
     private readonly TcpClient _tcpClient;
 
     private NetworkStream _networkStream;
-    public TcpNetworkSender(INetworkMessageSerializer<TEnum> networkMessageSerializer, TcpClient tcpClient) : base(networkMessageSerializer)
+
+    private Action _onConnectionLost;
+    public TcpNetworkSender(INetworkMessageSerializer<TEnum> networkMessageSerializer, TcpClient tcpClient, Action onConnectionLost) : base(networkMessageSerializer)
     {
         _tcpClient = tcpClient;
+        _onConnectionLost = onConnectionLost;
     }
 
     protected override void SendMessage(byte[] data)
@@ -26,6 +29,7 @@ sealed class TcpNetworkSender<TEnum> : NetworkSender<TEnum> where TEnum : Enum
         catch (Exception e)
         {
             Console.WriteLine(e);
+            _onConnectionLost?.Invoke();
             throw;
         }
     }
