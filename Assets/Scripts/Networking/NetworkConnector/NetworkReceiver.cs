@@ -8,7 +8,7 @@ namespace GameFrame.Networking.NetworkConnector
 {
     abstract class NetworkReceiver<TEnum> where TEnum : Enum
     {
-        protected NetworkMessageHandler<TEnum> RegisteredMessageHandler;
+        protected NetworkMessageDeserializer<TEnum> RegisteredMessageDeserializer;
 
         private Task _receiverTask;
 
@@ -29,7 +29,7 @@ namespace GameFrame.Networking.NetworkConnector
         /// </summary>
         public virtual void StartReceiving()
         {
-            if(RegisteredMessageHandler == null)
+            if(RegisteredMessageDeserializer == null)
                 throw new NoMessageHandlerRegisteredException("No message handler had been registered in: " + this.GetType() + " please use RegisterNewMessageHandler before starting");
 
             if (!_running)
@@ -86,10 +86,10 @@ namespace GameFrame.Networking.NetworkConnector
         /// <summary>
         /// Register a new Messagehandler that handles the incoming messages
         /// </summary>
-        /// <param name="messageHandler"></param>
-        public void RegisterNewMessageHandler(NetworkMessageHandler<TEnum> messageHandler)
+        /// <param name="messageDeserializer"></param>
+        public void RegisterNewMessageHandler(NetworkMessageDeserializer<TEnum> messageDeserializer)
         {
-            RegisteredMessageHandler = messageHandler;
+            RegisteredMessageDeserializer = messageDeserializer;
         }
 
         /// <summary>
@@ -98,10 +98,10 @@ namespace GameFrame.Networking.NetworkConnector
         /// <param name="data"></param>
         protected void HandleData(byte[] data)
         {
-            if(RegisteredMessageHandler == null)
+            if(RegisteredMessageDeserializer == null)
                 throw new NoMessageHandlerRegisteredException("No message handler had been registered in: " + this.GetType());
 
-            RegisteredMessageHandler.AddMessageToQueue(data);
+            RegisteredMessageDeserializer.AddMessageToQueue(data);
         }
     }
 }

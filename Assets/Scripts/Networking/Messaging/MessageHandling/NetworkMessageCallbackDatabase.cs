@@ -17,7 +17,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         public void RegisterCallBack<TMessage>(TEnum messageEventType, Action<TMessage> callback) where TMessage : NetworkMessage<TEnum>
         {
             if (KeyExists(messageEventType))
-                throw new MessageTypeAlreadyRegisteredException("Messagetype: " + messageEventType + " has already been registered in database: " + this.GetType());
+                throw new MessageEventAlreadyRegisteredException("Messagetype: " + messageEventType + " has already been registered in database: " + this.GetType());
 
 
             var action = new Action<NetworkMessage<TEnum>>((message) => callback.Invoke((TMessage) message));
@@ -40,7 +40,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         public NetworkMessageCallbackWrapper<TEnum> GetCallbackWrapper(TEnum messageEventType)
         {
             if (!KeyExists(messageEventType))
-                throw new MessageTypeNotRegisteredException("Messagetype: " + messageEventType + " has not been registered in MessageHandler: " + this.GetType() + ". Please register this MessageEventType with: RegisterCallback(MessageEventType, INetworkMessageCallback<T>)");
+                throw new MessageEventNotRegisteredException("Messagetype: " + messageEventType + " has not been registered in MessageHandler: " + this.GetType() + ". Please register this MessageEventType with: RegisterCallback(MessageEventType, INetworkMessageCallback<T>)");
 
             return GetValue(messageEventType);
         }
@@ -53,7 +53,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         public void UnRegisterCallback(TEnum messageEventType)
         {
             if (!KeyExists(messageEventType))
-                throw new MessageTypeNotRegisteredException("Messagetype: " + messageEventType + " has not been registered in database: " + this.GetType());
+                throw new MessageEventNotRegisteredException("Messagetype: " + messageEventType + " has not been registered in database: " + this.GetType());
 
             RemoveKey(messageEventType);
         }

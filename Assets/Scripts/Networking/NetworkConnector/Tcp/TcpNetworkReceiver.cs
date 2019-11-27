@@ -9,9 +9,11 @@ sealed class TcpNetworkReceiver<TEnum> : NetworkReceiver<TEnum> where TEnum : En
 
     private NetworkStream _networkStream;
 
-    public TcpNetworkReceiver(TcpClient tcpClient)
+    private Action _onConnectionLost;
+    public TcpNetworkReceiver(TcpClient tcpClient, Action onConnectionLost)
     {
         _tcpClient = tcpClient;
+        _onConnectionLost = onConnectionLost;
     }
 
     protected override byte[] ReceiveData()
@@ -36,6 +38,7 @@ sealed class TcpNetworkReceiver<TEnum> : NetworkReceiver<TEnum> where TEnum : En
         catch (Exception e)
         {
             Console.WriteLine(e);
+            _onConnectionLost?.Invoke();
             throw;
         }
     }

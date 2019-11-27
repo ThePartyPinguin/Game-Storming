@@ -2,50 +2,40 @@
 using System.Net;
 using System.Net.Sockets;
 using GameFrame.Networking.Exception;
+using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.Serialization;
+using UnityEngine;
 
 namespace GameFrame.Networking.NetworkConnector
 {
     public class NetworkConnector<TEnum> where TEnum : Enum
     {
-        public IPAddress IpAddress { get; }
 
         private NetworkReceiver<TEnum> _receiver;
         private NetworkSender<TEnum> _sender;
 
-        private IPEndPoint _endPoint;
+        private IPAddress _ipAddress;
+        private int _port;
+
         private TcpClient _tcpClient;
 
         private INetworkMessageSerializer<TEnum> _networkMessageSerializer;
         private bool _setupComplete;
 
-        public NetworkConnector(string ipAddress, int port)
-        {
-            if (IPAddress.TryParse(ipAddress, out IPAddress ip))
-            {
-                IpAddress = ip;
-
-                _endPoint = new IPEndPoint(IpAddress, port);
-            }
-            else
-            {
-                throw new InvalidIPAdressException("The given ipAdress: " + IpAddress + " could not be parsed");
-            }
-        }
-
         public NetworkConnector(IPAddress ipAddress, int port)
         {
-            IpAddress = ipAddress;
-            _endPoint = new IPEndPoint(IpAddress, port);
+            _ipAddress = ipAddress;
+            _port = port;
         }
 
         /// <summary>
         /// Setup the sender and receiver
         /// </summary>
-        /// <param name="initialMessageCallbackDatabase">Initial set of callback that can be handled after connecting</param>
+        /// <param name="onMessageReceived">a callback that get's called when a new message is received and deserialized'</param>
         /// <param name="serializationType">The used serializationType</param>
-        public void Setup(NetworkMessageCallbackDatabase<TEnum> initialMessageCallbackDatabase, SerializationType serializationType)
+        /// <param name="onConnectionLost">A callback that gets invoked when the send or receiver catches an error</param>
+        public void Setup(Action<NetworkMessage<TEnum>> onMessageReceived, SerializationType serializationType, Action onConnectionLost)
         {
             if(_setupComplete)
                 throw new AlreadySetupExcpetion("The: " + this.GetType() + " has already been setup");
@@ -59,36 +49,65 @@ namespace GameFrame.Networking.NetworkConnector
                     break;
             }
 
-            _receiver = new TcpNetworkReceiver<TEnum>(_tcpClient);
-            _receiver.RegisterNewMessageHandler(new NetworkMessageHandler<TEnum>(initialMessageCallbackDatabase, _networkMessageSerializer));
+            _receiver = new TcpNetworkReceiver<TEnum>(_tcpClient, onConnectionLost);
 
-            _sender = new TcpNetworkSender<TEnum>(_networkMessageSerializer, _tcpClient);
+            _receiver.RegisterNewMessageHandler(new NetworkMessageDeserializer<TEnum>(onMessageReceived, _networkMessageSerializer));
+
+            _sender = new TcpNetworkSender<TEnum>(_networkMessageSerializer, _tcpClient, onConnectionLost);
 
             _setupComplete = true;
         }
 
         private void SetupTcpClient()
         {
-            _tcpClient = new TcpClient(_endPoint);
+            Debug.Log(_ipAddress);
+            
         }
 
         /// <summary>
         /// Try to connect the tcp client, if succeed, start the message receiver
         /// </summary>
-        public void Connect()
+        /// <param name="onConnected">A callback that get's invoked when the tcpClient successfully connects to a host</param>
+        /// <param name="onConnectFailed">A callback that get's invoked when the tcpClient throws an error when trying to connect to the given host</param>
+        public void Connect(Action onConnected, Action onConnectFailed)
         {
             if(!_setupComplete)
                 throw new NotSetupCorrectlyException("The " + this.GetType() + " was not setup correct, please run setup() before connecting");
 
             try
             {
-                _tcpClient.Connect(_endPoint);
+                _tcpClient = new TcpClient();
+                _tcpClient.Connect(_ipAddress, _port);
                 _receiver.StartReceiving();
+
+                onConnected?.Invoke();
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Debug.LogError(e);
+                onConnectFailed?.Invoke();
+            }
+        }
+
+        public void Close()
+        {
+            try
+            {
+                Debug.Log("Trying to close port");
+
+                _tcpClient.GetStream().Flush();
+                _tcpClient.GetStream().Dispose();
+                _tcpClient.GetStream().Close();
+
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning(e);
+            }
+            finally
+            {
+                _tcpClient.Dispose();
+                Debug.Log("Connection closed");
             }
         }
     }
