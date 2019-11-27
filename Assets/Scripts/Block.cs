@@ -44,6 +44,23 @@ public class Block : Draggable
         }
     }
 
+    public void DetachAndDestroy()
+    {
+        if (this.transform.parent != null)
+        {
+            GameObject go = this.transform.parent.gameObject;
+            this.transform.SetParent(null);
+            Destroy(go);
+        }
+    }
+
+    public override void OnMouseDown()
+    {
+         this.DetachAndDestroy();
+            base.OnMouseDown();
+        
+    }
+
     public int CalculateScore()
     {
         throw new System.NotImplementedException();

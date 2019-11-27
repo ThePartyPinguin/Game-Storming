@@ -13,7 +13,7 @@ public class BlockBubble : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        block.GetComponent<Rigidbody2D>().Sleep();
     }
 
     // Update is called once per frame
@@ -21,5 +21,7 @@ public class BlockBubble : MonoBehaviour
     {
         
     }
+
+
     #endregion
 }

@@ -63,6 +63,7 @@ public class BlockGenerator : MonoBehaviour
             }
         }
         Debug.Log("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location.");
+       
         return new Vector3(-999999, -999999);
     }
     #endregion
