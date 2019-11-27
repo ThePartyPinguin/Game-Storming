@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Block : Draggable
 {
@@ -9,6 +10,8 @@ public class Block : Draggable
     private string idea;
     [SerializeField]
     private Tower tower;
+    [SerializeField]
+    private TextMeshPro textVisual;
 
     Participant owner;
 
@@ -25,6 +28,20 @@ public class Block : Draggable
     void Update()
     {
         
+    }
+
+    public void setParticipant(Participant p )
+    {
+        this.owner = p;
+    }
+
+    public void setIdea(string _idea)
+    {
+        this.idea = _idea;
+        if(this.textVisual != null)
+        {
+            this.textVisual.text = idea;
+        }
     }
 
     public int CalculateScore()
