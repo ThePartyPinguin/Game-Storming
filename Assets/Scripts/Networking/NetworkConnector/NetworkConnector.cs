@@ -120,8 +120,8 @@ namespace GameFrame.Networking.NetworkConnector
         {
             try
             {
-                _receiver.StopReceiving();
-                _sender.Stop();
+                _receiver?.StopReceiving();
+                _sender?.Stop();
             }
             catch (System.Exception e)
             {

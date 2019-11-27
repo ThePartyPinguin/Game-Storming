@@ -102,11 +102,9 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             while (QueueContainsMessages())
             {
                 byte[] messageData = _messagesToHandleQueue.Dequeue();
-                Debug.Log("Starting deserialization of messagedata: " + messageData.Length);
 
                 if (DeserializeMessage(messageData, out var message))
                 {
-                    Debug.Log("Message deserialized: " + message.MessageEventType);
                     CallOnMessageDeserialized(message);
                 }
             }
@@ -126,10 +124,8 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// <returns></returns>
         private bool DeserializeMessage(byte[] data, out NetworkMessage<TEnum> message)
         {
-            Debug.Log(data.Length);
             try
             {
-                Debug.Log(_byteEnumValues.ContainsKey(data[0]));
                 if (!_byteEnumValues.ContainsKey(data[0]))
                     throw new MessageEventTypeNotValid("The received messageEventType identifier: " + data[0] + " could not be found in the given typeParameter enum: " + typeof(TEnum));
 
@@ -160,6 +156,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// <param name="message">The deserialized message</param>
         private void CallOnMessageDeserialized(NetworkMessage<TEnum> message)
         {
+            Debug.Log(message.MessageEventType);
             OnMessageHandledCallback?.Invoke(message);
         }
 

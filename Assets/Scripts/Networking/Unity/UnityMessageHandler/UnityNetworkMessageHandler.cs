@@ -6,7 +6,7 @@ using GameFrame.Networking.Messaging.MessageHandling;
 using UnityEngine;
 using UnityEngine.Experimental.XR;
 
-public class UnityNetworkMessageHandler : MonoSingleton<UnityNetworkMessageHandler>, INetworkMessageHandler<NetworkMessage<NetworkEvent>, NetworkEvent>
+public class UnityNetworkMessageHandler : MonoBehaviour, INetworkMessageHandler<NetworkMessage<NetworkEvent>, NetworkEvent>
 {
     public int MaxMessagesPerFrame;
 
@@ -16,11 +16,30 @@ public class UnityNetworkMessageHandler : MonoSingleton<UnityNetworkMessageHandl
 
     private Queue<NetworkMessage<NetworkEvent>> _messagesToHandleQueue;
     private bool _coRoutineRunning;
+
     void Start()
     {
-        Debug.Log(FindObjectsOfType<UnityBaseMessageEventsDatabase<BaseNetworkMessage, BaseMessageCallbackWrapper<BaseNetworkMessage, BaseMessageCallback<BaseNetworkMessage>>, BaseMessageCallback<BaseNetworkMessage>>>().Length);
-        
         _messagesToHandleQueue = new Queue<NetworkMessage<NetworkEvent>>();
+
+        if (EventsOnlyMessageEvents != null)
+        {
+            DontDestroyOnLoad(EventsOnlyMessageEvents);
+            EventsOnlyMessageEvents.transform.SetParent(this.transform);
+        }
+
+        if (StringMessageEvents != null)
+        {
+            DontDestroyOnLoad(StringMessageEvents);
+            StringMessageEvents.transform.SetParent(this.transform);
+        }
+
+        if (ImageMessageEvents != null)
+        {
+            DontDestroyOnLoad(ImageMessageEvents);
+            ImageMessageEvents.transform.SetParent(this.transform);
+        }
+
+
         _coRoutineRunning = false;
     }
 

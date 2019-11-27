@@ -8,10 +8,13 @@ using GameFrame.Networking.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(UnityNetworkMessageHandler))]
 public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
 {
     public string IpAddress => _ipAddress;
     public int Port => _port;
+
+    public NetworkConnector<NetworkEvent> NetworkConnector => _networkConnector;
 
     [SerializeField]
     private string _ipAddress;
@@ -38,12 +41,20 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
     // Start is called before the first frame update
     void Start()
     {
-        _messageHandler = UnityNetworkMessageHandler.Instance;
+        _messageHandler = GetComponent<UnityNetworkMessageHandler>();
+
+        StartCoroutine(ConnectCoRoutine());
+    }
+
+    private IEnumerator ConnectCoRoutine()
+    {
+        yield return new WaitForSeconds(5f);
+
+        Debug.Log("Setting up connection to server");
 
         var ipAddress = ParseIpAddress();
-
         _networkConnector = new NetworkConnector<NetworkEvent>(ipAddress, _port);
-        _networkConnector.Setup(SerializationType.JSON);  
+        _networkConnector.Setup(SerializationType.JSON);
         _networkConnector.SetupCallbacks(_messageHandler.MessageHandled, CallOnConnected, CallOnConnectFailed, CallOnConnectionInterrupted);
         _networkConnector.Connect();
         _networkConnector.Start();

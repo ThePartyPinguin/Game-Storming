@@ -22,9 +22,6 @@ namespace GameFrame.Networking.NetworkConnector
             _networkMessageSerializer = networkMessageSerializer;
             _networkMessagesQueueToSend = new Queue<NetworkMessage<TEnum>>();
             _waitUntilStopped = new ManualResetEvent(false);
-
-            _senderTask = new Task(Send);
-            _senderTask.GetAwaiter().OnCompleted(SendTaskStopped);
         }
 
         public void QueueNewMessageToSend(NetworkMessage<TEnum> message)
@@ -34,6 +31,8 @@ namespace GameFrame.Networking.NetworkConnector
             if (!_senderTaskRunning)
             {
                 _senderTaskRunning = true;
+                _senderTask = new Task(Send);
+                _senderTask.GetAwaiter().OnCompleted(SendTaskStopped);
                 _senderTask.Start();
             }
         }
