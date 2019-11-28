@@ -10,6 +10,8 @@ public class Block : Draggable
     [SerializeField]
     private Tower tower;
     private Rigidbody2D rigidBody;
+    private bool isConnected;
+    private SpringJoint2D blockJoint;
     private HingeJoint2D towerJoint;
 
     Participant owner;
@@ -19,6 +21,7 @@ public class Block : Draggable
     #region methods
     private void Start()
     {
+        blockJoint = GetComponent<SpringJoint2D>();
         towerJoint = GetComponent<HingeJoint2D>();
         rigidBody = GetComponent<Rigidbody2D>();
         tower = null;
@@ -40,10 +43,17 @@ public class Block : Draggable
             StartCoroutine(SnapToFoundation());
             base.OnMouseUp();
         }
-        else if (collision.gameObject.CompareTag("Block") && false)
+        else if (collision.gameObject.CompareTag("Block") && collision.gameObject.GetComponent<Block>())
         {
-            //blockJoint.enabled = true;
-            //blockJoint.connectedBody = collision.rigidbody;
+            Block otherBlock = collision.gameObject.GetComponent<Block>();
+            blockJoint.enabled = true;
+            Vector2 contactPoint = transform.InverseTransformPoint(collision.GetContact(0).point);
+            blockJoint.anchor = new Vector2(
+                contactPoint.x < 1 ? Mathf.Max(contactPoint.x, -0.5f) : Mathf.Min(contactPoint.x, 0.5f),
+                contactPoint.y < 1 ? Mathf.Max(contactPoint.y, -0.5f) : Mathf.Min(contactPoint.y, 0.5f));
+            blockJoint.connectedBody = collision.rigidbody;
+            base.OnMouseUp();
+            this.tower = otherBlock.GetTower();
         }
     }
 
@@ -57,6 +67,11 @@ public class Block : Draggable
         float functionalRotation = (transform.eulerAngles.z % 180);
         bool isHorizontal = 45 <= functionalRotation && functionalRotation < 135;
         return (isHorizontal ? transform.localScale.x : transform.localScale.y);
+    }
+
+    public Tower GetTower()
+    {
+        return this.tower;
     }
 
     public void DetachFromTower()
