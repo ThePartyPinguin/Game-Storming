@@ -35,10 +35,9 @@ public abstract class Draggable : MonoBehaviour
     {
         dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         GetComponent<Rigidbody2D>().angularVelocity = 0f;
-        onDrag.Invoke();
     }
 
-    private void OnMouseUp()
+    protected void OnMouseUp()
     {
         dragJoint.enabled = false;
         onDragUp.Invoke();

@@ -18,9 +18,7 @@ public class Tower
     public Tower(Block firstBlock)
     {
         this.idea = firstBlock.GetIdea() ?? throw new ArgumentNullException(nameof(idea));
-        float functionalRotation = (firstBlock.transform.eulerAngles.z % 180);
-        bool isHorizontal = !(45 <= functionalRotation && functionalRotation < 135);
-        this.height = isHorizontal ? firstBlock.transform.localScale.x : firstBlock.transform.localScale.y;
+        this.height = firstBlock.GetHeight();
         this.blocks = new List<Block>();
         blocks.Add(firstBlock);
     }
