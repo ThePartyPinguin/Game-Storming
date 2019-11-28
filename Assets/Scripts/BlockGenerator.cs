@@ -36,11 +36,11 @@ public class BlockGenerator : MonoBehaviour
     {
         if (owner != null && ideaTitle != "")
         {
-            GameObject block = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
-            block.GetComponent<SpriteRenderer>().color = owner.GetColor();
-            block.GetComponent<Block>().setParticipant(owner);
-            block.GetComponent<Block>().setIdea(ideaTitle);
-            owner.addBlock(block.GetComponent<Block>());
+            GameObject blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
+            blockbubble.GetComponentsInChildren<SpriteRenderer>()[1].color = owner.GetColor();
+            blockbubble.GetComponentInChildren<Block>().setParticipant(owner);
+            blockbubble.GetComponentInChildren<Block>().setIdea(ideaTitle);
+            owner.addBlock(blockbubble.GetComponentInChildren<Block>());
             Debug.Log("[BlockGenerator.SpawnBlock] Block Created: (Owner: " + owner.ToString() + ") (BlockTitle: " + ideaTitle + ")");
         }
     }
