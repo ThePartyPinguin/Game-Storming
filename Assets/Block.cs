@@ -11,7 +11,6 @@ public class Block : Draggable
     private Tower tower;
     private Rigidbody2D rigidBody;
     private bool isConnected;
-    private SpringJoint2D blockJoint;
     private HingeJoint2D towerJoint;
 
     Participant owner;
@@ -21,18 +20,21 @@ public class Block : Draggable
     #region methods
     private void Start()
     {
-        blockJoint = GetComponent<SpringJoint2D>();
         towerJoint = GetComponent<HingeJoint2D>();
         rigidBody = GetComponent<Rigidbody2D>();
         tower = null;
+        isConnected = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (isConnected) { Debug.Log("Shouldn't happen :c " + Time.time);  return; }
         if (collision.gameObject.CompareTag("Foundation") && tower == null)
         {
+            Debug.Log("Tower created" + Time.time);
             Tower newTower = new Tower(this);
             this.tower = newTower;
+            this.isConnected = true;
             
             towerJoint.enabled = true;
             Vector2 contactPoint = transform.InverseTransformPoint(collision.GetContact(0).point);
@@ -43,16 +45,11 @@ public class Block : Draggable
             StartCoroutine(SnapToFoundation());
             base.OnMouseUp();
         }
-        else if (collision.gameObject.CompareTag("Block") && collision.gameObject.GetComponent<Block>())
+        else if (collision.gameObject.CompareTag("Block") && collision.gameObject.GetComponent<Block>()) //Extra check for if it's done
         {
+            Debug.Log("HitBlock" + Time.time);
             Block otherBlock = collision.gameObject.GetComponent<Block>();
-            blockJoint.enabled = true;
-            Vector2 contactPoint = transform.InverseTransformPoint(collision.GetContact(0).point);
-            blockJoint.anchor = new Vector2(
-                contactPoint.x < 1 ? Mathf.Max(contactPoint.x, -0.5f) : Mathf.Min(contactPoint.x, 0.5f),
-                contactPoint.y < 1 ? Mathf.Max(contactPoint.y, -0.5f) : Mathf.Min(contactPoint.y, 0.5f));
-            blockJoint.connectedBody = collision.rigidbody;
-            base.OnMouseUp();
+            //base.OnMouseUp();
             this.tower = otherBlock.GetTower();
         }
     }
@@ -76,10 +73,9 @@ public class Block : Draggable
 
     public void DetachFromTower()
     {
-        if (!rigidBody.isKinematic) { return; }
-        //blockJoint.enabled = false;
         StartCoroutine(ReleaseFromFoundation());
         tower = null;
+        this.isConnected = false;
     }
 
     public int CalculateScore()
@@ -120,7 +116,7 @@ public class Block : Draggable
     {
         rigidBody.isKinematic = false;
         GetComponent<Collider2D>().enabled = false;
-        yield return new WaitUntil(() => transform.position.y >= (-2.5f + GetHeight()/2));
+        yield return new WaitUntil(() => transform.position.y >= (-3.45f + GetHeight()/2));
         GetComponent<Collider2D>().enabled = true;
     }
     #endregion
