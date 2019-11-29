@@ -37,7 +37,7 @@ public class BlockGenerator : MonoBehaviour
         if (owner != null && ideaTitle != "")
         {
             GameObject blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
-            blockbubble.GetComponentsInChildren<SpriteRenderer>()[1].color = owner.GetColor();
+            blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.GetColor();
             blockbubble.GetComponentInChildren<Block>().setParticipant(owner);
             blockbubble.GetComponentInChildren<Block>().setIdea(ideaTitle);
             owner.addBlock(blockbubble.GetComponentInChildren<Block>());
