@@ -62,8 +62,6 @@ public class Block : Draggable
         Debug.Log("clicked block");
          this.DetachAndDestroy();
             base.OnMouseDown();
-   
-        
     }
 
     public int CalculateScore()

@@ -13,19 +13,26 @@ public class Tower : MonoBehaviour
     private int breakingHeight;
     [SerializeField]
     private List<Block> blocks;
+    [SerializeField]
+    private float pointScale = 10f;
     #endregion
 
+    /// <summary>
+    /// Pointsystem...
+    /// points scale depending on amount of blocks present in tower, less blocks equals more points.
+    /// </summary>
+
+
     #region methods
-    // Start is called before the first frame update
-    void Start()
+    public int AddBlock(Block block)
     {
-        
+        this.blocks.Add(block);
+        return CalculateScore();
     }
 
-    // Update is called once per frame
-    void Update()
+    private int CalculateScore()
     {
-        
+        return Mathf.FloorToInt(pointScale / this.blocks.Count);
     }
     #endregion
 }
