@@ -12,6 +12,8 @@ public class Block : Draggable
     private Tower tower;
     [SerializeField]
     private TextMeshPro textVisual;
+    [SerializeField]
+    private GameObject blockbubble;
 
     Participant owner;
 
@@ -27,10 +29,13 @@ public class Block : Draggable
     // Update is called once per frame
     void Update()
     {
-        
+        if(this.GetComponentInChildren<BlockBubble>() != null)
+        {
+            this.transform.position = new Vector3(this.blockbubble.transform.position.x, this.blockbubble.transform.position.y, 0.1f);   
+        }
     }
 
-    public void setParticipant(Participant p )
+    public void setParticipant(Participant p)
     {
         this.owner = p;
     }
@@ -42,6 +47,23 @@ public class Block : Draggable
         {
             this.textVisual.text = idea;
         }
+    }
+
+    public void DetachAndDestroy()
+    {
+        if (this.blockbubble != null)
+        {
+            Destroy(blockbubble);
+        }
+    }
+
+    public override void OnMouseDown()
+    {
+        Debug.Log("clicked block");
+         this.DetachAndDestroy();
+            base.OnMouseDown();
+   
+        
     }
 
     public int CalculateScore()
