@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Text;
 using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
+using UnityEngine;
 
 namespace GameFrame.Networking.Server
 {
@@ -17,13 +19,13 @@ namespace GameFrame.Networking.Server
             _port = port;
         }
 
-        protected void Start(HandshakeHandler<TEnum> handshakeHandler)
+        protected void Start(Action<TcpClient> onClientConnect)
         {
             if (_serverListener == null)
-                _serverListener = new ServerListener<TEnum>(_port, handshakeHandler);
+                _serverListener = new ServerListener<TEnum>(_port);
 
-            _serverListener.StartListener();
-            Console.WriteLine("Server started listening for new connections");
+            _serverListener.StartListener(onClientConnect);
+            Debug.Log("Server started listening for new connections");
         }
 
         public void Stop()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector;
@@ -11,23 +12,20 @@ class CustomGameServer : GameServer<NetworkEvent>
 {
     private Dictionary<int, NetworkConnector<NetworkEvent>> _connectedClients;
 
-    private ServerHandshakeHandler _handshakeHandler;
     private readonly SerializationType _serializationType;
-    private readonly INetworkMessageHandler<NetworkMessage<NetworkEvent>, NetworkEvent> _onClientAcceptedNewMessageHandler;
+    //private readonly INetworkMessageHandler<NetworkMessage<NetworkEvent>, NetworkEvent> _onClientAcceptedNewMessageHandler;
 
-    public CustomGameServer(int port, int maxConnectedClients, INetworkMessageHandler<NetworkMessage<NetworkEvent>, NetworkEvent>  newNetworkMessageHandler, SerializationType serializationType) : base(port)
+    public CustomGameServer(int port, int maxConnectedClients, SerializationType serializationType) : base(port)
     {
         _serializationType = serializationType;
-        _onClientAcceptedNewMessageHandler = newNetworkMessageHandler;
         _connectedClients = new Dictionary<int, NetworkConnector<NetworkEvent>>();
+
+        NetworkMessageCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<EventOnlyNetworkMessage>(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE, OnReceiveHandshakeRequest);
     }
 
     public void StartServer()
     {
-        if (_handshakeHandler == null)
-            _handshakeHandler = new ServerHandshakeHandler(OnReceiveHandshakeResponse, OnClientDisconnect, _serializationType);
-
-        Start(_handshakeHandler);
+        Start(OnClientConnect);
     }
 
     public void StopServer()
@@ -35,15 +33,27 @@ class CustomGameServer : GameServer<NetworkEvent>
         Stop();
     }
 
-    private void OnReceiveHandshakeResponse(EventOnlyNetworkMessage message, NetworkConnector<NetworkEvent> connector)
+    private void OnClientConnect(TcpClient client)
     {
-        Debug.LogError("[OnReceiveHandshakeResponse]: " + message.MessageEventType);
+        var connector = new NetworkConnector<NetworkEvent>(client);
+        connector.Setup(_serializationType);
+        connector.SetupCallbacks(() => { }, () => { }, OnConnectionLost);
+        connector.Start();
+    }
+
+    private void OnConnectionLost(NetworkConnector<NetworkEvent> connector)
+    {
+
+    }
+
+    private void OnReceiveHandshakeRequest(EventOnlyNetworkMessage message, NetworkConnector<NetworkEvent> connector)
+    {
         if (message.MessageEventType == NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE)
         {
-            Debug.LogError("A new client has been accepted");
+            Debug.Log("Received client handshake request");
             int clientId = _connectedClients.Count;
-            connector.SetupCallbacks(_onClientAcceptedNewMessageHandler.MessageHandled, () => {}, () => {}, OnClientDisconnect);
             _connectedClients.Add(clientId, connector);
+            connector.SendMessage(new EventOnlyNetworkMessage(NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE));
         }
     }
 

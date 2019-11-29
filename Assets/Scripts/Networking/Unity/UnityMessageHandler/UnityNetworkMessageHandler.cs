@@ -89,25 +89,25 @@ public class UnityNetworkMessageHandler : MonoBehaviour, INetworkMessageHandler<
         {
             var message = _messagesToHandleQueue.Dequeue();
 
-            HandleSingleMessage(message);
+            //HandleSingleMessage(message);
         }
     }
 
     private void HandleSingleMessage(NetworkMessage<NetworkEvent> message)
     {
-        switch (message)
-        {
-            case EventOnlyNetworkMessage eventsOnlyMessage:
-                EventsOnlyMessageEvents.CallMessageCallback(eventsOnlyMessage);
-                break;
-            case StringNetworkMessage stringMessage:
-                StringMessageEvents.CallMessageCallback(stringMessage);
-                break;
+        //switch (message)
+        //{
+        //    case EventOnlyNetworkMessage eventsOnlyMessage:
+        //        EventsOnlyMessageEvents.CallMessageCallback(eventsOnlyMessage);
+        //        break;
+        //    case StringNetworkMessage stringMessage:
+        //        StringMessageEvents.CallMessageCallback(stringMessage);
+        //        break;
 
-            case ImageNetworkMessage imageMessage:
-                ImageMessageEvents.CallMessageCallback(imageMessage);
-                break;
-        }
+        //    case ImageNetworkMessage imageMessage:
+        //        ImageMessageEvents.CallMessageCallback(imageMessage);
+        //        break;
+        //}
     }
 
 }

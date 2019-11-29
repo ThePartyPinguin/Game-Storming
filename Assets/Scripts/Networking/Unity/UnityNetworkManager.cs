@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using GameFrame.Networking.Exception;
+using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
-
-[RequireComponent(typeof(UnityNetworkMessageHandler))]
 public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
 {
     public string IpAddress => _ipAddress;
@@ -35,29 +34,27 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
     [SerializeField]
     private UnityEvent _onConnectionInterrupted;
 
-    private UnityNetworkMessageHandler _messageHandler;
     private NetworkConnector<NetworkEvent> _networkConnector;
 
     // Start is called before the first frame update
     void Start()
     {
-        _messageHandler = GetComponent<UnityNetworkMessageHandler>();
-
         StartCoroutine(ConnectCoRoutine());
     }
 
     private IEnumerator ConnectCoRoutine()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(3f);
 
         Debug.Log("Setting up connection to server");
 
         var ipAddress = ParseIpAddress();
         _networkConnector = new NetworkConnector<NetworkEvent>(ipAddress, _port);
         _networkConnector.Setup(SerializationType.JSON);
-        _networkConnector.SetupCallbacks(_messageHandler.MessageHandled, CallOnConnected, CallOnConnectFailed, CallOnConnectionInterrupted);
+        _networkConnector.SetupCallbacks(CallOnConnected, CallOnConnectFailed, CallOnConnectionInterrupted);
         _networkConnector.Connect();
         _networkConnector.Start();
+        _networkConnector.SendMessage(new EventOnlyNetworkMessage(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE));
     }
 
     private IPAddress ParseIpAddress()

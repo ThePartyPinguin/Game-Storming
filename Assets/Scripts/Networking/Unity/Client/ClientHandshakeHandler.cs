@@ -6,11 +6,10 @@ public class ClientHandshakeHandler : MonoBehaviour
 {
     public void OnHandshakeReceive(EventOnlyNetworkMessage message)
     {
-        Debug.Log("Received handshake");
-
         if (message.MessageEventType == NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE)
         {
-            UnityNetworkManager.Instance.NetworkConnector.SendMessage(new EventOnlyNetworkMessage(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE));
+            Debug.Log("Received handshake");
+
             StartCoroutine(TestStringMessage());
         }
     }
@@ -19,6 +18,6 @@ public class ClientHandshakeHandler : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
         Debug.Log("Sending string message");
-        UnityNetworkManager.Instance.NetworkConnector.SendMessage(new StringNetworkMessage(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE, "Test string"));
+        UnityNetworkManager.Instance.NetworkConnector.SendMessage(new StringNetworkMessage(NetworkEvent.CLIENT_SEND_TEST_STRING, "Test string"));
     }
 }

@@ -7,27 +7,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.NetworkConnector;
+using UnityEngine;
 
 namespace GameFrame.Networking.Server
 {
     public class ServerListener<TEnum> where TEnum : Enum
     {
-        private HandshakeHandler<TEnum> _handshakeHandler;
-
         private TcpListener _tcpListener;
         private Task _listenerTask;
         private bool _listenerRunning;
 
         private ManualResetEvent _waitUntilListenerStopped;
-        public ServerListener(int port, HandshakeHandler<TEnum> handshakeHandler)
+        private Action<TcpClient> _onClientConnect;
+        public ServerListener(int port)
         {
-            _handshakeHandler = handshakeHandler;
             _tcpListener = new TcpListener(IPAddress.Any, port);
             _waitUntilListenerStopped = new ManualResetEvent(false);
         }
 
-        public void StartListener()
+        public void StartListener(Action<TcpClient> onClientConnect)
         {
+            _onClientConnect = onClientConnect;
             _tcpListener.Start();
 
             if (!_listenerRunning)
@@ -54,7 +54,8 @@ namespace GameFrame.Networking.Server
                 try
                 {
                     TcpClient client = _tcpListener.AcceptTcpClient();
-                    _handshakeHandler.AddClientToAccept(client);
+                    Debug.Log("New connection received");
+                    _onClientConnect?.Invoke(client);
                 }
                 catch(SocketException e)
                 {

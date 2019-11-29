@@ -51,7 +51,7 @@ namespace GameFrame.Networking.NetworkConnector
             while (_networkMessagesQueueToSend.Count > 0)
             {
                 byte[] data = _networkMessageSerializer.Serialize(_networkMessagesQueueToSend.Dequeue());
-
+                
                 SendMessage(data);
             }
             _senderTaskRunning = false;
@@ -60,7 +60,6 @@ namespace GameFrame.Networking.NetworkConnector
         private void SendTaskStopped()
         {
             _waitUntilStopped.Set();
-            Debug.Log("Sender stopped");
         }
 
         protected abstract void SendMessage(byte[] data);

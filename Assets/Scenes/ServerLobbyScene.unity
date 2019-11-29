@@ -202,7 +202,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 709982254}
-  - component: {fileID: 709982256}
   - component: {fileID: 709982255}
   m_Layer: 0
   m_Name: ServerPrefab
@@ -240,22 +239,6 @@ MonoBehaviour:
   Port: 5555
   MaxConnectedPlayers: 8
   SerializationType: 0
---- !u!114 &709982256
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 709982253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 743f4587b515afa4793d7c44c5d9f3fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MaxMessagesPerFrame: 15
-  EventsOnlyMessageEvents: {fileID: 515771105}
-  StringMessageEvents: {fileID: 515771107}
-  ImageMessageEvents: {fileID: 0}
 --- !u!1 &1249274597
 GameObject:
   m_ObjectHideFlags: 0

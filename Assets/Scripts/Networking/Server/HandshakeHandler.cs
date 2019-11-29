@@ -30,25 +30,6 @@ namespace GameFrame.Networking.Server
             _connectorsToAccept = new Queue<NetworkConnector<TEnum>>();
         }
 
-        public void AddClientToAccept(TcpClient client)
-        {
-            Debug.Log("Adding client to accept queue");
-            var connector = new NetworkConnector<TEnum>(client);
-            connector.Setup(_serializationType);
-            connector.SetupCallbacks((message) => { OnHandshakeReceived(message, connector);}, () => {}, () => {}, OnConnectionLost);
-            connector.Start();
-
-            _connectorsToAccept.Enqueue(connector);
-
-            if (!_acceptTaskRunning)
-            {
-                _acceptTaskRunning = true;
-                _acceptTask = new Task(AcceptConnectors);
-                _acceptTask.GetAwaiter().OnCompleted(OnAcceptTaskStop);
-                _acceptTask.Start();
-            }
-        }
-
         private void OnHandshakeReceived(NetworkMessage<TEnum> message, NetworkConnector<TEnum> connector)
         {
             Debug.Log("ReceivedMessage");

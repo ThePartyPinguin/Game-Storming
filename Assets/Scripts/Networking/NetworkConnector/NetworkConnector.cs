@@ -25,7 +25,6 @@ namespace GameFrame.Networking.NetworkConnector
         private Action<NetworkConnector<TEnum>> _onConnectionLost;
         private Action _onConnected;
         private Action _onConnectionFailed;
-        private Action<NetworkMessage<TEnum>> _onMessageReceived;
 
 
         public NetworkConnector(IPAddress ipAddress, int port)
@@ -60,9 +59,8 @@ namespace GameFrame.Networking.NetworkConnector
             _setupComplete = true;
         }
 
-        public void SetupCallbacks(Action<NetworkMessage<TEnum>> onMessageReceived, Action onConnected, Action onConnectionFailed, Action<NetworkConnector<TEnum>> onConnectionLost)
+        public void SetupCallbacks(Action onConnected, Action onConnectionFailed, Action<NetworkConnector<TEnum>> onConnectionLost)
         {
-            _onMessageReceived = onMessageReceived;
             _onConnectionLost = onConnectionLost;
             _onConnected = onConnected;
             _onConnectionFailed = onConnectionFailed;
@@ -70,7 +68,7 @@ namespace GameFrame.Networking.NetworkConnector
 
         public void Start()
         {
-            _receiver = new TcpNetworkReceiver<TEnum>(new NetworkMessageDeserializer<TEnum>(OnMessageReceived, _networkMessageSerializer), _tcpClient, OnConnectionLost);
+            _receiver = new TcpNetworkReceiver<TEnum>(new NetworkMessageDeserializer<TEnum>(this, _networkMessageSerializer), _tcpClient, OnConnectionLost);
             _sender = new TcpNetworkSender<TEnum>(_networkMessageSerializer, _tcpClient, OnConnectionLost);
             _receiver.StartReceiving();
         }
@@ -78,11 +76,6 @@ namespace GameFrame.Networking.NetworkConnector
         private void OnConnectionLost()
         {
             _onConnectionLost?.Invoke(this);
-        }
-
-        private void OnMessageReceived(NetworkMessage<TEnum> message)
-        {
-            _onMessageReceived?.Invoke(message);
         }
         /// <summary>
         /// Try to connect the tcp client, if succeed, start the message receiver
@@ -96,8 +89,7 @@ namespace GameFrame.Networking.NetworkConnector
             {
                 _tcpClient = new TcpClient();
                 _tcpClient.Connect(_ipAddress, _port);
-
-
+                
                 _onConnected?.Invoke();
             }
             catch (System.Exception e)
