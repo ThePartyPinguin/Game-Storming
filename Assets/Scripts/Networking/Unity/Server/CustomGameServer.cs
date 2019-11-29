@@ -20,7 +20,7 @@ class CustomGameServer : GameServer<NetworkEvent>
         _serializationType = serializationType;
         _connectedClients = new Dictionary<int, NetworkConnector<NetworkEvent>>();
 
-        NetworkMessageCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<EventOnlyNetworkMessage>(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE, OnReceiveHandshakeRequest);
+        NetworkEventCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<EventOnlyNetworkMessage>(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE, OnReceiveHandshakeRequest);
     }
 
     public void StartServer()
@@ -37,7 +37,7 @@ class CustomGameServer : GameServer<NetworkEvent>
     {
         var connector = new NetworkConnector<NetworkEvent>(client);
         connector.Setup(_serializationType);
-        connector.SetupCallbacks(() => { }, () => { }, OnConnectionLost);
+        connector.SetupCallbacks(() => { }, OnConnectionLost);
         connector.Start();
     }
 
@@ -53,7 +53,7 @@ class CustomGameServer : GameServer<NetworkEvent>
             Debug.Log("Received client handshake request");
             int clientId = _connectedClients.Count;
             _connectedClients.Add(clientId, connector);
-            connector.SendMessage(new EventOnlyNetworkMessage(NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE));
+            connector.SendMessage(new HandshakeServerResponseMessage(NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE, clientId));
         }
     }
 
