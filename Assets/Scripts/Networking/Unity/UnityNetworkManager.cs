@@ -26,7 +26,7 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
 
     [Header("Connection events")]
     [SerializeField]
-    private UnityEvent _onConnected;
+    private IntUnityEvent _onConnected;
 
     [SerializeField]
     private UnityEvent _onConnectFailed;
@@ -51,10 +51,27 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
         var ipAddress = ParseIpAddress();
         _networkConnector = new NetworkConnector<NetworkEvent>(ipAddress, _port);
         _networkConnector.Setup(SerializationType.JSON);
-        _networkConnector.SetupCallbacks(CallOnConnected, CallOnConnectFailed, CallOnConnectionInterrupted);
+        _networkConnector.SetupCallbacks(CallOnConnectFailed, CallOnConnectionInterrupted);
+
+        SetupHandshakeEvent();
+
         _networkConnector.Connect();
         _networkConnector.Start();
         _networkConnector.SendMessage(new EventOnlyNetworkMessage(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE));
+    }
+
+    private void SetupHandshakeEvent()
+    {
+        NetworkEventCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<HandshakeServerResponseMessage>(NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE,
+            (message, connector) =>
+            {
+                CallOnConnected(message.ClientId);
+                NetworkEventCallbackDatabase<NetworkEvent>.Instance.UnRegisterCallback(NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE);
+                bool exists = NetworkEventCallbackDatabase<NetworkEvent>.Instance.CallbackExists(NetworkEvent
+                    .SERVER_TO_CLIENT_HANDSHAKE);
+
+                Debug.Log("Handshake callback exists: " + exists);
+            });
     }
 
     private IPAddress ParseIpAddress()
@@ -70,9 +87,10 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
         throw new InvalidIPAdressException("The given ipAddress: " + _ipAddress + " is not valid");
     }
 
-    private void CallOnConnected()
+    private void CallOnConnected(int clientId)
     {
-        _onConnected?.Invoke();
+        Debug.Log("Connected: " + clientId);
+        _onConnected?.Invoke(clientId);
     }
 
     private void CallOnConnectFailed()

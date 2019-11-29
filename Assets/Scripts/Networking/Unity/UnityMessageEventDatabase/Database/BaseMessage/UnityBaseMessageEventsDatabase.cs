@@ -34,7 +34,7 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
             }
             _messageCallbackCollection.Add(callbackWrapper.EventType, callbackWrapper.Callback);
 
-            NetworkMessageCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<TBaseMessage>(callbackWrapper.EventType,
+            NetworkEventCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<TBaseMessage>(callbackWrapper.EventType,
                 (message, connector) =>
                 {
                     AddMessageToQueue(message);

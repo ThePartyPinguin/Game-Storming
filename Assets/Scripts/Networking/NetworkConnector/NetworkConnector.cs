@@ -23,7 +23,6 @@ namespace GameFrame.Networking.NetworkConnector
         private bool _setupComplete;
 
         private Action<NetworkConnector<TEnum>> _onConnectionLost;
-        private Action _onConnected;
         private Action _onConnectionFailed;
 
 
@@ -59,10 +58,9 @@ namespace GameFrame.Networking.NetworkConnector
             _setupComplete = true;
         }
 
-        public void SetupCallbacks(Action onConnected, Action onConnectionFailed, Action<NetworkConnector<TEnum>> onConnectionLost)
+        public void SetupCallbacks(Action onConnectionFailed, Action<NetworkConnector<TEnum>> onConnectionLost)
         {
             _onConnectionLost = onConnectionLost;
-            _onConnected = onConnected;
             _onConnectionFailed = onConnectionFailed;
         }
 
@@ -89,8 +87,6 @@ namespace GameFrame.Networking.NetworkConnector
             {
                 _tcpClient = new TcpClient();
                 _tcpClient.Connect(_ipAddress, _port);
-                
-                _onConnected?.Invoke();
             }
             catch (System.Exception e)
             {

@@ -6,7 +6,7 @@ using GameFrame.Networking.NetworkConnector;
 
 namespace GameFrame.Networking.Messaging.MessageHandling
 {
-    public class NetworkMessageCallbackDatabase<TEnum> : MemoryDatabase<TEnum, NetworkMessageCallbackWrapper<TEnum>, NetworkMessageCallbackDatabase<TEnum>> where TEnum : Enum
+    public class NetworkEventCallbackDatabase<TEnum> : MemoryDatabase<TEnum, NetworkMessageCallbackWrapper<TEnum>, NetworkEventCallbackDatabase<TEnum>> where TEnum : Enum
     {
         /// <summary>
         /// Register a new NetworkMessageCallbackWrapper, 

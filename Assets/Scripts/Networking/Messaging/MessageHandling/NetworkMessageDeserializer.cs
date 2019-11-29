@@ -19,7 +19,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         private readonly NetworkConnector<TEnum> _networkConnector;
         private Dictionary<byte, TEnum> _byteEnumValues;
 
-        private NetworkMessageCallbackDatabase<TEnum> _callbackDatabase;
+        private NetworkEventCallbackDatabase<TEnum> _callbackDatabase;
 
         #region Init
 
@@ -29,7 +29,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             _networkMessageSerializer = serializer;
 
             _messageTypeDatabase = NetworkMessageTypeDataBase<TEnum>.Instance;
-            _callbackDatabase = NetworkMessageCallbackDatabase<TEnum>.Instance;
+            _callbackDatabase = NetworkEventCallbackDatabase<TEnum>.Instance;
             SetupByteDictionary();
 
             _messagesToHandleQueue = new Queue<byte[]>();
