@@ -3,15 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using GameFrame.Networking.Exception;
+using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
-
 public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
 {
     public string IpAddress => _ipAddress;
     public int Port => _port;
+
+    public NetworkConnector<NetworkEvent> NetworkConnector => _networkConnector;
 
     [SerializeField]
     private string _ipAddress;
@@ -32,19 +34,27 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
     [SerializeField]
     private UnityEvent _onConnectionInterrupted;
 
-    private UnityNetworkMessageHandler _messageHandler;
     private NetworkConnector<NetworkEvent> _networkConnector;
 
     // Start is called before the first frame update
     void Start()
     {
-        _messageHandler = UnityNetworkMessageHandler.Instance;
+        StartCoroutine(ConnectCoRoutine());
+    }
+
+    private IEnumerator ConnectCoRoutine()
+    {
+        yield return new WaitForSeconds(3f);
+
+        Debug.Log("Setting up connection to server");
 
         var ipAddress = ParseIpAddress();
-
         _networkConnector = new NetworkConnector<NetworkEvent>(ipAddress, _port);
-        _networkConnector.Setup(_messageHandler.MessageHandled, SerializationType.JSON, CallOnConnectionInterrupted);  
-        _networkConnector.Connect(CallOnConnected, CallOnConnectFailed);
+        _networkConnector.Setup(SerializationType.JSON);
+        _networkConnector.SetupCallbacks(CallOnConnected, CallOnConnectFailed, CallOnConnectionInterrupted);
+        _networkConnector.Connect();
+        _networkConnector.Start();
+        _networkConnector.SendMessage(new EventOnlyNetworkMessage(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE));
     }
 
     private IPAddress ParseIpAddress()
@@ -70,14 +80,14 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
         _onConnectFailed?.Invoke();
     }
 
-    private void CallOnConnectionInterrupted()
+    private void CallOnConnectionInterrupted(NetworkConnector<NetworkEvent> connector)
     {
         _onConnectionInterrupted?.Invoke();
     }
 
     void OnApplicationQuit()
     {
+        _networkConnector.Stop();
         Debug.Log("quit");
-        _networkConnector.Close();
     }
 }

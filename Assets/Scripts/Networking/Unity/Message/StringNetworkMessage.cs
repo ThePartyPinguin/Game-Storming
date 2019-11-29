@@ -6,7 +6,9 @@ using UnityEngine;
 
 public class StringNetworkMessage : BaseNetworkMessage
 {
-    public StringNetworkMessage(NetworkEvent messageEventType) : base(messageEventType)
+    public string Value { get; }
+    public StringNetworkMessage(NetworkEvent messageEventType, string value) : base(messageEventType)
     {
+        Value = value;
     }
 }

@@ -2,39 +2,40 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameFrame.Networking.Exception;
-using GameFrame.Networking.Messaging.Message;
+using GameFrame.Networking.NetworkConnector;
+using UnityEngine;
 
 namespace GameFrame.Networking.Messaging.MessageHandling
 {
     sealed class NetworkMessageDeserializer<TEnum> where TEnum : Enum
     {
-        public readonly Action<NetworkMessage<TEnum>> OnMessageHandledCallback;
-
-        private readonly NetworkMessageTypeDataBase<TEnum, NetworkMessage<TEnum>> _messageTypeDatabase; 
+        private readonly NetworkMessageTypeDataBase<TEnum> _messageTypeDatabase; 
         private readonly Queue<byte[]> _messagesToHandleQueue;
         private readonly object _isRunningLock;
-        private readonly Task _messageHandlingTask;
+        private Task _messageHandlingTask;
         private bool _taskRunning;
 
         private INetworkMessageSerializer<TEnum> _networkMessageSerializer;
-
+        private readonly NetworkConnector<TEnum> _networkConnector;
         private Dictionary<byte, TEnum> _byteEnumValues;
+
+        private NetworkMessageCallbackDatabase<TEnum> _callbackDatabase;
 
         #region Init
 
-        public NetworkMessageDeserializer(Action<NetworkMessage<TEnum>> onMessageHandledCallback, INetworkMessageSerializer<TEnum> serializer)
+        public NetworkMessageDeserializer(NetworkConnector<TEnum> connector, INetworkMessageSerializer<TEnum> serializer)
         {
+            _networkConnector = connector;
             _networkMessageSerializer = serializer;
-            OnMessageHandledCallback = onMessageHandledCallback;
 
-            _messageTypeDatabase = NetworkMessageTypeDataBase<TEnum, NetworkMessage<TEnum>>.Instance;
+            _messageTypeDatabase = NetworkMessageTypeDataBase<TEnum>.Instance;
+            _callbackDatabase = NetworkMessageCallbackDatabase<TEnum>.Instance;
             SetupByteDictionary();
 
             _messagesToHandleQueue = new Queue<byte[]>();
 
             _isRunningLock = new object();
 
-            _messageHandlingTask = new Task(Run);
         }
 
         /// <summary>
@@ -74,7 +75,10 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             lock (_isRunningLock)
             {
                 if (!_taskRunning)
+                {
+                    _messageHandlingTask = new Task(Run);
                     _messageHandlingTask.Start();
+                }
             }
         }
 
@@ -97,10 +101,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             {
                 byte[] messageData = _messagesToHandleQueue.Dequeue();
 
-                if (DeserializeMessage(messageData, out var message))
-                {
-                    CallOnMessageDeserialized(message);
-                }
+                DeserializeAndHandleMessage(messageData);
             }
             _taskRunning = false;
         }
@@ -116,39 +117,29 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// <param name="messageEventType">gives the messageEventType enum value from data[0]</param>
         /// <param name="message">gives back the deserialized message from data</param>
         /// <returns></returns>
-        private bool DeserializeMessage(byte[] data, out NetworkMessage<TEnum> message)
+        private void DeserializeAndHandleMessage(byte[] data)
         {
             try
             {
-                if (_byteEnumValues.ContainsKey(data[0]))
+                if (!_byteEnumValues.ContainsKey(data[0]))
                     throw new MessageEventTypeNotValid("The received messageEventType identifier: " + data[0] + " could not be found in the given typeParameter enum: " + typeof(TEnum));
 
                 var messageEventType = _byteEnumValues[data[0]];
+                
+                var wrapper = _callbackDatabase.GetCallbackWrapper(messageEventType);
 
-                var messageType = _messageTypeDatabase.GetTypeForKey(messageEventType);
+                var type = wrapper.MessageType;
 
-                message = _networkMessageSerializer.DeSerializeWithOffset(data, 1, data.Length - 1, messageType);
-                return true;
+                var message = _networkMessageSerializer.DeSerializeWithOffset(data, 1, data.Length - 1, type);
+
+                wrapper.Callback.Invoke(message, _networkConnector);
+
             }
             catch (System.Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-
-        }
-
-        #endregion
-
-        #region CallbackHandling
-
-        /// <summary>
-        /// After a message has been DeSerialized this method gets called after which the OnMessageHandledCallback gets called
-        /// </summary>
-        /// <param name="message">The deserialized message</param>
-        private void CallOnMessageDeserialized(NetworkMessage<TEnum> message)
-        {
-            OnMessageHandledCallback?.Invoke(message);
         }
 
         #endregion

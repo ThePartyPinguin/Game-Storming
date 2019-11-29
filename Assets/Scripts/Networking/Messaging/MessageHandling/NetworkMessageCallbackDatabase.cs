@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using GameFrame.Networking.Messaging.Message;
+using GameFrame.Networking.NetworkConnector;
 
 namespace GameFrame.Networking.Messaging.MessageHandling
 {
@@ -14,20 +15,20 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// <param name="messageEventType">Event used to find the callback on receiving a message with the callback</param>
         /// <param name="callback">The callback for when a message is received</param>
 
-        public void RegisterCallBack<TMessage>(TEnum messageEventType, Action<TMessage> callback) where TMessage : NetworkMessage<TEnum>
+        public void RegisterCallBack<TMessage>(TEnum messageEventType, Action<TMessage, NetworkConnector<TEnum>> callback) where TMessage : NetworkMessage<TEnum>
         {
             if (KeyExists(messageEventType))
                 throw new MessageEventAlreadyRegisteredException("Messagetype: " + messageEventType + " has already been registered in database: " + this.GetType());
 
 
-            var action = new Action<NetworkMessage<TEnum>>((message) => callback.Invoke((TMessage) message));
+            var action = new Action<NetworkMessage<TEnum>, NetworkConnector<TEnum>>((message, connector) => callback.Invoke((TMessage) message, connector));
 
             var wrapper = new NetworkMessageCallbackWrapper<TEnum>(typeof(TMessage), action);
 
             AddNewValue(messageEventType, wrapper);
         }
 
-        public Action<TMessage> GetCallback<TMessage>(TEnum messageEventType) where TMessage : NetworkMessage<TEnum>
+        public Action<TMessage, NetworkConnector<TEnum>> GetCallback<TMessage>(TEnum messageEventType) where TMessage : NetworkMessage<TEnum>
         {
             var wrapper = GetCallbackWrapper(messageEventType);
 

@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector;
+using UnityEngine;
 
 sealed class TcpNetworkReceiver<TEnum> : NetworkReceiver<TEnum> where TEnum : Enum
 {
@@ -10,10 +11,16 @@ sealed class TcpNetworkReceiver<TEnum> : NetworkReceiver<TEnum> where TEnum : En
     private NetworkStream _networkStream;
 
     private Action _onConnectionLost;
-    public TcpNetworkReceiver(TcpClient tcpClient, Action onConnectionLost)
+    public TcpNetworkReceiver(NetworkMessageDeserializer<TEnum> messageDeserializer, TcpClient tcpClient, Action onConnectionLost) : base(messageDeserializer)
     {
         _tcpClient = tcpClient;
         _onConnectionLost = onConnectionLost;
+    }
+
+    protected override void Setup()
+    {
+        _networkStream = _tcpClient.GetStream();
+        base.Setup();
     }
 
     protected override byte[] ReceiveData()

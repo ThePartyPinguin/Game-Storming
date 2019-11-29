@@ -6,7 +6,7 @@ using GameFrame.Networking.Messaging.Message;
 
 namespace GameFrame.Networking.Messaging.MessageHandling
 {
-    public class NetworkMessageTypeDataBase<TEnum, TMessage> : MemoryDatabase<TEnum, Type, NetworkMessageTypeDataBase<TEnum, TMessage>> where TEnum : Enum where TMessage : NetworkMessage<TEnum>
+    public class NetworkMessageTypeDataBase<TEnum> : MemoryDatabase<TEnum, Type, NetworkMessageTypeDataBase<TEnum>> where TEnum : Enum
     {
         public void RegisterType(TEnum key, Type type)
         {
