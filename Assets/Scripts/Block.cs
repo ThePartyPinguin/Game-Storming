@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Block : Draggable
 {
@@ -13,6 +14,8 @@ public class Block : Draggable
     private bool isConnected;
     private HingeJoint2D towerJoint;
     private Coroutine currentCoroutine;
+    [SerializeField]
+    private TextMeshPro textVisual;
 
     Participant owner;
 
@@ -77,6 +80,20 @@ public class Block : Draggable
         tower = null;
         this.isConnected = false;
         StartCoroutine(ReleaseFromFoundation());
+    }
+
+    public void setParticipant(Participant p )
+    {
+        this.owner = p;
+    }
+
+    public void setIdea(string _idea)
+    {
+        this.idea = _idea;
+        if(this.textVisual != null)
+        {
+            this.textVisual.text = idea;
+        }
     }
 
     public int CalculateScore()
