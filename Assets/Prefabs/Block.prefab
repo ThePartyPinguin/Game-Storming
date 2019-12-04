@@ -100,8 +100,8 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 0.6117647}
-      key1: {r: 1, g: 1, b: 1, a: 0}
+      key0: {r: 1, g: 1, b: 1, a: 0}
+      key1: {r: 1, g: 1, b: 1, a: 0.39215687}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -117,8 +117,8 @@ TrailRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 65535
-      atime2: 0
+      atime1: 4819
+      atime2: 65535
       atime3: 0
       atime4: 0
       atime5: 0
@@ -126,7 +126,7 @@ TrailRenderer:
       atime7: 0
       m_Mode: 0
       m_NumColorKeys: 2
-      m_NumAlphaKeys: 2
+      m_NumAlphaKeys: 3
     numCornerVertices: 2
     numCapVertices: 0
     alignment: 0
@@ -288,6 +288,8 @@ MonoBehaviour:
           m_BoolArgument: 1
         m_CallState: 2
   idea: Idea
+  textVisual: {fileID: 0}
+  blockbubble: {fileID: 0}
 --- !u!61 &4683487841430045390
 BoxCollider2D:
   m_ObjectHideFlags: 0
