@@ -3,23 +3,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using GameFrame.Networking.Exception;
 using GameFrame.Networking.Messaging.MessageHandling;
+using UnityEngine;
 
 namespace GameFrame.Networking.NetworkConnector
 {
     abstract class NetworkReceiver<TEnum> where TEnum : Enum
     {
-        protected NetworkMessageDeserializer<TEnum> RegisteredMessageDeserializer;
+        protected NetworkMessageDeserializer<TEnum> MessageDeserializer;
 
-        private Task _receiverTask;
+        private readonly Thread _receiverThread;
 
-        private ManualResetEvent _waitUntilTaskFinished;
+        private readonly ManualResetEvent _waitUntilTaskFinished;
 
         private bool _running;
-        protected NetworkReceiver()
-        {
-            _receiverTask = new Task(Receive);
 
-            _receiverTask.GetAwaiter().OnCompleted(ReleaseWaitUntilFinished);
+        private bool _setupComplete;
+
+        protected NetworkReceiver(NetworkMessageDeserializer<TEnum> messageDeserializer)
+        {
+            MessageDeserializer = messageDeserializer;
+            _receiverThread = new Thread(Receive);
+
+            _waitUntilTaskFinished = new ManualResetEvent(false);
+            
+            //_receiverThread.GetAwaiter().OnCompleted(ReleaseWaitUntilFinished);
 
             _waitUntilTaskFinished = new ManualResetEvent(true);
         }
@@ -29,12 +36,21 @@ namespace GameFrame.Networking.NetworkConnector
         /// </summary>
         public virtual void StartReceiving()
         {
-            if(RegisteredMessageDeserializer == null)
+            if(MessageDeserializer == null)
                 throw new NoMessageHandlerRegisteredException("No message handler had been registered in: " + this.GetType() + " please use RegisterNewMessageHandler before starting");
 
+            if (!_setupComplete)
+                Setup();
+
             if (!_running)
-                _receiverTask.Start();
+            {
+                _waitUntilTaskFinished.Reset();
+                _running = true;
+                _receiverThread.Start();
+            }
         }
+
+        protected abstract void Stop();
 
         /// <summary>
         /// if the receiverTask is running stop it, then wait until it has finished
@@ -44,7 +60,8 @@ namespace GameFrame.Networking.NetworkConnector
             if (_running)
             {
                 _running = false;
-                _waitUntilTaskFinished.WaitOne();
+                Stop();
+                _waitUntilTaskFinished.WaitOne(500);
             }
         }
 
@@ -53,15 +70,14 @@ namespace GameFrame.Networking.NetworkConnector
         /// </summary>
         private void ReleaseWaitUntilFinished()
         {
-            _waitUntilTaskFinished.Reset();
+            _waitUntilTaskFinished.Set();
         }
 
         /// <summary>
         /// The method the receiver task continuously runs when it has started
         /// </summary>
-        private async void Receive()
+        private void Receive()
         {
-            _waitUntilTaskFinished.Set();
             while (_running)
             {
                 byte[] data = ReceiveData();
@@ -70,11 +86,9 @@ namespace GameFrame.Networking.NetworkConnector
                 {
                     HandleData(data);
                 }
-                else
-                {
-                    await Task.Delay(100);
-                }
             }
+
+            ReleaseWaitUntilFinished();
         }
 
         /// <summary>
@@ -83,14 +97,6 @@ namespace GameFrame.Networking.NetworkConnector
         /// <returns></returns>
         protected abstract byte[] ReceiveData();
 
-        /// <summary>
-        /// Register a new Messagehandler that handles the incoming messages
-        /// </summary>
-        /// <param name="messageDeserializer"></param>
-        public void RegisterNewMessageHandler(NetworkMessageDeserializer<TEnum> messageDeserializer)
-        {
-            RegisteredMessageDeserializer = messageDeserializer;
-        }
 
         /// <summary>
         /// Handle the incomming data, and add it to the queue in the registered messagehandler
@@ -98,10 +104,16 @@ namespace GameFrame.Networking.NetworkConnector
         /// <param name="data"></param>
         protected void HandleData(byte[] data)
         {
-            if(RegisteredMessageDeserializer == null)
+            if(MessageDeserializer == null)
                 throw new NoMessageHandlerRegisteredException("No message handler had been registered in: " + this.GetType());
 
-            RegisteredMessageDeserializer.AddMessageToQueue(data);
+
+            MessageDeserializer.AddMessageToQueue(data);
+        }
+
+        protected virtual void Setup()
+        {
+            _setupComplete = false;
         }
     }
 }
