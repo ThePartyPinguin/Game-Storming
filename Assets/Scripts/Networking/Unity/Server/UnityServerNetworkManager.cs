@@ -40,6 +40,9 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
 
         settings.ClientToServerHandshakeEvent = NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE;
         settings.ServerToClientHandshakeEvent = NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE;
+        settings.ClientDisconnectEvent = NetworkEvent.CLIENT_DISCONNECT;
+        settings.ServerDisconnectEvent = NetworkEvent.SERVER_DISCONNECT;
+
         settings.MaxConnectedClients = MaxConnectedPlayers;
         settings.SerializationType = SerializationType;
         settings.TcpPort = TcpPort;
@@ -61,6 +64,9 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
 
     void OnApplicationQuit()
     {
+        PlayerPrefs.SetInt("Screenmanager Resolution Width", 800);
+        PlayerPrefs.SetInt("Screenmanager Resolution Height", 600);
+        PlayerPrefs.SetInt("Screenmanager Is Fullscreen mode", 0);
         _gameServer.StopServer();
         Debug.Log("Server stopped");
     }
