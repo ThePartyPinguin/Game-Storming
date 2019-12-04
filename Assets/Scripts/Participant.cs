@@ -23,6 +23,7 @@ public class Participant
         this.id = _id;
         this.name = _name;
         this.color = _color;
+        this.score = 0;
     }
 
     public void addBlock(Block b)
@@ -38,6 +39,11 @@ public class Participant
     public override string ToString()
     {
         return name;
+    }
+
+    public void AddPoints(int amount)
+    {
+        this.score += amount;
     }
     #endregion
 }

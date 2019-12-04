@@ -16,6 +16,8 @@ public class Block : Draggable
     private Coroutine currentCoroutine;
     [SerializeField]
     private TextMeshPro textVisual;
+    [SerializeField]
+    private GameObject blockbubble;
 
     Participant owner;
 
@@ -80,9 +82,13 @@ public class Block : Draggable
         tower = null;
         this.isConnected = false;
         StartCoroutine(ReleaseFromFoundation());
+        if(this.GetComponentInChildren<BlockBubble>() != null)
+        {
+            this.transform.position = new Vector3(this.blockbubble.transform.position.x, this.blockbubble.transform.position.y, 0.1f);   
+        }
     }
 
-    public void setParticipant(Participant p )
+    public void setParticipant(Participant p)
     {
         this.owner = p;
     }
@@ -94,6 +100,21 @@ public class Block : Draggable
         {
             this.textVisual.text = idea;
         }
+    }
+
+    public void DetachAndDestroy()
+    {
+        if (this.blockbubble != null)
+        {
+            Destroy(blockbubble);
+        }
+    }
+
+    public override void OnMouseDown()
+    {
+        Debug.Log("clicked block");
+         this.DetachAndDestroy();
+            base.OnMouseDown();
     }
 
     public int CalculateScore()

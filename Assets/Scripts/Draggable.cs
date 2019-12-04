@@ -25,7 +25,7 @@ public abstract class Draggable : MonoBehaviour
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
     }
 
-    private void OnMouseDown()
+    public virtual void OnMouseDown()
     {
         dragJoint.enabled = true;
         onDragDown.Invoke();

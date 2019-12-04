@@ -14,6 +14,8 @@ public class Tower
     private int breakingHeight;
     [SerializeField]
     private List<Block> blocks;
+    [SerializeField]
+    private float pointScale = 10f;
 
     public Tower(Block firstBlock)
     {
@@ -22,9 +24,27 @@ public class Tower
         this.blocks = new List<Block>();
         blocks.Add(firstBlock);
     }
+    
+    #endregion
+
+    /// <summary>
+    /// Pointsystem...
+    /// points scale depending on amount of blocks present in tower, less blocks equals more points.
+    /// </summary>
+
+
+    #region methods
+    public int AddBlock(Block block)
+    {
+        this.blocks.Add(block);
+        return CalculateScore();
+    }
     #endregion
 
     #region methods
-
+    private int CalculateScore()
+    {
+        return Mathf.FloorToInt(pointScale / this.blocks.Count);
+    }
     #endregion
 }
