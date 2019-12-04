@@ -25,7 +25,7 @@ namespace Assets.Scripts.Networking.Client
 
         private void OnReceiveHandShakeResponse(ServerToClientHandshakeResponse<TEnum> message, Guid connectorId)
         {
-            Debug.Log("Received handshake");
+            Debug.Log("Received handshake: " + message.Accepted);
             if (!message.Accepted)
             {
                 OnConnectionFailed?.Invoke();
@@ -33,7 +33,9 @@ namespace Assets.Scripts.Networking.Client
                 return;
             }
 
-            _networkConnector.StartUdp();
+            if(_connectionSettings.UseUdp)
+                _networkConnector.StartUdp();
+
             OnConnectionSuccess?.Invoke(message.ClientId);
         }
 
