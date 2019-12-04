@@ -132,7 +132,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
 
                 var message = _networkMessageSerializer.DeSerializeWithOffset(data, 1, data.Length - 1, type);
 
-                wrapper.Callback.Invoke(message, _networkConnector);
+                wrapper.Callback.Invoke(message, _networkConnector.Guid);
 
             }
             catch (System.Exception e)

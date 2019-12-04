@@ -7,9 +7,9 @@ namespace GameFrame.Networking.Messaging.MessageHandling
     public sealed class NetworkMessageCallbackWrapper<TEnum> where TEnum : Enum
     {
         public Type MessageType { get; }
-        public Action<NetworkMessage<TEnum>, NetworkConnector<TEnum>> Callback { get; }
+        public Action<NetworkMessage<TEnum>, Guid> Callback { get; }
 
-        public NetworkMessageCallbackWrapper(Type messageType, Action<NetworkMessage<TEnum>, NetworkConnector<TEnum>> callback)
+        public NetworkMessageCallbackWrapper(Type messageType, Action<NetworkMessage<TEnum>, Guid> callback)
         {
             MessageType = messageType;
             Callback = callback;

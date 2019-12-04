@@ -11,9 +11,9 @@ namespace GameFrame.Networking.NetworkConnector
     {
         protected NetworkMessageDeserializer<TEnum> MessageDeserializer;
 
-        private Task _receiverTask;
+        private readonly Thread _receiverThread;
 
-        private ManualResetEvent _waitUntilTaskFinished;
+        private readonly ManualResetEvent _waitUntilTaskFinished;
 
         private bool _running;
 
@@ -22,10 +22,11 @@ namespace GameFrame.Networking.NetworkConnector
         protected NetworkReceiver(NetworkMessageDeserializer<TEnum> messageDeserializer)
         {
             MessageDeserializer = messageDeserializer;
-            _receiverTask = new Task(Receive);
+            _receiverThread = new Thread(Receive);
 
             _waitUntilTaskFinished = new ManualResetEvent(false);
-            _receiverTask.GetAwaiter().OnCompleted(ReleaseWaitUntilFinished);
+            
+            //_receiverThread.GetAwaiter().OnCompleted(ReleaseWaitUntilFinished);
 
             _waitUntilTaskFinished = new ManualResetEvent(true);
         }
@@ -45,9 +46,11 @@ namespace GameFrame.Networking.NetworkConnector
             {
                 _waitUntilTaskFinished.Reset();
                 _running = true;
-                _receiverTask.Start();
+                _receiverThread.Start();
             }
         }
+
+        protected abstract void Stop();
 
         /// <summary>
         /// if the receiverTask is running stop it, then wait until it has finished
@@ -57,6 +60,7 @@ namespace GameFrame.Networking.NetworkConnector
             if (_running)
             {
                 _running = false;
+                Stop();
                 _waitUntilTaskFinished.WaitOne(500);
             }
         }
@@ -67,7 +71,6 @@ namespace GameFrame.Networking.NetworkConnector
         private void ReleaseWaitUntilFinished()
         {
             _waitUntilTaskFinished.Set();
-
         }
 
         /// <summary>
@@ -84,6 +87,8 @@ namespace GameFrame.Networking.NetworkConnector
                     HandleData(data);
                 }
             }
+
+            ReleaseWaitUntilFinished();
         }
 
         /// <summary>
