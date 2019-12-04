@@ -19,7 +19,7 @@ public class Tower
 
     public Tower(Block firstBlock)
     {
-        this.idea = firstBlock.GetIdea() ?? throw new ArgumentNullException(nameof(idea));
+        this.idea = firstBlock.Idea ?? throw new ArgumentNullException(nameof(idea));
         this.height = firstBlock.GetHeight();
         this.blocks = new List<Block>();
         blocks.Add(firstBlock);

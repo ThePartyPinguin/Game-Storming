@@ -9,7 +9,7 @@ public class BlockBubble : MonoBehaviour
     private Block block;
 
     private float timer;
-    private Vector3 startposition;
+    private Vector2 startposition;
     #endregion
 
     #region methods
@@ -19,23 +19,14 @@ public class BlockBubble : MonoBehaviour
         this.startposition = this.transform.position;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void FixedUpdate()
     {
         timer += Time.fixedDeltaTime;
         float x = Mathf.Cos(timer);
         float y = Mathf.Sin(timer);
 
-        this.transform.parent.position = startposition + new Vector3(x, y, 0);
+        this.transform.parent.position = startposition + new Vector2(x, y);
     }
-
-
-
 
     #endregion
 }
