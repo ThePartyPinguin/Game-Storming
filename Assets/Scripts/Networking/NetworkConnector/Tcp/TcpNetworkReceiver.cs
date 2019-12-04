@@ -1,52 +1,63 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Threading;
 using GameFrame.Networking.Messaging.MessageHandling;
-using GameFrame.Networking.NetworkConnector;
-using UnityEngine;
 
-sealed class TcpNetworkReceiver<TEnum> : NetworkReceiver<TEnum> where TEnum : Enum
+namespace GameFrame.Networking.NetworkConnector.Tcp
 {
-    private readonly TcpClient _tcpClient;
-
-    private NetworkStream _networkStream;
-
-    private Action _onConnectionLost;
-    public TcpNetworkReceiver(NetworkMessageDeserializer<TEnum> messageDeserializer, TcpClient tcpClient, Action onConnectionLost) : base(messageDeserializer)
+    class TcpNetworkReceiver<TEnum> : NetworkReceiver<TEnum> where TEnum : Enum
     {
-        _tcpClient = tcpClient;
-        _onConnectionLost = onConnectionLost;
-    }
+        private readonly TcpClient _tcpClient;
 
-    protected override void Setup()
-    {
-        _networkStream = _tcpClient.GetStream();
-        base.Setup();
-    }
+        private NetworkStream _networkStream;
 
-    protected override byte[] ReceiveData()
-    {
-        if (_networkStream == null)
-            _networkStream = _tcpClient.GetStream();
-        try
+        private Action _onConnectionLost;
+        public TcpNetworkReceiver(NetworkMessageDeserializer<TEnum> messageDeserializer, TcpClient tcpClient, Action onConnectionLost) : base(messageDeserializer)
         {
-            int dataAvailable = _tcpClient.Available;
+            _tcpClient = tcpClient;
+            _onConnectionLost = onConnectionLost;
+        }
 
-            if (dataAvailable > 0)
+        protected override void Setup()
+        {
+            _networkStream = _tcpClient.GetStream();
+            base.Setup();
+        }
+
+        protected override void Stop()
+        {
+            _networkStream.Close();
+            _networkStream.Dispose();
+
+            _tcpClient.Close();
+            _tcpClient.Dispose();
+        }
+
+        protected override byte[] ReceiveData()
+        {
+            if (_networkStream == null)
+                _networkStream = _tcpClient.GetStream();
+            try
             {
-                byte[] buffer = new byte[dataAvailable];
-                _networkStream.Read(buffer, 0, buffer.Length);
-                return buffer;
+                int dataAvailable = _tcpClient.Available;
+                if (dataAvailable > 0)
+                {
+                    byte[] buffer = new byte[dataAvailable];
+                    _networkStream.Read(buffer, 0, buffer.Length);
+                    return buffer;
+                }
+                else
+                {
+                    Thread.Sleep(10);
+                    return null;
+                }
             }
-            else
+            catch (System.Exception e)
             {
+                Console.WriteLine(e);
+                _onConnectionLost?.Invoke();
                 return null;
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            _onConnectionLost?.Invoke();
-            throw;
         }
     }
 }

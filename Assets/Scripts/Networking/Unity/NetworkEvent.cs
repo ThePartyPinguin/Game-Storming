@@ -6,8 +6,8 @@ public enum NetworkEvent
 {
     //Events send by client
     CLIENT_TO_SERVER_HANDSHAKE,
-    CLIENT_SEND_TEST_STRING,
-
+    CLIENT_DISCONNECT,
     //Events send by server
-    SERVER_TO_CLIENT_HANDSHAKE
+    SERVER_TO_CLIENT_HANDSHAKE,
+    SERVER_DISCONNECT
 }

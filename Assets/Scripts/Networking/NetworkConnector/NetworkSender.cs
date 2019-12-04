@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using GameFrame.Networking.Messaging.Message;
-using UnityEngine;
 
 namespace GameFrame.Networking.NetworkConnector
 {
@@ -30,6 +29,7 @@ namespace GameFrame.Networking.NetworkConnector
 
             if (!_senderTaskRunning)
             {
+                _waitUntilStopped.Reset();
                 _senderTaskRunning = true;
                 _senderTask = new Task(Send);
                 _senderTask.GetAwaiter().OnCompleted(SendTaskStopped);

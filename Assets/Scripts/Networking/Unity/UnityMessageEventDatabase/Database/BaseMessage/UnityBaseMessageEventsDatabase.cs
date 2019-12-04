@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using GameFrame.Networking.Messaging.MessageHandling;
 using UnityEngine;
-using UnityEngine.Events;
 
 public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallbackWrapper, TBaseCallback> :  MonoBehaviour
     where TBaseMessage : BaseNetworkMessage
@@ -65,6 +65,13 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
 
     private IEnumerator HandleMessages()
     {
+        if (_messageCallbackCollection == null)
+        {
+            while (_messageCallbackCollection == null)
+            {
+                yield return new WaitForEndOfFrame();
+            }
+        }
         while (_messagesToHandle.Count > 0)
         {
             if (_messagesToHandle.Count > 15)
@@ -85,13 +92,14 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
     {
         for (int i = 0; i < amount; i++)
         {
+            Debug.Log("Amount to handle: " + amount);
             CallMessageCallback(_messagesToHandle.Dequeue());
         }
     }
 
     private void CallMessageCallback(TBaseMessage message)
     {
-
+        
         TBaseCallback callback = GetMessageCallback(message.MessageEventType);
 
         callback.Invoke(message);

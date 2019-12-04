@@ -15,20 +15,20 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// <param name="messageEventType">Event used to find the callback on receiving a message with the callback</param>
         /// <param name="callback">The callback for when a message is received</param>
 
-        public void RegisterCallBack<TMessage>(TEnum messageEventType, Action<TMessage, NetworkConnector<TEnum>> callback) where TMessage : NetworkMessage<TEnum>
+        public void RegisterCallBack<TMessage>(TEnum messageEventType, Action<TMessage, Guid> callback) where TMessage : NetworkMessage<TEnum>
         {
             if (KeyExists(messageEventType))
                 throw new MessageEventAlreadyRegisteredException("Messagetype: " + messageEventType + " has already been registered in database: " + this.GetType());
 
 
-            var action = new Action<NetworkMessage<TEnum>, NetworkConnector<TEnum>>((message, connector) => callback.Invoke((TMessage) message, connector));
+            var action = new Action<NetworkMessage<TEnum>, Guid>((message, connectorId) => callback.Invoke((TMessage) message, connectorId));
 
             var wrapper = new NetworkMessageCallbackWrapper<TEnum>(typeof(TMessage), action);
 
             AddNewValue(messageEventType, wrapper);
         }
 
-        public Action<TMessage, NetworkConnector<TEnum>> GetCallback<TMessage>(TEnum messageEventType) where TMessage : NetworkMessage<TEnum>
+        public Action<TMessage, Guid> GetCallback<TMessage>(TEnum messageEventType) where TMessage : NetworkMessage<TEnum>
         {
             var wrapper = GetCallbackWrapper(messageEventType);
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using Assets.Scripts.Networking.Client;
 using GameFrame.Networking.Exception;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector;
@@ -10,68 +11,81 @@ using UnityEngine;
 using UnityEngine.Events;
 public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
 {
-    public string IpAddress => _ipAddress;
-    public int Port => _port;
-
-    public NetworkConnector<NetworkEvent> NetworkConnector => _networkConnector;
+    //public NetworkConnector<NetworkEvent> NetworkConnector => _networkConnector;
 
     [SerializeField]
     private string _ipAddress;
 
     [SerializeField]
-    private int _port;
+    private int _tcpPort;
+
+    [SerializeField]
+    private int _udpReceivePort;
+
+    [SerializeField]
+    private int _udpRemoteSendPort;
 
     [SerializeField]
     private SerializationType _serializationType;
 
     [Header("Connection events")]
     [SerializeField]
-    private IntUnityEvent _onConnected;
+    private OnConnectCallback _onConnected;
 
     [SerializeField]
     private UnityEvent _onConnectFailed;
     
     [SerializeField]
     private UnityEvent _onConnectionInterrupted;
+    
+    private GameClient<NetworkEvent> _gameClient;
 
-    private NetworkConnector<NetworkEvent> _networkConnector;
-
-    // Start is called before the first frame update
-    void Start()
+    public void Connect()
     {
         StartCoroutine(ConnectCoRoutine());
     }
 
+
     private IEnumerator ConnectCoRoutine()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1.5f);
 
         Debug.Log("Setting up connection to server");
 
         var ipAddress = ParseIpAddress();
-        _networkConnector = new NetworkConnector<NetworkEvent>(ipAddress, _port);
-        _networkConnector.Setup(SerializationType.JSON);
-        _networkConnector.SetupCallbacks(CallOnConnectFailed, CallOnConnectionInterrupted);
 
+        ClientConnectionSettings<NetworkEvent> settings = new ClientConnectionSettings<NetworkEvent>();
+
+        settings.ClientToServerHandshakeEvent = NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE;
+        settings.ServerToClientHandshakeEvent = NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE;
+        settings.ClientDisconnectEvent = NetworkEvent.CLIENT_DISCONNECT;
+        settings.ServerDisconnectEvent = NetworkEvent.SERVER_DISCONNECT;
+
+        settings.SerializationType = SerializationType.JSON;
+        settings.ServerIpAddress = ipAddress;
+        settings.TcpPort = _tcpPort;
+        settings.UdpRemoteSendPort = _udpRemoteSendPort;
+        settings.UdpReceivePort = _udpReceivePort;
+        
         SetupHandshakeEvent();
 
-        _networkConnector.Connect();
-        _networkConnector.Start();
-        _networkConnector.SendMessage(new EventOnlyNetworkMessage(NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE));
+        _gameClient = new GameClient<NetworkEvent>(settings);
+
+        _gameClient.OnConnectionSuccess += CallOnConnected;
+        _gameClient.OnConnectionFailed += () => Debug.Log("Could not connect to server");
+        _gameClient.OnConnectionLost += () => Debug.Log("Connection to server lost");
+
+        _gameClient.Connect();
     }
 
     private void SetupHandshakeEvent()
     {
-        NetworkEventCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<HandshakeServerResponseMessage>(NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE,
-            (message, connector) =>
-            {
-                CallOnConnected(message.ClientId);
-                NetworkEventCallbackDatabase<NetworkEvent>.Instance.UnRegisterCallback(NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE);
-                bool exists = NetworkEventCallbackDatabase<NetworkEvent>.Instance.CallbackExists(NetworkEvent
-                    .SERVER_TO_CLIENT_HANDSHAKE);
+        
+    }
 
-                Debug.Log("Handshake callback exists: " + exists);
-            });
+    public void Test(EventOnlyNetworkMessage message)
+    {
+        Debug.Log("Receive response");
     }
 
     private IPAddress ParseIpAddress()
@@ -87,10 +101,11 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
         throw new InvalidIPAdressException("The given ipAddress: " + _ipAddress + " is not valid");
     }
 
-    private void CallOnConnected(int clientId)
+    private void CallOnConnected(Guid clientId)
     {
         Debug.Log("Connected: " + clientId);
-        _onConnected?.Invoke(clientId);
+
+       _onConnected?.Invoke(clientId);
     }
 
     private void CallOnConnectFailed()
@@ -105,7 +120,13 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
 
     void OnApplicationQuit()
     {
-        _networkConnector.Stop();
+        _gameClient.Stop();
         Debug.Log("quit");
+    }
+
+    [Serializable]
+    private class OnConnectCallback : UnityEvent<Guid>
+    {
+        
     }
 }

@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GameFrame.Networking.Messaging.Message;
-using GameFrame.Networking.NetworkConnector;
-using UnityEngine;
 
 namespace GameFrame.Networking.Server
 {
     public class ServerListener<TEnum> where TEnum : Enum
     {
         private TcpListener _tcpListener;
-        private Task _listenerTask;
+        private Thread _listenerThread;
         private bool _listenerRunning;
 
         private ManualResetEvent _waitUntilListenerStopped;
@@ -23,6 +18,7 @@ namespace GameFrame.Networking.Server
         {
             _tcpListener = new TcpListener(IPAddress.Any, port);
             _waitUntilListenerStopped = new ManualResetEvent(false);
+            _listenerThread = new Thread(Listen);
         }
 
         public void StartListener(Action<TcpClient> onClientConnect)
@@ -33,9 +29,10 @@ namespace GameFrame.Networking.Server
             if (!_listenerRunning)
             {
                 _listenerRunning = true;
-                _listenerTask = new Task(Listen);
-                _listenerTask.GetAwaiter().OnCompleted(OnListenerTaskStopped);
-                _listenerTask.Start();
+                //_listenerThread = new Thread(Listen);
+                //_listenerThread.GetAwaiter().OnCompleted(OnListenerTaskStopped);
+                _listenerThread.Start();
+                _waitUntilListenerStopped.Reset();
             }
         }
 
@@ -43,7 +40,7 @@ namespace GameFrame.Networking.Server
         {
             _tcpListener.Stop();
             _listenerRunning = false;
-            _waitUntilListenerStopped.WaitOne(500);
+            _waitUntilListenerStopped.WaitOne();
         }
 
         public void Listen()
@@ -53,15 +50,18 @@ namespace GameFrame.Networking.Server
             {
                 try
                 {
+                    Console.WriteLine("Listnening for new connection");
                     TcpClient client = _tcpListener.AcceptTcpClient();
-                    Debug.Log("New connection received");
+                    Console.WriteLine("New connection received");
                     _onClientConnect?.Invoke(client);
                 }
                 catch(SocketException e)
                 {
-
+                    Console.WriteLine(e);
                 }
             }
+
+            OnListenerTaskStopped();
         }
 
         private void OnListenerTaskStopped()

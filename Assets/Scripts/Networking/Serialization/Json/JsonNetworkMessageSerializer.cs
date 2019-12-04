@@ -24,16 +24,13 @@ sealed class JsonNetworkMessageSerializer<TEnum> : INetworkMessageSerializer<TEn
 
     public byte[] Serialize(NetworkMessage<TEnum> message)
     {
-        Console.WriteLine(message.MessageEventType);
         string json = ConvertToJson(message);
-        Console.WriteLine(json);
         return EncodeJsonString(json, message.MessageEventType);
     }
 
     public TMessage DeSerializeWithOffset<TMessage>(byte[] data, int offset, int length) where TMessage : NetworkMessage<TEnum>
     {
         string json = DeCodeBytes(data, offset, length);
-        Console.WriteLine(json);
         return DeSerializeJson<TMessage>(json);
     }
 
@@ -45,16 +42,8 @@ sealed class JsonNetworkMessageSerializer<TEnum> : INetworkMessageSerializer<TEn
 
     private string ConvertToJson(NetworkMessage<TEnum> message)
     {
-        Console.WriteLine(message.MessageEventType);
         return JsonConvert.SerializeObject(message);
     }
-
-    //public NetworkMessage<TEnum> DeSerializeWithOffset(byte[] data, int offset, int length, Type type)
-    //{
-    //    string json = DeCodeBytes(data, offset, length);
-
-    //    return DeSerializeJson(json, type);
-    //}
 
     private TMessage DeSerializeJson<TMessage>(string json) where TMessage : NetworkMessage<TEnum>
     {
@@ -70,6 +59,4 @@ sealed class JsonNetworkMessageSerializer<TEnum> : INetworkMessageSerializer<TEn
     {
         return Encoding.Unicode.GetString(data, offset, count);
     }
-
-    
 }

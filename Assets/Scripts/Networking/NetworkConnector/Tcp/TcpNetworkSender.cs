@@ -1,40 +1,39 @@
 ﻿using System;
 using System.Net.Sockets;
-using GameFrame.Networking.NetworkConnector;
-using UnityEngine;
 
-sealed class TcpNetworkSender<TEnum> : NetworkSender<TEnum> where TEnum : Enum
+namespace GameFrame.Networking.NetworkConnector.Tcp
 {
-    private readonly TcpClient _tcpClient;
-
-    private NetworkStream _networkStream;
-    private Action _onConnectionLost;
-    public TcpNetworkSender(INetworkMessageSerializer<TEnum> networkMessageSerializer, TcpClient tcpClient, Action onConnectionLost) : base(networkMessageSerializer)
+    class TcpNetworkSender<TEnum> : NetworkSender<TEnum> where TEnum : Enum
     {
-        _tcpClient = tcpClient;
-        _onConnectionLost = onConnectionLost;
-    }
+        private readonly TcpClient _tcpClient;
 
-    protected override void Setup()
-    {
-        _networkStream = _tcpClient.GetStream();
-        base.Setup();
-    }
-
-    protected override void SendMessage(byte[] data)
-    {
-
-        if (data == null || data.Length <= 0)
-            return;
-
-        try
+        private NetworkStream _networkStream;
+        private Action _onConnectionLost;
+        public TcpNetworkSender(INetworkMessageSerializer<TEnum> networkMessageSerializer, TcpClient tcpClient, Action onConnectionLost) : base(networkMessageSerializer)
         {
-            _networkStream.Write(data, 0, data.Length);
+            _tcpClient = tcpClient;
+            _onConnectionLost = onConnectionLost;
         }
-        catch (Exception e)
+
+        protected override void Setup()
         {
-            Console.WriteLine(e);
-            throw;
+            _networkStream = _tcpClient.GetStream();
+            base.Setup();
+        }
+
+        protected override void SendMessage(byte[] data)
+        {
+            if (data == null || data.Length <= 0)
+                return;
+
+            try
+            {
+                _networkStream.Write(data, 0, data.Length);
+            }
+            catch (System.Exception e)
+            {
+                _onConnectionLost?.Invoke();
+            }
         }
     }
 }
