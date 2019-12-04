@@ -40,6 +40,15 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
     
     private GameClient<NetworkEvent> _gameClient;
 
+    void Start()
+    {
+        Connect();
+        _onConnected.AddListener((guid) =>
+        {
+            Debug.Log(guid);
+        });
+    }
+
     public void Connect()
     {
         StartCoroutine(ConnectCoRoutine());
