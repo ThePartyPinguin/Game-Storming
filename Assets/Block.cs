@@ -12,6 +12,7 @@ public class Block : Draggable
     private Rigidbody2D rigidBody;
     private bool isConnected;
     private HingeJoint2D towerJoint;
+    private Coroutine currentCoroutine;
 
     Participant owner;
 
@@ -31,7 +32,8 @@ public class Block : Draggable
         if (isConnected) { Debug.Log("Shouldn't happen :c " + Time.time);  return; }
         if (collision.gameObject.CompareTag("Foundation") && tower == null)
         {
-            Debug.Log("Tower created" + Time.time);
+            if (currentCoroutine != null) { StopCoroutine(currentCoroutine); }
+            //Debug.Log("Tower created" + Time.time);
             Tower newTower = new Tower(this);
             this.tower = newTower;
             this.isConnected = true;
@@ -47,10 +49,9 @@ public class Block : Draggable
         }
         else if (collision.gameObject.CompareTag("Block") && collision.gameObject.GetComponent<Block>()) //Extra check for if it's done
         {
-            Debug.Log("HitBlock" + Time.time);
+            //Debug.Log("HitBlock" + Time.time);
             Block otherBlock = collision.gameObject.GetComponent<Block>();
-            //base.OnMouseUp();
-            this.tower = otherBlock.GetTower();
+            currentCoroutine = StartCoroutine(SnapToTower(otherBlock.GetTower()));
         }
     }
 
@@ -73,9 +74,9 @@ public class Block : Draggable
 
     public void DetachFromTower()
     {
-        StartCoroutine(ReleaseFromFoundation());
         tower = null;
         this.isConnected = false;
+        StartCoroutine(ReleaseFromFoundation());
     }
 
     public int CalculateScore()
@@ -110,6 +111,14 @@ public class Block : Draggable
         transform.position = new Vector3(transform.position.x, -3.5f + GetHeight() / 2, 1);
 
         towerJoint.enabled = false;
+    }
+
+    private IEnumerator SnapToTower(Tower otherTower)
+    {
+        yield return new WaitUntil(() => (Mathf.Approximately(rigidBody.velocity.magnitude, 0f) && Mathf.Approximately(rigidBody.angularVelocity, 0f)));
+        this.tower = otherTower;
+        currentCoroutine = null;
+        base.OnMouseUp();
     }
 
     private IEnumerator ReleaseFromFoundation()
