@@ -150,37 +150,48 @@ public class Block : Draggable
     /// </summary>
     private IEnumerator SnapToFoundation()
     {
+        //Enable joint to make the block not move anymore, only rotate
         GetComponent<TargetJoint2D>().enabled = false;
         rigidBody.velocity = Vector2.zero;
         rigidBody.angularVelocity = 0.1f;
         
-        
+        //Wait until the block lays flat on one of its sides
         yield return new WaitUntil(() => (Mathf.Abs(transform.eulerAngles.z % 90) < 2f || Mathf.Abs(transform.eulerAngles.z % 90) > 88));
 
+        //Definitively rotate and position the block to negate small rotation and position errors
         rigidBody.isKinematic = true;
         rigidBody.velocity = Vector2.zero;
         rigidBody.angularVelocity = 0f;
-
         transform.eulerAngles = new Vector3(0, 0, Mathf.Round(transform.eulerAngles.z / 90) * 90);
         transform.position = new Vector3(transform.position.x, -3.5f + GetHeight() / 2, 1);
 
+        //Disable the rotatejoint
         towerJoint.enabled = false;
     }
 
-    private IEnumerator SnapToTower(Tower otherTower)
-    {
-        yield return new WaitUntil(() => (Mathf.Approximately(rigidBody.velocity.magnitude, 0f) && Mathf.Approximately(rigidBody.angularVelocity, 0f)));
-        this.tower = otherTower;
-        currentCoroutine = null;
-        base.OnMouseUp();
-    }
-
+    /// <summary>
+    /// Removes a block from foundation if there are no other blocks in the tower.
+    /// </summary>
     private IEnumerator ReleaseFromFoundation()
     {
         rigidBody.isKinematic = false;
         GetComponent<Collider2D>().enabled = false;
-        yield return new WaitUntil(() => transform.position.y >= (-3.45f + GetHeight()/2));
+
+        yield return new WaitUntil(() => (transform.position.y >= (-3.45f + GetHeight()/2)));
         GetComponent<Collider2D>().enabled = true;
+    }
+
+    /// <summary>
+    /// Waits until the block lies still and then assigns it to the tower.
+    /// </summary>
+    /// <param name="otherTower">The tower the block will snap to</param>
+    private IEnumerator SnapToTower(Tower otherTower)
+    {
+        yield return new WaitUntil(() => (Mathf.Approximately(rigidBody.velocity.magnitude, 0f) && Mathf.Approximately(rigidBody.angularVelocity, 0f)));
+        this.tower = otherTower;
+        otherTower.AddBlock(this);
+        currentCoroutine = null;
+        base.OnMouseUp();
     }
     #endregion
 }

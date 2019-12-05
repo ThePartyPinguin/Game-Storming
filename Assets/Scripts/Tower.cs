@@ -16,7 +16,9 @@ public class Tower
     private List<Block> blocks;
     [SerializeField]
     private float pointScale = 10f;
+    #endregion
 
+    #region methods
     public Tower(Block firstBlock)
     {
         this.idea = firstBlock.Idea ?? throw new ArgumentNullException(nameof(idea));
@@ -24,24 +26,22 @@ public class Tower
         this.blocks = new List<Block>();
         blocks.Add(firstBlock);
     }
-    
-    #endregion
 
     /// <summary>
-    /// Pointsystem...
-    /// points scale depending on amount of blocks present in tower, less blocks equals more points.
+    /// Adds the given block to this tower and returns the score the block's player gets from this.
     /// </summary>
-
-
-    #region methods
+    /// <param name="block">The block to be added to this tower</param>
+    /// <returns></returns>
     public int AddBlock(Block block)
     {
         this.blocks.Add(block);
         return CalculateScore();
     }
-    #endregion
 
-    #region methods
+    /// <summary>
+    /// Calculates the amount of points a player gets for getting his block in this tower.
+    /// Points scale depending on amount of blocks present in tower, less blocks equals more points.
+    /// </summary>
     private int CalculateScore()
     {
         return Mathf.FloorToInt(pointScale / this.blocks.Count);
