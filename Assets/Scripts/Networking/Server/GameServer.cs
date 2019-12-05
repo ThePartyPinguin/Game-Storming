@@ -60,16 +60,20 @@ namespace GameFrame.Networking.Server
                 client.Stop();
             }
 
-            try
+            if (_serverSettings.UseUdp)
             {
-                NetworkConnector<TEnum>.UdpClient.Close();
-                NetworkConnector<TEnum>.UdpClient.Dispose();
-            }
-            catch (System.Exception e)
-            {
-                Console.WriteLine(e);
-                Thread.Sleep(10000);
-                throw;
+                try
+                {
+                    
+                        NetworkConnector<TEnum>.UdpClient.Close();
+                        NetworkConnector<TEnum>.UdpClient.Dispose();
+                }
+                catch (System.Exception e)
+                {
+                    Console.WriteLine(e);
+                    Thread.Sleep(200);
+                    throw;
+                }
             }
         }
         private void RemoveConnection(Guid connectorId)

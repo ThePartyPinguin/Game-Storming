@@ -23,6 +23,7 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
     // Start is called before the first frame update
     void Start()
     {
+        UnitySystemConsoleRedirector.Redirect();
         Setup();
     }
 
