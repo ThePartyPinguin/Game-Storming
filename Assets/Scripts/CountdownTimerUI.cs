@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class CountdownTimer : MonoBehaviour {
+public class CountdownTimerUI : MonoBehaviour {
     public int duration;
     private float countdown;
     public Image timerVisuals;

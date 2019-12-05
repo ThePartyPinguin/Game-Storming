@@ -13,9 +13,8 @@ public class GameManager : MonoSingleton<GameManager>
     [SerializeField]
     public UnityEvent buildingPhaseCompleted;
 
-    private List<Participant> participants;
+    private List<Participant> participants; 
     private int currentBuilder;
-    private float timer;
     #endregion
 
     #region properties
@@ -36,7 +35,7 @@ public class GameManager : MonoSingleton<GameManager>
         //[PSEUDOCODE]
         //Send buildermessage participants[currentBuilder]
 
-        timer = buildingTime; 
+        //timer = buildingTime; 
     }
 
     private void Update()
