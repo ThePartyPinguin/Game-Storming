@@ -14,7 +14,7 @@ public class CommandlineBuild : MonoBehaviour
         if (!ServerBuildExists())
         {
             Debug.Log("No server build exists, building now");
-            BuildServer();
+            BuildServerNormal();
         }
         else
         {
@@ -22,10 +22,25 @@ public class CommandlineBuild : MonoBehaviour
         }
     }
 
-    [MenuItem("Build/Standalone server", false, 10)]
-    public static void BuildServer()
+    [MenuItem("Build/Standalone server, normal", false, 9)]
+    public static void BuildServerNormal()
     {
-        bool buildSucceeded = ServerBuilder.Build();
+        bool buildSucceeded = ServerBuilder.Build(BuildOptions.Development);
+
+        if (buildSucceeded)
+        {
+            ServerBuilder.StartLatestBuild();
+        }
+        else
+        {
+            Debug.LogError("Something went wrong building the server");
+        }
+    }
+
+    [MenuItem("Build/Standalone server, headless", false, 10)]
+    public static void BuildServerheadless()
+    {
+        bool buildSucceeded = ServerBuilder.Build(BuildOptions.EnableHeadlessMode);
 
         if (buildSucceeded)
         {

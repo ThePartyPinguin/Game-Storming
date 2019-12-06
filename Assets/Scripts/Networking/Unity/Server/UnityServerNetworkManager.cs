@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using GameFrame.Networking.Messaging.MessageHandling;
-using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
 using GameFrame.Networking.Server;
 using UnityEngine;
@@ -15,6 +13,8 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
     public int MaxConnectedPlayers;
 
     public SerializationType SerializationType;
+    public bool UseUdp;
+
     private GameServer<NetworkEvent> _gameServer;
     
     [SerializeField]
@@ -23,8 +23,8 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
     // Start is called before the first frame update
     void Start()
     {
+        UnitySystemConsoleRedirector.Redirect();
         Setup();
-
     }
 
     public void Setup()
@@ -46,9 +46,14 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
         settings.MaxConnectedClients = MaxConnectedPlayers;
         settings.SerializationType = SerializationType;
         settings.TcpPort = TcpPort;
-        settings.UdpReceivePort = UdpReceivePort;
-        settings.UdpRemoteSendPort = UdpRemoteSendPort;
 
+        if (UseUdp)
+        {
+            settings.UseUdp = UseUdp;
+
+            settings.UdpReceivePort = UdpReceivePort;
+            settings.UdpRemoteSendPort = UdpRemoteSendPort;
+        }
 
         _gameServer = new GameServer<NetworkEvent>(settings, (guid) => _onClientConnect?.Invoke(guid));
 
@@ -69,6 +74,21 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
         PlayerPrefs.SetInt("Screenmanager Is Fullscreen mode", 0);
         _gameServer.StopServer();
         Debug.Log("Server stopped");
+    }
+
+    public void SendMessageToPlayer(Guid playerId, BaseNetworkMessage message)
+    {
+        _gameServer.SecureSendMessageToSpecificPlayer(playerId, message);
+    }
+
+    public void BroadcastMessage(BaseNetworkMessage message)
+    {
+        _gameServer.SecureBroadcastMessage(message);
+    }
+    
+    public void BroadcastMessage(BaseNetworkMessage message, Guid excludePlayerId)
+    {
+        _gameServer.SecureBroadcastMessage(message, excludePlayerId);
     }
 
     [Serializable]

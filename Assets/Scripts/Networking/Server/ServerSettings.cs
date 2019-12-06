@@ -17,4 +17,6 @@ public class ServerSettings<TEnum> where TEnum : Enum
     public int MaxConnectedClients { get; set; } = 8;
 
     public SerializationType SerializationType { get; set; }
+
+    public bool UseUdp { get; set; }
 }

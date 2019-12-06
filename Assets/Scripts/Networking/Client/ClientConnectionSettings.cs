@@ -22,4 +22,6 @@ public class ClientConnectionSettings<TEnum> where TEnum : Enum
     public IPAddress ServerIpAddress { get; set; } = null;
 
     public SerializationType SerializationType { get; set; }
+
+    public bool UseUdp { get; set; }
 }

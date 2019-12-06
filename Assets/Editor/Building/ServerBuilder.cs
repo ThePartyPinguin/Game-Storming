@@ -13,7 +13,7 @@ public static class ServerBuilder
 {
     private static Process _serverProcess;
     private static ManualResetEvent _waitForServerToExitEvent;
-    public static bool Build()
+    public static bool Build(BuildOptions options)
     {
         if (_serverProcess != null)
         {
@@ -57,7 +57,7 @@ public static class ServerBuilder
         BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
 
         buildPlayerOptions.scenes = scenePaths.ToArray();
-        buildPlayerOptions.options = BuildOptions.Development;
+        buildPlayerOptions.options = options;
         buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
         buildPlayerOptions.locationPathName = path + "/server.exe";
 
