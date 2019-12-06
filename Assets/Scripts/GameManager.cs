@@ -6,15 +6,14 @@ using UnityEngine.Events;
 public class GameManager : MonoSingleton<GameManager>
 {
     #region fields
-    [SerializeField]
-    public float buildingTime;
-    [SerializeField]
-    public UnityEvent buildingTimeCompleted;
-    [SerializeField]
-    public UnityEvent buildingPhaseCompleted;
-
     private List<Participant> participants; 
-    private int currentBuilder;
+    private int currentBuilderIndex;
+    [SerializeField]
+    private CountdownTimer timer;
+    
+
+    [SerializeField]
+    private StringBasedUnityEvent newBuilderCalled;
     #endregion
 
     #region properties
@@ -31,16 +30,58 @@ public class GameManager : MonoSingleton<GameManager>
         participants.Add(new Participant(4, "Player 4", Color.yellow));
         participants.Add(new Participant(5, "Player 5", Color.magenta));
 
-        currentBuilder = 0;
-        //[PSEUDOCODE]
-        //Send buildermessage participants[currentBuilder]
-
-        //timer = buildingTime; 
+        currentBuilderIndex = 0;
+        NotifyNextBuilder(currentBuilderIndex);
     }
 
-    private void Update()
+    /// <summary>
+    /// Decide who, if any, the next builder is.
+    /// If all builders have had a turn, activate the voting phase.
+    /// </summary>
+    public void DetermineNextBuilder()
     {
-        
+        //Call next builder
+        if (currentBuilderIndex != (participants.Count - 1))
+        {
+            ++currentBuilderIndex;
+            //[PSEUDOCODE]
+            NotifyNextBuilder(currentBuilderIndex);
+        }
+        //All participants have had a turn, commence voting phase
+        else
+        {
+            StartVotingPhase();
+        }
     }
+
+    private void NotifyNextBuilder(int builderParticipantIndex)
+    {
+        var builderName = participants[builderParticipantIndex].Name;
+        Debug.Log(builderName);
+        newBuilderCalled.Invoke(builderName);
+        //TODO: Networking notify next builder phone
+    }
+
+    /// <summary>
+    /// Reactivates scene so next builder can go build.
+    /// Also resets the timer.
+    /// </summary>
+    public void StartNewBuilderTime()
+    {
+        timer.ResetTimer();
+        //TODO: other activation stuff probably (enable rigidbodies etc.)
+    }
+
+    /// <summary>
+    /// Activates the voting phase
+    /// </summary>
+    private void StartVotingPhase()
+    {
+        throw new System.NotImplementedException();
+    }
+
     #endregion
 }
+
+[System.Serializable]
+public class StringBasedUnityEvent : UnityEvent<string> { }

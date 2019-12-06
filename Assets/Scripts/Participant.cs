@@ -16,6 +16,10 @@ public class Participant
     private List<Block> blocks;
     #endregion
 
+    #region properties
+    public string Name { get { return this.name; } }
+    #endregion
+
     #region methods
     public Participant(int _id, string _name, Color _color)
     {
