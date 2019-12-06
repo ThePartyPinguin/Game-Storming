@@ -29,7 +29,7 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
         {
             if (_messageCallbackCollection.ContainsKey(callbackWrapper.EventType))
             {
-                Debug.LogError("Event: " + callbackWrapper.EventType + " already can't be used twice for multiple events");
+                Debug.LogError("Event: " + callbackWrapper.EventType + " already can't be used twice for multiple events, was registered in: " + this.GetType());
                 continue;
             }
             _messageCallbackCollection.Add(callbackWrapper.EventType, callbackWrapper.Callback);
