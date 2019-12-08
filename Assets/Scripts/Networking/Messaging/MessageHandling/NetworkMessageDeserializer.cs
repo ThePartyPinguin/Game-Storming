@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using GameFrame.Networking.Exception;
 using GameFrame.Networking.NetworkConnector;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace GameFrame.Networking.Messaging.MessageHandling
@@ -130,9 +132,19 @@ namespace GameFrame.Networking.Messaging.MessageHandling
 
                 var type = wrapper.MessageType;
 
-                var message = _networkMessageSerializer.DeSerializeWithOffset(data, 1, data.Length - 1, type);
+                try
+                {
+                    var message = _networkMessageSerializer.DeSerializeWithOffset(data, 1, data.Length - 1, type);
 
-                wrapper.Callback.Invoke(message, _networkConnector.Guid);
+                    wrapper.Callback.Invoke(message, _networkConnector.Guid);
+
+                    Debug.Log(Encoding.Unicode.GetString(data, 1, data.Length - 1));
+                }
+                catch (JsonReaderException e)
+                {
+                    Debug.Log(e);
+                    Debug.Log(Encoding.Unicode.GetString(data, 1, data.Length - 1));
+                }
 
             }
             catch (System.Exception e)

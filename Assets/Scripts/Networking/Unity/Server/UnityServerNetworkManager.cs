@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Net;
 using GameFrame.Networking.Serialization;
 using GameFrame.Networking.Server;
 using UnityEngine;
@@ -15,12 +16,12 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
     public SerializationType SerializationType;
     public bool UseUdp;
 
+    public GameServer<NetworkEvent> GameServer => _gameServer;
+
     private GameServer<NetworkEvent> _gameServer;
     
-    [SerializeField]
-    private OnConnectCallback _onClientConnect;
+    public OnConnectCallback OnClientConnected;
 
-    // Start is called before the first frame update
     void Start()
     {
         UnitySystemConsoleRedirector.Redirect();
@@ -55,7 +56,7 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
             settings.UdpRemoteSendPort = UdpRemoteSendPort;
         }
 
-        _gameServer = new GameServer<NetworkEvent>(settings, (guid) => _onClientConnect?.Invoke(guid));
+        _gameServer = new GameServer<NetworkEvent>(settings, (guid) => OnClientConnected?.Invoke(guid));
 
         _gameServer.StartServer();
 
@@ -92,7 +93,13 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
     }
 
     [Serializable]
-    private class OnConnectCallback : UnityEvent<Guid>
+    public class OnConnectCallback : UnityEvent<Guid>
+    {
+
+    }
+
+    [Serializable]
+    public class OnServerStartedCallback : UnityEvent<IPAddress>
     {
 
     }

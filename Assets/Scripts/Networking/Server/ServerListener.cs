@@ -8,6 +8,9 @@ namespace GameFrame.Networking.Server
 {
     public class ServerListener<TEnum> where TEnum : Enum
     {
+        public IPAddress LocalIpAddress => _localIpAddress;
+        public int ListenPort => _listenPort;
+
         private IPAddress _localIpAddress;
         private int _listenPort;
 

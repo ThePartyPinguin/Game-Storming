@@ -12,6 +12,8 @@ namespace GameFrame.Networking.Server
 {
     public class GameServer<TEnum> where TEnum : Enum
     {
+        public ServerListener<TEnum> ServerListener => _serverListener;
+
         private readonly int _tcpPort;
         private readonly int _udpPort;
 

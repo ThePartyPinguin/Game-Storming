@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [Serializable]
-public class BaseMessageCallback<TBaseMessage> : UnityEvent<TBaseMessage>
+public class BaseMessageCallback<TBaseMessage> : UnityEvent<TBaseMessage, Guid>
 {
 
 }
