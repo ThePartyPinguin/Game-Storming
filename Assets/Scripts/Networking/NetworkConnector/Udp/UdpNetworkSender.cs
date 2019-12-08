@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameFrame.Networking.Serialization;
+using System;
 using System.Net;
 using System.Net.Sockets;
 

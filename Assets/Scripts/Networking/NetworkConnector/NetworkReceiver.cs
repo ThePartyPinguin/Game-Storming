@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using GameFrame.Networking.Exception;
+﻿using GameFrame.Networking.Exception;
 using GameFrame.Networking.Messaging.MessageHandling;
-using UnityEngine;
+using System;
+using System.Threading;
 
 namespace GameFrame.Networking.NetworkConnector
 {
@@ -42,12 +40,20 @@ namespace GameFrame.Networking.NetworkConnector
             if (!_setupComplete)
                 Setup();
 
-            if (!_running)
+            try
             {
-                _waitUntilTaskFinished.Reset();
-                _running = true;
-                _receiverThread.Start();
+                if (!_running)
+                {
+                    _waitUntilTaskFinished.Reset();
+                    _running = true;
+                    _receiverThread.Start();
+                }
             }
+            catch (System.Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
         }
 
         protected abstract void Stop();
@@ -84,6 +90,7 @@ namespace GameFrame.Networking.NetworkConnector
 
                 if (data != null && data.Length > 0)
                 {
+
                     HandleData(data);
                 }
             }

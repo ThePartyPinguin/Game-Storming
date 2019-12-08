@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Threading;
-using GameFrame.Networking.Messaging;
-using GameFrame.Networking.Messaging.Message;
+﻿using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace GameFrame.Networking.Server
 {
@@ -62,20 +61,16 @@ namespace GameFrame.Networking.Server
                 client.Stop();
             }
 
-            if (_serverSettings.UseUdp)
+            try
             {
-                try
-                {
-                    
-                        NetworkConnector<TEnum>.UdpClient.Close();
-                        NetworkConnector<TEnum>.UdpClient.Dispose();
-                }
-                catch (System.Exception e)
-                {
-                    Console.WriteLine(e);
-                    Thread.Sleep(200);
-                    throw;
-                }
+                NetworkConnector<TEnum>.UdpClient.Close();
+                NetworkConnector<TEnum>.UdpClient.Dispose();
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine(e);
+                Thread.Sleep(10000);
+                throw;
             }
         }
         private void RemoveConnection(Guid connectorId)

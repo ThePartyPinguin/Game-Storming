@@ -1,12 +1,13 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
-using GameFrame.Networking.Exception;
+﻿using GameFrame.Networking.Exception;
 using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector.Tcp;
 using GameFrame.Networking.NetworkConnector.Udp;
 using GameFrame.Networking.Serialization;
+using GameFrame.Networking.Serialization.Json;
+using System;
+using System.Net;
+using System.Net.Sockets;
 
 namespace GameFrame.Networking.NetworkConnector
 {
@@ -63,7 +64,7 @@ namespace GameFrame.Networking.NetworkConnector
         public void Setup(SerializationType serializationType)
         {
             if(_setupComplete)
-                throw new AlreadySetupExcpetion("The: " + this.GetType() + " has already been setup");
+                throw new AlreadySetupException("The: " + this.GetType() + " has already been setup");
 
             switch (serializationType)
             {
@@ -129,6 +130,7 @@ namespace GameFrame.Networking.NetworkConnector
             {
                 _tcpClient = new TcpClient();
                 _tcpClient.Connect(_ipAddress, _tcpReceivePort);
+                Console.WriteLine("Connected");
             }
             catch (System.Exception e)
             {
