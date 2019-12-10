@@ -10,7 +10,7 @@ public class Block : Draggable
     private string idea;
     [SerializeField]
     private Tower tower;
-    Participant owner;
+    private Participant owner;
 
     [SerializeField]
     private TextMeshPro textVisual;
@@ -35,9 +35,13 @@ public class Block : Draggable
         }
     }
 
-    public Tower Tower { get; }
+    public Tower Tower { get { return this.tower; } }
 
-    public Participant Participant { get; set; }
+    public Participant Owner
+    {
+        get { return this.owner; }
+        set { this.owner = value; }
+    }
     #endregion
 
     #region methods
@@ -80,7 +84,6 @@ public class Block : Draggable
         //If the block hits a tower, it becomes part of that tower
         else if (collision.gameObject.CompareTag("Block") && collision.gameObject.GetComponent<Block>()) //Extra check for if it's done
         {
-            //Debug.Log("HitBlock" + Time.time);
             Block otherBlock = collision.gameObject.GetComponent<Block>();
             currentCoroutine = StartCoroutine(SnapToTower(otherBlock.Tower));
         }
@@ -124,9 +127,8 @@ public class Block : Draggable
 
     public override void OnMouseDown()
     {
-        Debug.Log("clicked block");
-         this.DetachAndDestroyBubble();
-            base.OnMouseDown();
+        this.DetachAndDestroyBubble();
+        base.OnMouseDown();
     }
 
     public int CalculateScore()

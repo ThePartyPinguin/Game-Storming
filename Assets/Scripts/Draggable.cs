@@ -8,6 +8,7 @@ using UnityEngine.Events;
 
 public abstract class Draggable : MonoBehaviour
 {
+    #region fields
     private bool isDragged;
     private int dragId;
 
@@ -19,7 +20,9 @@ public abstract class Draggable : MonoBehaviour
     private UnityEvent onDrag;
     [SerializeField]
     private UnityEvent onDragUp;
+    #endregion
 
+    #region methods
     private void Awake()
     {
         //Caching values
@@ -44,4 +47,5 @@ public abstract class Draggable : MonoBehaviour
         dragJoint.enabled = false;
         onDragUp.Invoke();
     }
+    #endregion
 }

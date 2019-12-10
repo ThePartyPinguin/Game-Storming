@@ -17,7 +17,11 @@ public class GameManager : MonoSingleton<GameManager>
     #endregion
 
     #region properties
-    public List<Participant> Participants { get; set; }
+    public List<Participant> Participants
+    {
+        get { return this.participants; }
+        set { this.participants = value; }
+    }
     #endregion
 
     #region methods
@@ -61,7 +65,6 @@ public class GameManager : MonoSingleton<GameManager>
     private void NotifyNextBuilder(int builderParticipantIndex)
     {
         var builderName = participants[builderParticipantIndex].Name;
-        Debug.Log(builderName);
         newBuilderCalled.Invoke(builderName);
         //TODO: Networking notify next builder phone
     }
