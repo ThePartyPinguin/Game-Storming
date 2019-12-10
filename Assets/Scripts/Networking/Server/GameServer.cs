@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace GameFrame.Networking.Server
 {
-    public class GameServer<TEnum> where TEnum : Enum
+    public sealed class GameServer<TEnum> where TEnum : Enum
     {
         public IPAddress LocalIpAddress
         {

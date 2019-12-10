@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using GameFrame.Networking.Client;
+using GameFrame.UnityHelpers.Networking;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -85,7 +86,6 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
             settings.UdpReceivePort = _udpReceivePort;
 
         }
-        SetupHandshakeEvent();
 
         _gameClient = new GameClient<NetworkEvent>(settings);
 
@@ -94,16 +94,6 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
         _gameClient.OnConnectionLost += () => Debug.Log("Connection to server lost");
 
         _gameClient.Connect();
-    }
-
-    private void SetupHandshakeEvent()
-    {
-        
-    }
-
-    public void Test(EventOnlyNetworkMessage message)
-    {
-        Debug.Log("Receive response");
     }
 
     private IPAddress ParseIpAddress()

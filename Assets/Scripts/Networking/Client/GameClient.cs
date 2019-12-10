@@ -6,7 +6,7 @@ using GameFrame.Networking.NetworkConnector;
 
 namespace GameFrame.Networking.Client
 {
-    internal class GameClient<TEnum> where TEnum : Enum
+    public sealed class GameClient<TEnum> where TEnum : Enum
     {
         public bool IsConnected => _isConnected;
         public Guid ClientId => _clientId;
