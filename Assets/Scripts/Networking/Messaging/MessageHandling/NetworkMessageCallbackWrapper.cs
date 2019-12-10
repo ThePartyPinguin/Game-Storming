@@ -1,6 +1,5 @@
-﻿using System;
-using GameFrame.Networking.Messaging.Message;
-using GameFrame.Networking.NetworkConnector;
+﻿using GameFrame.Networking.Messaging.Message;
+using System;
 
 namespace GameFrame.Networking.Messaging.MessageHandling
 {

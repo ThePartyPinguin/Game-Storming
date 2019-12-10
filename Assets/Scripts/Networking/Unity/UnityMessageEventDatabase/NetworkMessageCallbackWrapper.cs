@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [Serializable]
-public abstract class NetworkMessageCallbackWrapper<TMessage, TCallback> where TMessage : NetworkMessage<NetworkEvent> where TCallback : UnityEvent<TMessage>
+public abstract class NetworkMessageCallbackWrapper<TMessage, TCallback> where TMessage : NetworkMessage<NetworkEvent> where TCallback : UnityEvent<TMessage, Guid>
 {
     public abstract NetworkEvent EventType { get; }
     public abstract TCallback Callback { get; }

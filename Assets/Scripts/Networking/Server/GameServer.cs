@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using System.Threading;
-using GameFrame.Networking.Messaging;
-using GameFrame.Networking.Messaging.Message;
+﻿using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace GameFrame.Networking.Server
 {
     public class GameServer<TEnum> where TEnum : Enum
     {
+        public ServerListener<TEnum> ServerListener => _serverListener;
+
         private readonly int _tcpPort;
         private readonly int _udpPort;
 
@@ -72,6 +73,19 @@ namespace GameFrame.Networking.Server
                 throw;
             }
         }
+        private void RemoveConnection(Guid connectorId)
+        {
+            if (!_connectedClients.ContainsKey(connectorId))
+                return;
+
+            var connector = _connectedClients[connectorId];
+
+            Console.WriteLine("Client disconnect event received");
+            connector.Stop();
+            _connectedClients.Remove(connectorId);
+        }
+
+        #region Callbacks
 
         private void OnClientConnect(TcpClient client)
         {
@@ -110,7 +124,8 @@ namespace GameFrame.Networking.Server
                 _connectorsToAccept.Remove(connectorId);
                 _connectedClients.Add(connectorId, connector);
 
-                connector.StartUdp();
+                if(_serverSettings.UseUdp)
+                    connector.StartUdp();
 
                 connector.SecureSendMessage(new ServerToClientHandshakeResponse<TEnum>(_serverSettings.ServerToClientHandshakeEvent, true, connectorId));
                 _onClientAccepted?.Invoke(connectorId);
@@ -119,39 +134,95 @@ namespace GameFrame.Networking.Server
 
         private void OnClientDisconnect(ClientDisconnectMessage<TEnum> message, Guid connectorId)
         {
-            if(!_connectedClients.ContainsKey(connectorId) && message.MessageEventType.Equals(_serverSettings.ClientDisconnectEvent))
+            if (!_connectedClients.ContainsKey(connectorId) && message.MessageEventType.Equals(_serverSettings.ClientDisconnectEvent))
                 return;
 
             Console.WriteLine("Client disconnect event received");
             RemoveConnection(connectorId);
         }
 
-        private void RemoveConnection(Guid connectorId)
-        {
-            if (!_connectedClients.ContainsKey(connectorId))
-                return;
-
-            var connector = _connectedClients[connectorId];
-
-            Console.WriteLine("Client disconnect event received");
-            connector.Stop();
-            _connectedClients.Remove(connectorId);
-        }
+        #endregion
+        
+        #region Broadcast
 
         public void BroadcastMessage(NetworkMessage<TEnum> message)
         {
-            foreach (var client in _connectedClients.Values)
+            if(!_serverSettings.UseUdp)
+                throw new System.Exception("Server not initialized to use udp");
+
+            foreach (var clientId in _connectedClients.Keys)
             {
-                client.SendMessage(message);
+                SendMessageToPlayer(clientId, message);
             }
         }
 
         public void SecureBroadcastMessage(NetworkMessage<TEnum> message)
         {
-            foreach (var client in _connectedClients.Values)
+            foreach (var clientId in _connectedClients.Keys)
             {
-                client.SecureSendMessage(message);
+                SecureSendMessageToPlayer(clientId, message);
             }
+        }
+
+        public void BroadcastMessage(NetworkMessage<TEnum> message, Guid excludePlayerId)
+        {
+
+            if (!_serverSettings.UseUdp)
+                throw new System.Exception("Server not initialized to use udp");
+
+            foreach (var clientId in _connectedClients.Keys)
+            {
+                if(clientId.Equals(excludePlayerId))
+                    continue;
+
+                SendMessageToPlayer(clientId, message);
+            }
+        }
+
+        public void SecureBroadcastMessage(NetworkMessage<TEnum> message, Guid excludePlayerId)
+        {
+            foreach (var clientId in _connectedClients.Keys)
+            {
+                if (clientId.Equals(excludePlayerId))
+                    continue;
+
+                SecureSendMessageToPlayer(clientId, message);
+            }
+        }
+
+        #endregion
+
+        #region Single message
+
+        public void SecureSendMessageToSpecificPlayer(Guid playerId, NetworkMessage<TEnum> message)
+        {
+            if (_connectedClients.ContainsKey(playerId))
+            {
+                SecureSendMessageToPlayer(playerId, message);
+            }
+        }
+
+        public void SendMessageToSpecificPlayer(Guid playerId, NetworkMessage<TEnum> message)
+        {
+            if (!_serverSettings.UseUdp)
+                throw new System.Exception("Server not initialized to use udp");
+
+            if (_connectedClients.ContainsKey(playerId))
+            {
+                SendMessageToPlayer(playerId, message);
+            }
+        }
+
+        #endregion
+
+        private void SecureSendMessageToPlayer(Guid playerId, NetworkMessage<TEnum> message)
+        {
+            _connectedClients[playerId].SecureSendMessage(message);
+        }
+
+        private void SendMessageToPlayer(Guid playerId, NetworkMessage<TEnum> message)
+        {
+            _connectedClients[playerId].SendMessage(message);
         }
 
     }

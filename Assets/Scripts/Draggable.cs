@@ -8,6 +8,7 @@ using UnityEngine.Events;
 
 public abstract class Draggable : MonoBehaviour
 {
+    #region fields
     private bool isDragged;
     private int dragId;
 
@@ -19,9 +20,12 @@ public abstract class Draggable : MonoBehaviour
     private UnityEvent onDrag;
     [SerializeField]
     private UnityEvent onDragUp;
+    #endregion
 
+    #region methods
     private void Awake()
     {
+        //Caching values
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
     }
 
@@ -35,6 +39,7 @@ public abstract class Draggable : MonoBehaviour
     {
         dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         GetComponent<Rigidbody2D>().angularVelocity = 0f;
+        onDrag.Invoke();
     }
 
     protected void OnMouseUp()
@@ -42,4 +47,5 @@ public abstract class Draggable : MonoBehaviour
         dragJoint.enabled = false;
         onDragUp.Invoke();
     }
+    #endregion
 }

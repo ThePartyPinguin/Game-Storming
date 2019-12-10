@@ -15,7 +15,7 @@ public class BlockGenerator : MonoBehaviour
 
     #region methods
     /// <summary>
-    /// 
+    /// Spawns a new block with given owner and idea in a new bubble at a random location.
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="ideaTitle"></param>
@@ -24,11 +24,10 @@ public class BlockGenerator : MonoBehaviour
         if (owner != null && ideaTitle != "")
         {
             GameObject blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
-            blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.GetColor();
-            blockbubble.GetComponentInChildren<Block>().Participant = owner;
+            blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.Color;
+            blockbubble.GetComponentInChildren<Block>().Owner = owner;
             blockbubble.GetComponentInChildren<Block>().Idea = ideaTitle;
-            owner.addBlock(blockbubble.GetComponentInChildren<Block>());
-            Debug.Log("[BlockGenerator.SpawnBlock] Block Created: (Owner: " + owner.ToString() + ") (BlockTitle: " + ideaTitle + ")");
+            owner.AddBlock(blockbubble.GetComponentInChildren<Block>());
         }
     }
 

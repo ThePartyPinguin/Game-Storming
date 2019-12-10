@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using Assets.Scripts.Networking.Client;
-using GameFrame.Networking.Exception;
-using GameFrame.Networking.Messaging.MessageHandling;
+﻿using GameFrame.Networking.Exception;
 using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
+using System;
+using System.Collections;
+using System.Net;
+using GameFrame.Networking.Client;
 using UnityEngine;
 using UnityEngine.Events;
+
 public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
 {
     //public NetworkConnector<NetworkEvent> NetworkConnector => _networkConnector;
@@ -28,6 +27,9 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
     [SerializeField]
     private SerializationType _serializationType;
 
+    [SerializeField] 
+    private bool _useUdp;
+
     [Header("Connection events")]
     [SerializeField]
     private OnConnectCallback _onConnected;
@@ -39,6 +41,15 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
     private UnityEvent _onConnectionInterrupted;
     
     private GameClient<NetworkEvent> _gameClient;
+
+    void Start()
+    {
+        Connect();
+        _onConnected.AddListener((guid) =>
+        {
+            Debug.Log(guid);
+        });
+    }
 
     public void Connect()
     {
@@ -64,14 +75,20 @@ public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
         settings.SerializationType = SerializationType.JSON;
         settings.ServerIpAddress = ipAddress;
         settings.TcpPort = _tcpPort;
-        settings.UdpRemoteSendPort = _udpRemoteSendPort;
-        settings.UdpReceivePort = _udpReceivePort;
-        
+
+        if (_useUdp)
+        {
+            settings.UseUdp = _useUdp;
+
+            settings.UdpRemoteSendPort = _udpRemoteSendPort;
+            settings.UdpReceivePort = _udpReceivePort;
+
+        }
         SetupHandshakeEvent();
 
         _gameClient = new GameClient<NetworkEvent>(settings);
 
-        _gameClient.OnConnectionSuccess += CallOnConnected;
+        _gameClient.OnConnectionSuccess = (guid) => { Debug.Log(guid); };
         _gameClient.OnConnectionFailed += () => Debug.Log("Could not connect to server");
         _gameClient.OnConnectionLost += () => Debug.Log("Connection to server lost");
 

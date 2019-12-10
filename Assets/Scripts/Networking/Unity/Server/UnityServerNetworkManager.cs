@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
-using GameFrame.Networking.Messaging.MessageHandling;
-using GameFrame.Networking.NetworkConnector;
+using System.Net;
 using GameFrame.Networking.Serialization;
 using GameFrame.Networking.Server;
 using UnityEngine;
@@ -15,16 +14,18 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
     public int MaxConnectedPlayers;
 
     public SerializationType SerializationType;
+    public bool UseUdp;
+
+    public GameServer<NetworkEvent> GameServer => _gameServer;
+
     private GameServer<NetworkEvent> _gameServer;
     
-    [SerializeField]
-    private OnConnectCallback _onClientConnect;
+    public OnConnectCallback OnClientConnected;
 
-    // Start is called before the first frame update
     void Start()
     {
+        UnitySystemConsoleRedirector.Redirect();
         Setup();
-
     }
 
     public void Setup()
@@ -40,14 +41,22 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
 
         settings.ClientToServerHandshakeEvent = NetworkEvent.CLIENT_TO_SERVER_HANDSHAKE;
         settings.ServerToClientHandshakeEvent = NetworkEvent.SERVER_TO_CLIENT_HANDSHAKE;
+        settings.ClientDisconnectEvent = NetworkEvent.CLIENT_DISCONNECT;
+        settings.ServerDisconnectEvent = NetworkEvent.SERVER_DISCONNECT;
+
         settings.MaxConnectedClients = MaxConnectedPlayers;
         settings.SerializationType = SerializationType;
         settings.TcpPort = TcpPort;
-        settings.UdpReceivePort = UdpReceivePort;
-        settings.UdpRemoteSendPort = UdpRemoteSendPort;
 
+        if (UseUdp)
+        {
+            settings.UseUdp = UseUdp;
 
-        _gameServer = new GameServer<NetworkEvent>(settings, (guid) => _onClientConnect?.Invoke(guid));
+            settings.UdpReceivePort = UdpReceivePort;
+            settings.UdpRemoteSendPort = UdpRemoteSendPort;
+        }
+
+        _gameServer = new GameServer<NetworkEvent>(settings, (guid) => OnClientConnected?.Invoke(guid));
 
         _gameServer.StartServer();
 
@@ -61,12 +70,36 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
 
     void OnApplicationQuit()
     {
+        PlayerPrefs.SetInt("Screenmanager Resolution Width", 800);
+        PlayerPrefs.SetInt("Screenmanager Resolution Height", 600);
+        PlayerPrefs.SetInt("Screenmanager Is Fullscreen mode", 0);
         _gameServer.StopServer();
         Debug.Log("Server stopped");
     }
 
+    public void SendMessageToPlayer(Guid playerId, BaseNetworkMessage message)
+    {
+        _gameServer.SecureSendMessageToSpecificPlayer(playerId, message);
+    }
+
+    public void BroadcastMessage(BaseNetworkMessage message)
+    {
+        _gameServer.SecureBroadcastMessage(message);
+    }
+    
+    public void BroadcastMessage(BaseNetworkMessage message, Guid excludePlayerId)
+    {
+        _gameServer.SecureBroadcastMessage(message, excludePlayerId);
+    }
+
     [Serializable]
-    private class OnConnectCallback : UnityEvent<Guid>
+    public class OnConnectCallback : UnityEvent<Guid>
+    {
+
+    }
+
+    [Serializable]
+    public class OnServerStartedCallback : UnityEvent<IPAddress>
     {
 
     }
