@@ -54,6 +54,10 @@ public class GameManager : MonoSingleton<GameManager>
         }
     }
 
+    /// <summary>
+    /// Sends a notification to the next builder both on the screen and to the next builder's device
+    /// </summary>
+    /// <param name="builderParticipantIndex"></param>
     private void NotifyNextBuilder(int builderParticipantIndex)
     {
         var builderName = participants[builderParticipantIndex].Name;

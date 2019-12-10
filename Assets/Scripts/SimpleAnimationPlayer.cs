@@ -12,6 +12,10 @@ public class SimpleAnimationPlayer : MonoBehaviour
     #endregion
 
     #region methods
+    /// <summary>
+    /// Starts playing an animation corresponding with the given animation name.
+    /// </summary>
+    /// <param name="animationName">Name of the animation you want to start playing.</param>
     public void PlayAnimation(string animationName)
     {
         animator.Play(animationName);

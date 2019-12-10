@@ -22,6 +22,7 @@ public abstract class Draggable : MonoBehaviour
 
     private void Awake()
     {
+        //Caching values
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
     }
 
@@ -35,6 +36,7 @@ public abstract class Draggable : MonoBehaviour
     {
         dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         GetComponent<Rigidbody2D>().angularVelocity = 0f;
+        onDrag.Invoke();
     }
 
     protected void OnMouseUp()

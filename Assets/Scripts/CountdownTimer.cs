@@ -17,7 +17,9 @@ public class CountdownTimer : MonoBehaviour
     #endregion
 
     #region methods
-
+    /// <summary>
+    /// Resets the timer to its initial value and starts the countdown again.
+    /// </summary>
     public void ResetTimer()
     {
         CancelInvoke();
@@ -25,6 +27,9 @@ public class CountdownTimer : MonoBehaviour
         InvokeRepeating("CountDown", 0, 0.1f);
     }
 
+    /// <summary>
+    /// Counts 0.1 second down from the timer and notifies any listeners
+    /// </summary>
     private void CountDown()
     {
         //Subtract 0.1 seconds from timer
