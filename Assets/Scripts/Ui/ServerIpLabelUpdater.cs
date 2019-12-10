@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Net;
+using TMPro;
 using UnityEngine;
 
 public class ServerIpLabelUpdater : MonoBehaviour
@@ -17,14 +18,11 @@ public class ServerIpLabelUpdater : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!_set)
+        if (!_set && !NetworkManager.GameServer.LocalIpAddress.Equals(IPAddress.Loopback))
         {
-            if(NetworkManager.GameServer != null && NetworkManager.GameServer.ServerListener != null && NetworkManager.GameServer.ServerListener.LocalIpAddress != null)
-            {
-                _set = true;
-                Label.text = NetworkManager.GameServer.ServerListener.LocalIpAddress.ToString() + ':' +
-                             NetworkManager.GameServer.ServerListener.ListenPort;
-            }
+            _set = true;
+            Label.text = NetworkManager.GameServer.LocalIpAddress.ToString() + ':' +
+                         NetworkManager.GameServer.ListenPort;
         }
     }
 }

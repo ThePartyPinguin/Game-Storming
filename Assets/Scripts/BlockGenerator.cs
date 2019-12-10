@@ -10,7 +10,7 @@ public class BlockGenerator : MonoBehaviour
     [SerializeField]
     private Vector2 spawnPosMinMaxY;
     [SerializeField]
-    private GameObject prefab;
+    private Block prefab;
     #endregion
 
     #region methods
@@ -23,11 +23,12 @@ public class BlockGenerator : MonoBehaviour
     {
         if (owner != null && ideaTitle != "")
         {
-            GameObject blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
+            Block blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
             blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.Color;
-            blockbubble.GetComponentInChildren<Block>().Owner = owner;
-            blockbubble.GetComponentInChildren<Block>().Idea = ideaTitle;
-            owner.AddBlock(blockbubble.GetComponentInChildren<Block>());
+
+            blockbubble.Owner = owner;
+            blockbubble.Idea = ideaTitle;
+            owner.AddBlock(blockbubble);
         }
     }
 

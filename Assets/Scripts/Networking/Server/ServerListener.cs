@@ -37,8 +37,6 @@ namespace GameFrame.Networking.Server
                 _localIpAddress = GetLocalIPAddress();
 
                 _listenerRunning = true;
-                //_listenerThread = new Thread(Listen);
-                //_listenerThread.GetAwaiter().OnCompleted(OnListenerTaskStopped);
                 _listenerThread.Start();
                 _waitUntilListenerStopped.Reset();
             }

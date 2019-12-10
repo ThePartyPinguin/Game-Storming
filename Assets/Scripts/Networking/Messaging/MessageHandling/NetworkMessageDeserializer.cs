@@ -116,13 +116,10 @@ namespace GameFrame.Networking.Messaging.MessageHandling
         /// <param name="data">dataBuffer byte[]</param>
         private void DeserializeAndHandleMessage(byte[] data)
         {
-            Console.WriteLine("Byte 0: " + data[0]);
-            Console.WriteLine("Byte 3: " + data[3]);
             try
             {
                 if (ContainsMultipleMessages(data))
                 {
-                    Console.WriteLine("Data contains multiple messages");
                     HandleMultipleMessages(data);
                 }
                 else
@@ -148,21 +145,14 @@ namespace GameFrame.Networking.Messaging.MessageHandling
             {
                 try
                 {
-                    Console.WriteLine("startIndex: " + startIndex);
                     if (data[startIndex] != 255 || data[startIndex + 3] != 255)
                         throw new InvalidMessageDataFormatException("Buffer does not have the right format byte 0 and byte 3 should be 0");
-
-                    Console.WriteLine("Byte " + (startIndex) + ':' + data[startIndex]);
-                    Console.WriteLine("Byte " + (startIndex + 1) + ':' + data[startIndex + 1]);
-                    Console.WriteLine("Byte " + (startIndex + 2) + ':' + data[startIndex + 2]);
-                    Console.WriteLine("Byte " + (startIndex + 3) + ':' + data[startIndex + 3]);
-
+                    
                     ushort payloadSize = GetPacketPayloadCount(data, startIndex + 1);
 
                     DeserializeMessage(data, startIndex + 4, payloadSize);
 
                     startIndex += payloadSize + 5;
-                    Console.WriteLine(startIndex);
                 }
                 catch (System.Exception e)
                 {
@@ -170,8 +160,6 @@ namespace GameFrame.Networking.Messaging.MessageHandling
                     break;
                 }
             }
-
-            Console.WriteLine("Parse all messages from buffer");
         }
         /// <summary>
         /// Handle a buffer that only contains a single dataBuffer
@@ -185,7 +173,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
                     throw new InvalidMessageDataFormatException("Buffer does not have the right format byte 0 and byte 3 should be 0");
 
                 ushort payloadSize = GetPacketPayloadCount(data, 1);
-                Console.WriteLine("payloadSize: " + payloadSize);
+
                 DeserializeMessage(data, 4, payloadSize);
             }
             catch (System.Exception e)
@@ -207,7 +195,7 @@ namespace GameFrame.Networking.Messaging.MessageHandling
                 throw new MessageEventTypeNotValid("The received messageEventType identifier: " + data[startIndex] + " could not be found in the given typeParameter enum: " + typeof(TEnum));
             
             var messageEventType = _byteEnumValues[data[startIndex]];
-            Console.WriteLine(messageEventType + "      " + data[startIndex]);
+
             var wrapper = _callbackDatabase.GetCallbackWrapper(messageEventType);
 
             var type = wrapper.MessageType;

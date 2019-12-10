@@ -4,6 +4,7 @@ using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -11,12 +12,32 @@ namespace GameFrame.Networking.Server
 {
     public class GameServer<TEnum> where TEnum : Enum
     {
-        public ServerListener<TEnum> ServerListener => _serverListener;
+        public IPAddress LocalIpAddress
+        {
+            get
+            {
+                if (_serverListener != null)
+                   return _serverListener.LocalIpAddress;
+
+                return IPAddress.Loopback;
+            }
+        }
+
+        public int ListenPort
+        {
+            get
+            {
+                if (_serverListener != null)
+                    return _serverListener.ListenPort;
+
+                return 0;
+            }
+        }
 
         private readonly int _tcpPort;
         private readonly int _udpPort;
 
-        private readonly Dictionary<Guid, NetworkConnector<TEnum>> _connectedClients;
+        private readonly Dictionary<Guid, ServerConnectedClient<TEnum>> _connectedClients;
         private readonly Dictionary<Guid, NetworkConnector<TEnum>> _connectorsToAccept;
 
         private ServerListener<TEnum> _serverListener;
@@ -25,14 +46,14 @@ namespace GameFrame.Networking.Server
 
         private readonly ServerSettings<TEnum> _serverSettings;
 
-        private Action<Guid> _onClientAccepted;
+        private Action<ServerConnectedClient<TEnum>> _onClientAccepted;
 
-        public GameServer(ServerSettings<TEnum> serverSettings, Action<Guid> onClientAccepted)
+        public GameServer(ServerSettings<TEnum> serverSettings, Action<ServerConnectedClient<TEnum>> onClientAccepted)
         {
             _serverSettings = serverSettings;
             _onClientAccepted = onClientAccepted;
 
-            _connectedClients = new Dictionary<Guid, NetworkConnector<TEnum>>();
+            _connectedClients = new Dictionary<Guid, ServerConnectedClient<TEnum>>();
             _connectorsToAccept = new Dictionary<Guid, NetworkConnector<TEnum>>();
         }
 
@@ -78,10 +99,12 @@ namespace GameFrame.Networking.Server
             if (!_connectedClients.ContainsKey(connectorId))
                 return;
 
-            var connector = _connectedClients[connectorId];
+            var client = _connectedClients[connectorId];
 
             Console.WriteLine("Client disconnect event received");
-            connector.Stop();
+
+            client.Stop();
+
             _connectedClients.Remove(connectorId);
         }
 
@@ -122,13 +145,16 @@ namespace GameFrame.Networking.Server
                 }
 
                 _connectorsToAccept.Remove(connectorId);
-                _connectedClients.Add(connectorId, connector);
+
+                var client = new ServerConnectedClient<TEnum>(connectorId, connector);
+
+                _connectedClients.Add(connectorId, client);
 
                 if(_serverSettings.UseUdp)
                     connector.StartUdp();
 
                 connector.SecureSendMessage(new ServerToClientHandshakeResponse<TEnum>(_serverSettings.ServerToClientHandshakeEvent, true, connectorId));
-                _onClientAccepted?.Invoke(connectorId);
+                _onClientAccepted?.Invoke(client);
             }
         }
 

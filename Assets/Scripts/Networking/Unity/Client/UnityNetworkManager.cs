@@ -3,6 +3,7 @@ using GameFrame.Networking.NetworkConnector;
 using GameFrame.Networking.Serialization;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using GameFrame.Networking.Client;
 using UnityEngine;
@@ -11,7 +12,7 @@ using UnityEngine.Events;
 public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
 {
     //public NetworkConnector<NetworkEvent> NetworkConnector => _networkConnector;
-
+    public List<NetworkEvent> NetworkEvents;
     [SerializeField]
     private string _ipAddress;
 
