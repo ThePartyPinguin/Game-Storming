@@ -245,7 +245,6 @@ GameObject:
   - component: {fileID: 4683487841430045385}
   - component: {fileID: 4683487841430045384}
   - component: {fileID: 8399848337567372163}
-  - component: {fileID: 3440721248724028418}
   m_Layer: 0
   m_Name: Block
   m_TagString: Block
@@ -477,32 +476,6 @@ HingeJoint2D:
   m_AngleLimits:
     m_LowerAngle: 0
     m_UpperAngle: 359
---- !u!61 &3440721248724028418
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4683487841430045387}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0.14999999, y: 0.14999999, z: 0.14999999, w: 0.14999999}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 1
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.95, y: 0.95}
-  m_EdgeRadius: 0
 --- !u!1 &7929567292299808311
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,4 +696,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parent: {fileID: 4683487841430045389}
   text: {fileID: 1655279713596963897}
-  rotationLimit: 0.7
