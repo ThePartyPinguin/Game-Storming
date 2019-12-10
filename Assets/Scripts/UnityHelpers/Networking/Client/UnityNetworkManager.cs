@@ -3,7 +3,6 @@ using GameFrame.Networking.Exception;
 using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.Serialization;
 using GameFrame.UnityHelpers.Networking.Message;
-using GameFrame.UnityHelpers.Networking.Shared;
 using System;
 using System.Collections;
 using System.Net;
@@ -13,7 +12,7 @@ using UnityEngine.Events;
 
 namespace GameFrame.UnityHelpers.Networking.Client
 {
-    public class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
+    public partial class UnityNetworkManager : MonoSingleton<UnityNetworkManager>
     {
         public string ipAddress;
         public int tcpPort;
@@ -29,10 +28,6 @@ namespace GameFrame.UnityHelpers.Networking.Client
         public ClientIdCallback OnConnectionInterrupted;
 
 
-        [Header("Instantiating")]
-        public NetworkedGameObjectCollection NetworkedGameObjects;
-
-        private NetworkedGameObjectsFactory _networkedGameObjectsFactory;
         
         public GameClient<NetworkEvent> GameClient { get; private set; }
         private ClientConnectionSettings<NetworkEvent> _connectionSettings;
@@ -40,8 +35,6 @@ namespace GameFrame.UnityHelpers.Networking.Client
         void Start()
         {
             SetDefaultSettings();
-
-            OnConnected.AddListener((guid) => SetupNetworkInstantiating());
 
             if(connectOnStart)
                 Connect();
@@ -162,24 +155,6 @@ namespace GameFrame.UnityHelpers.Networking.Client
         {
             GameClient?.Stop();
             Debug.Log("quit");
-        }
-
-        #endregion
-
-        #region Instantiating
-
-        private void SetupNetworkInstantiating()
-        {
-            Debug.Log("Connected, setting up instantiating ability");
-            _networkedGameObjectsFactory = NetworkedGameObjectsFactory.Instance;
-
-            _networkedGameObjectsFactory.SetupOnProduceCallback((o) => SendSecureMessage(new ClientInstantiateRequestMessage(NetworkEvent.CLIENT_INSTANTIATE_REQUEST, o.ObjectTypeId, o.NetworkId)));
-
-            NetworkEventCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<ServerInstantiateResponse>(NetworkEvent.SERVER_INSTANTIATE_RESPONSE, 
-                (response, connectorId) =>
-                {
-                    _networkedGameObjectsFactory.UpdateNetworkObjectNetworkId(response.ClientAssignedNetworkId, response.ServerAssignedNetworkId);
-                });
         }
 
         #endregion

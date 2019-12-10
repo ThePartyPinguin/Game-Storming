@@ -9,7 +9,7 @@ using UnityEngine;
 public class Participant
 {
     #region fields
-    private int id;
+    public Guid Id { get; }
     private string name;
     private Color color;
     private int score;
@@ -23,10 +23,10 @@ public class Participant
     #endregion
 
     #region methods
-    public Participant(int id, string name, Color color)
+    public Participant(Guid id, string name, Color color)
     {
         blocks = new List<Block>();
-        this.id = id;
+        this.Id = id;
         this.name = name;
         this.color = color;
         this.score = 0;

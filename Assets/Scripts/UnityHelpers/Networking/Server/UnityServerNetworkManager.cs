@@ -4,8 +4,6 @@ using GameFrame.UnityHelpers.Networking;
 using GameFrame.UnityHelpers.Networking.Message;
 using GameFrame.Networking.Serialization;
 using GameFrame.Networking.Server;
-using GameFrame.UnityHelpers.Networking.Client;
-using GameFrame.UnityHelpers.Networking.Shared;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -23,13 +21,10 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
 
     public ClientIdCallback OnClientConnect;
 
-    private ClientIdCallback _callbackToCallInCoRoutine;
-    private bool _startCoRoutine;
-
-    public NetworkedGameObjectCollection NetworkedGameObjects;
     // Start is called before the first frame update
     void Start()
     {
+        UnitySystemConsoleRedirector.Redirect();
         Setup();
     }
 
@@ -61,14 +56,11 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
             settings.UdpRemoteSendPort = UdpRemoteSendPort;
         }
 
-        foreach (var o in NetworkedGameObjects.NetworkedGameObjects)
-        {
-            Debug.Log(o.GetHashCode());
-        }
+        ASyncToSynchronousCallbackHandler syncHandler = ASyncToSynchronousCallbackHandler.Instance;
 
         GameServer = new GameServer<NetworkEvent>(settings, (client) =>
         {
-            ASyncToSynchronousCallbackHandler.Instance.QueueCallbackToHandle(() => OnClientConnect?.Invoke(client.ClientId));
+            syncHandler.QueueCallbackToHandle(() => OnClientConnect?.Invoke(client));
         });
 
         GameServer.StartServer();
@@ -83,7 +75,7 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
 
     void OnApplicationQuit()
     {
-        GameServer.StopServer();
+        GameServer?.StopServer();
         Debug.Log("Server stopped");
     }
 
@@ -103,7 +95,7 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
     }
 
     [Serializable]
-    public class ClientIdCallback : UnityEvent<Guid>
+    public class ClientIdCallback : UnityEvent<ServerConnectedClient<NetworkEvent>>
     {
 
     }

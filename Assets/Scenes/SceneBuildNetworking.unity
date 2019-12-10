@@ -698,7 +698,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPosMinMaxX: {x: -13, y: 13}
   spawnPosMinMaxY: {x: 7, y: 10}
-  prefab: {fileID: 0}
+  prefab: {fileID: 4683487841430045391, guid: d4d31243c26ab6747b4a11744b87b3aa, type: 3}
 --- !u!4 &224617007
 Transform:
   m_ObjectHideFlags: 0
@@ -1180,6 +1180,8 @@ GameObject:
   m_Component:
   - component: {fileID: 334303977}
   - component: {fileID: 334303976}
+  - component: {fileID: 334303979}
+  - component: {fileID: 334303978}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1196,25 +1198,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 334303975}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9851692e1034c0a46b9804af2ab88857, type: 3}
+  m_Script: {fileID: 11500000, guid: 469ea6b19583dcd449595513e989262c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NetworkEvents: 0000000000000000
-  _ipAddress: 
-  _tcpPort: 0
-  _udpReceivePort: 0
-  _udpRemoteSendPort: 0
-  _serializationType: 0
-  _useUdp: 0
-  _onConnected:
+  TcpPort: 5555
+  UdpRemoteSendPort: 0
+  UdpReceivePort: 0
+  MaxConnectedPlayers: 8
+  SerializationType: 0
+  UseUdp: 0
+  OnClientConnect:
     m_PersistentCalls:
-      m_Calls: []
-  _onConnectFailed:
-    m_PersistentCalls:
-      m_Calls: []
-  _onConnectionInterrupted:
-    m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 334303979}
+        m_MethodName: OnClientConnected
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &334303977
 Transform:
   m_ObjectHideFlags: 0
@@ -1229,6 +1235,62 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &334303978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 334303975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f29e84a2080ed745a343ecb2c3bb65b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _messageCallbackWrappers:
+  - _eventType: 2
+    _callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 334303979}
+          m_MethodName: OnReceiveClientName
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - _eventType: 3
+    _callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 334303979}
+          m_MethodName: SpawnBlock
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &334303979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 334303975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbb6855bcd53c264d82e8cb364a58665, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BlockGenerator: {fileID: 224617006}
 --- !u!1 &466843775
 GameObject:
   m_ObjectHideFlags: 0
