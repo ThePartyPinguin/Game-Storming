@@ -1,8 +1,8 @@
-﻿using System;
+﻿using GameFrame.Networking.Messaging.MessageHandling;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using GameFrame.Networking.Messaging.MessageHandling;
 
 namespace GameFrame.Networking.NetworkConnector.Udp
 {

@@ -154,6 +154,7 @@ MonoBehaviour:
   _udpReceivePort: 11000
   _udpRemoteSendPort: 12000
   _serializationType: 0
+  _useUdp: 0
   _onConnected:
     m_PersistentCalls:
       m_Calls: []

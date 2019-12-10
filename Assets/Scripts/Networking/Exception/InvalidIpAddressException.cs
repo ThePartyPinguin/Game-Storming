@@ -1,10 +1,10 @@
 ﻿namespace GameFrame.Networking.Exception
 {
-    public sealed class NoMessageHandlerRegisteredException : System.Exception
+    public sealed class InvalidIpAddressException : System.Exception
     {
         public override string Message { get; }
 
-        public NoMessageHandlerRegisteredException(string message)
+        public InvalidIpAddressException(string message)
         {
             Message = message;
         }

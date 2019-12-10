@@ -1,8 +1,9 @@
-﻿using System;
+﻿using GameFrame.Networking.Messaging.Message;
+using GameFrame.Networking.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using GameFrame.Networking.Messaging.Message;
 
 namespace GameFrame.Networking.NetworkConnector
 {
@@ -50,8 +51,8 @@ namespace GameFrame.Networking.NetworkConnector
             _waitUntilStopped.Set();
             while (_networkMessagesQueueToSend.Count > 0)
             {
-                byte[] data = _networkMessageSerializer.Serialize(_networkMessagesQueueToSend.Dequeue());
-                
+                NetworkMessage<TEnum> message = _networkMessagesQueueToSend.Dequeue();
+                byte[] data = _networkMessageSerializer.Serialize(message);
                 SendMessage(data);
             }
             _senderTaskRunning = false;

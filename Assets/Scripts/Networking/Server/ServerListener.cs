@@ -2,12 +2,14 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace GameFrame.Networking.Server
 {
     public class ServerListener<TEnum> where TEnum : Enum
     {
+        public IPAddress LocalIpAddress => _localIpAddress;
+        public int ListenPort => _listenPort;
+
         private IPAddress _localIpAddress;
         private int _listenPort;
 
@@ -65,22 +67,14 @@ namespace GameFrame.Networking.Server
         public void Listen()
         {
             _waitUntilListenerStopped.Reset();
-            Console.WriteLine("Listnening for new connection on: " + _localIpAddress + ':' + _listenPort);
-
             while (_listenerRunning)
             {
                 try
                 {
-                    if (_tcpListener.Pending())
-                    {
-                        TcpClient client = _tcpListener.AcceptTcpClient();
-                        Console.WriteLine("New connection received");
-                        _onClientConnect?.Invoke(client);
-                    }
-                    else
-                    {
-                        Thread.Sleep(250);
-                    }
+                    Console.WriteLine("Listnening for new connection on: " + _localIpAddress + ':' + _listenPort);
+                    TcpClient client = _tcpListener.AcceptTcpClient();
+                    Console.WriteLine("New connection received");
+                    _onClientConnect?.Invoke(client);
                 }
                 catch(SocketException e)
                 {

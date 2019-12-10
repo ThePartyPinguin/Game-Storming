@@ -19,11 +19,11 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
 
     private Dictionary<NetworkEvent, TBaseCallback> _messageCallbackCollection;
 
-    private Queue<TBaseMessage> _messagesToHandle;
+    private Queue<KeyValuePair<TBaseMessage, Guid>> _messagesToHandle;
     private bool _coRoutineRunning;
     void Start()
     {
-        _messagesToHandle = new Queue<TBaseMessage>();
+        _messagesToHandle = new Queue<KeyValuePair<TBaseMessage, Guid>>();
         _messageCallbackCollection = new Dictionary<NetworkEvent, TBaseCallback>();
         foreach (var callbackWrapper in MessageCallbackWrappers)
         {
@@ -34,19 +34,16 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
             }
             _messageCallbackCollection.Add(callbackWrapper.EventType, callbackWrapper.Callback);
 
-            NetworkEventCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<TBaseMessage>(callbackWrapper.EventType,
-                (message, connector) =>
-                {
-                    AddMessageToQueue(message);
-                });
+            NetworkEventCallbackDatabase<NetworkEvent>.Instance.RegisterCallBack<TBaseMessage>(callbackWrapper.EventType, AddMessageToQueue);
+            Debug.Log("Registered callback: " + callbackWrapper.EventType);
         }
 
         MessageCallbackWrappers.Clear();
     }
 
-    public void AddMessageToQueue(TBaseMessage message)
+    public void AddMessageToQueue(TBaseMessage message, Guid clientId)
     {
-        _messagesToHandle.Enqueue(message);
+        _messagesToHandle.Enqueue(new KeyValuePair<TBaseMessage, Guid>(message, clientId));
     }
 
     void Update()
@@ -93,15 +90,18 @@ public abstract class UnityBaseMessageEventsDatabase<TBaseMessage, TBaseCallback
         for (int i = 0; i < amount; i++)
         {
             Debug.Log("Amount to handle: " + amount);
-            CallMessageCallback(_messagesToHandle.Dequeue());
+
+            var messagePair = _messagesToHandle.Dequeue();
+
+            CallMessageCallback(messagePair.Key, messagePair.Value);
         }
     }
 
-    private void CallMessageCallback(TBaseMessage message)
+    private void CallMessageCallback(TBaseMessage message, Guid clientId)
     {
         
         TBaseCallback callback = GetMessageCallback(message.MessageEventType);
 
-        callback.Invoke(message);
+        callback.Invoke(message, clientId);
     }
 }

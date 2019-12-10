@@ -3,12 +3,16 @@ using System.Threading;
 using GameFrame.Networking.Messaging.Message;
 using GameFrame.Networking.Messaging.MessageHandling;
 using GameFrame.Networking.NetworkConnector;
-using UnityEngine;
 
-namespace Assets.Scripts.Networking.Client
+namespace GameFrame.Networking.Client
 {
     internal class GameClient<TEnum> where TEnum : Enum
     {
+        public bool IsConnected => _isConnected;
+        public Guid ClientId => _clientId;
+
+        private Guid _clientId;
+        private bool _isConnected;
         public Action<Guid> OnConnectionSuccess{ get; set;  }
         public Action OnConnectionFailed { get; set;  }
         public Action OnConnectionLost { get; set;  }
@@ -25,9 +29,9 @@ namespace Assets.Scripts.Networking.Client
 
         private void OnReceiveHandShakeResponse(ServerToClientHandshakeResponse<TEnum> message, Guid connectorId)
         {
-            Debug.Log("Received handshake: " + message.Accepted);
             if (!message.Accepted)
             {
+                _isConnected = false;
                 OnConnectionFailed?.Invoke();
                 _networkConnector.Stop();
                 return;
@@ -36,12 +40,14 @@ namespace Assets.Scripts.Networking.Client
             if(_connectionSettings.UseUdp)
                 _networkConnector.StartUdp();
 
+            _isConnected = true;
+            _clientId = message.ClientId;
             OnConnectionSuccess?.Invoke(message.ClientId);
         }
 
         private void OnReceiveServerDisconnect(ServerDisconnectMessage<TEnum> message, Guid connectorId)
         {
-            Debug.Log("Server stopped");
+            _isConnected = false;
             OnConnectionLost?.Invoke();
             StopWithoutSendingEvent();
         }
@@ -84,6 +90,7 @@ namespace Assets.Scripts.Networking.Client
 
         public void Stop()
         {
+            _isConnected = false;
             SecureSendMessage(new ClientDisconnectMessage<TEnum>(_connectionSettings.ClientDisconnectEvent));
             Thread.Sleep(200);
             _networkConnector.Stop();
