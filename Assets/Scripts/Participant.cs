@@ -16,24 +16,25 @@ public class Participant
     private List<Block> blocks;
     #endregion
 
+    #region properties
+    public string Name { get { return this.name; } }
+
+    public Color Color { get { return this.color; } }
+    #endregion
+
     #region methods
-    public Participant(int _id, string _name, Color _color)
+    public Participant(int id, string name, Color color)
     {
         blocks = new List<Block>();
-        this.id = _id;
-        this.name = _name;
-        this.color = _color;
+        this.id = id;
+        this.name = name;
+        this.color = color;
         this.score = 0;
     }
 
-    public void addBlock(Block b)
+    public void AddBlock(Block b)
     {
         blocks.Add(b);
-    }
-
-    public Color GetColor()
-    {
-        return this.color;
     }
 
     public override string ToString()

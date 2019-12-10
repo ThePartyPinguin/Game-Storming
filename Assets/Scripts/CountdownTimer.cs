@@ -1,56 +1,49 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
-public class CountdownTimer : MonoBehaviour {
-    public int duration;
-    private float countdown;
-    public Image timerVisuals;
-    public TMP_Text timerText;
-    public Gradient newColor;
-    public Gradient alpha;
-    public UnityEvent completed;
+public class CountdownTimer : MonoBehaviour
+{
+    #region fields
+    [SerializeField]
+    private int countdownTime;
+    private float timer;
 
+    [SerializeField]
+    private ProgressUnityEvent countdownTick;
+    [SerializeField]
+    private UnityEvent countdownCompleted;
+    #endregion
 
-    // Use this for initialization
-    void Start () {
-        Reset();
-        
-    }
-
-    public void Reset()
+    #region methods
+    /// <summary>
+    /// Resets the timer to its initial value and starts the countdown again.
+    /// </summary>
+    public void ResetTimer()
     {
         CancelInvoke();
-        countdown = duration;
+        timer = countdownTime;
         InvokeRepeating("CountDown", 0, 0.1f);
     }
 
-    public float GetCountdown()
-    {
-        return countdown;
-    }
-
-
-
+    /// <summary>
+    /// Counts 0.1 second down from the timer and notifies any listeners
+    /// </summary>
     private void CountDown()
     {
-        countdown -= 0.1f;
-        UpdateUI();
-        if (countdown <= 0)
+        //Subtract 0.1 seconds from timer
+        timer -= 0.1f;
+        countdownTick.Invoke(countdownTime, timer);
+
+        if (timer <= 0)
         {
             CancelInvoke();
-            completed.Invoke();
+            countdownCompleted.Invoke();
         }
     }
-
-    private void UpdateUI()
-    {
-        timerText.text = Mathf.Ceil(countdown).ToString();
-        timerText.color = newColor.Evaluate(countdown / duration);
-        timerVisuals.fillAmount = (countdown / duration);
-        timerVisuals.GetComponentsInChildren<Image>()[1].color = alpha.Evaluate(countdown / duration);
-    }
+    #endregion
 }
+
+[System.Serializable]
+public class ProgressUnityEvent : UnityEvent<int, float> {}

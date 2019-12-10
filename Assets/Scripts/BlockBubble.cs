@@ -9,20 +9,17 @@ public class BlockBubble : MonoBehaviour
     private Block block;
 
     private float timer;
-    private Vector3 startposition;
+    private Vector2 startposition;
+    private Transform parentTransform;
     #endregion
 
     #region methods
     // Start is called before the first frame update
     void Start()
     {
+        //Caching values
         this.startposition = this.transform.position;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        this.parentTransform = this.transform.parent;
     }
 
     private void FixedUpdate()
@@ -31,11 +28,7 @@ public class BlockBubble : MonoBehaviour
         float x = Mathf.Cos(timer);
         float y = Mathf.Sin(timer);
 
-        this.transform.parent.position = startposition + new Vector3(x, y, 0);
+        parentTransform.position = startposition + new Vector2(x, y);
     }
-
-
-
-
     #endregion
 }
