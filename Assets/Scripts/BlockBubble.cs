@@ -5,11 +5,8 @@ using UnityEngine;
 public class BlockBubble : MonoBehaviour
 {
     #region fields
-    [SerializeField]
-    private Block block;
-
     private float timer;
-    private Vector2 startposition;
+    public Vector2 startposition;
     #endregion
 
     #region methods

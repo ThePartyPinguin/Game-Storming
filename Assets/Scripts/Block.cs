@@ -119,6 +119,7 @@ public class Block : Draggable
         {
             Destroy(blockbubble);
             rigidBody.isKinematic = false;
+            this.transform.parent = null;
         }
     }
 
