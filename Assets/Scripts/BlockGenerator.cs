@@ -29,7 +29,7 @@ public class BlockGenerator : MonoBehaviour
             blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.Color;
             blockbubble.GetComponentInChildren<Block>().Owner = owner;
             blockbubble.GetComponentInChildren<Block>().Idea = ideaTitle;
-            owner.addBlock(blockbubble.GetComponentInChildren<Block>());
+            owner.AddBlock(blockbubble.GetComponentInChildren<Block>());
             Debug.Log("[BlockGenerator.SpawnBlock] Block Created: (Owner: " + owner.ToString() + ") (BlockTitle: " + ideaTitle + ")");
 
             blockbubble.transform.parent = bubbleMover;

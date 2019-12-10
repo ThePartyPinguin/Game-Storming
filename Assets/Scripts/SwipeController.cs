@@ -60,8 +60,11 @@ public class SwipeController : MonoBehaviour
 
     void LateUpdate()
     {
+        //get difference in position from last update
         Vector3 v = (this.transform.position - this.startPosition);
+        //update the spawn area and move the blockbubbles with the new camera position
         blockGen.UpdateSpawnArea(v);
+        //move each block bubbles startposition, this needs to be done in order to prevent it from snapping back.
         foreach (BlockBubble blockBubble in bubbleMover.GetComponentsInChildren<BlockBubble>())
         {
             blockBubble.startposition += new Vector2(v.x, v.y);
