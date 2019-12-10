@@ -15,7 +15,9 @@ public class Block : Draggable
     [SerializeField]
     private TextMeshPro textVisual;
     [SerializeField]
-    private GameObject blockbubble;
+    private GameObject blockBubble;
+    [SerializeField]
+    private BoxCollider2D blockCollider;
 
     private Rigidbody2D rigidBody;
     private HingeJoint2D towerJoint;
@@ -96,7 +98,8 @@ public class Block : Draggable
     {
         float functionalRotation = (transform.eulerAngles.z % 180);
         bool isHorizontal = 45 <= functionalRotation && functionalRotation < 135;
-        return (isHorizontal ? transform.localScale.x : transform.localScale.y);
+        var renderer = GetComponent<SpriteRenderer>();
+        return (isHorizontal ? renderer.size.x : renderer.size.y);
     }
 
     /// <summary>
@@ -109,7 +112,7 @@ public class Block : Draggable
         StartCoroutine(ReleaseFromFoundation());
         if(this.GetComponentInChildren<BlockBubble>() != null)
         {
-            this.transform.position = new Vector3(this.blockbubble.transform.position.x, this.blockbubble.transform.position.y, 0.1f);   
+            this.transform.position = new Vector3(this.blockBubble.transform.position.x, this.blockBubble.transform.position.y, 0.1f);   
         }
     }
 
@@ -118,10 +121,18 @@ public class Block : Draggable
     /// </summary>
     public void DetachAndDestroyBubble()
     {
-        if (this.blockbubble != null)
+        if (this.blockBubble != null)
         {
-            Destroy(blockbubble);
+            //Pop the bubble
+            Destroy(blockBubble);
+
+            //Activate block physics
             rigidBody.isKinematic = false;
+            blockCollider.enabled = true;
+
+            //Render block in front of bubbleBlocks
+            GetComponent<SpriteRenderer>().sortingOrder = 4;
+            GetComponentInChildren<TextMeshPro>().sortingOrder = 5;
         }
     }
 
@@ -165,6 +176,7 @@ public class Block : Draggable
         rigidBody.velocity = Vector2.zero;
         rigidBody.angularVelocity = 0f;
         transform.eulerAngles = new Vector3(0, 0, Mathf.Round(transform.eulerAngles.z / 90) * 90);
+        Debug.Log(GetHeight());
         transform.position = new Vector3(transform.position.x, -3.5f + GetHeight() / 2, 1);
 
         //Disable the rotatejoint

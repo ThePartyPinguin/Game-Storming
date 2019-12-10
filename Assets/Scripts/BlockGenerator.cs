@@ -10,7 +10,11 @@ public class BlockGenerator : MonoBehaviour
     [SerializeField]
     private Vector2 spawnPosMinMaxY;
     [SerializeField]
-    private GameObject prefab;
+    private Block prefab;
+    [SerializeField]
+    private AnimationCurve blockSizeX;
+    [SerializeField]
+    private AnimationCurve blockSizeY;
     #endregion
 
     #region methods
@@ -23,11 +27,27 @@ public class BlockGenerator : MonoBehaviour
     {
         if (owner != null && ideaTitle != "")
         {
-            GameObject blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
+            Block blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
             blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.Color;
-            blockbubble.GetComponentInChildren<Block>().Owner = owner;
-            blockbubble.GetComponentInChildren<Block>().Idea = ideaTitle;
-            owner.AddBlock(blockbubble.GetComponentInChildren<Block>());
+            blockbubble.Owner = owner;
+            blockbubble.Idea = ideaTitle;
+            owner.AddBlock(blockbubble);
+
+            //Variable block size based on amount of characters in the idea
+            float newSizeX = blockSizeX.Evaluate(ideaTitle.Length);
+            float newSizeY = blockSizeY.Evaluate(ideaTitle.Length);
+            Vector2 newSize = new Vector2(newSizeX, newSizeY);
+            Vector2 newColliderSize = new Vector2(newSizeX - 0.05f, newSizeY - 0.05f);
+
+            blockbubble.GetComponent<SpriteRenderer>().size = newSize;
+            foreach (var collider in blockbubble.GetComponents<BoxCollider2D>())
+            {
+                collider.size = newColliderSize;
+            }
+            blockbubble.GetComponentInChildren<TrailRenderer>().widthMultiplier = Mathf.Min(newSizeX, newSizeY);
+            blockbubble.GetComponentInChildren<BlockBubble>().transform.localScale *= Mathf.Max(newSizeX, newSizeY);
+            blockbubble.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
+
         }
     }
 

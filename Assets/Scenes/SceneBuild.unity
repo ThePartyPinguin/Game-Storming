@@ -667,52 +667,6 @@ Transform:
   m_Father: {fileID: 844979551}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -82.5}
---- !u!1 &224617005
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 224617007}
-  - component: {fileID: 224617006}
-  m_Layer: 0
-  m_Name: BlockGenerator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &224617006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 224617005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7043eeb4355cbfc46b37a9f1d6775b08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnPosMinMaxX: {x: -13, y: 13}
-  spawnPosMinMaxY: {x: 7, y: 10}
-  prefab: {fileID: 4683487841430045387, guid: d4d31243c26ab6747b4a11744b87b3aa, type: 3}
---- !u!4 &224617007
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 224617005}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &235673522
 GameObject:
   m_ObjectHideFlags: 0
@@ -1624,7 +1578,7 @@ Transform:
   - {fileID: 1911287840}
   - {fileID: 25490304}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &976128403
 GameObject:
@@ -2379,6 +2333,7 @@ GameObject:
   - component: {fileID: 1328236476}
   - component: {fileID: 1328236475}
   - component: {fileID: 1328236474}
+  - component: {fileID: 1328236477}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2479,6 +2434,69 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1328236477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328236473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7043eeb4355cbfc46b37a9f1d6775b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPosMinMaxX: {x: -13, y: 13}
+  spawnPosMinMaxY: {x: 7, y: 10}
+  prefab: {fileID: 4683487841430045391, guid: d4d31243c26ab6747b4a11744b87b3aa, type: 3}
+  blockSizeX:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  blockSizeY:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1349121174
 GameObject:
   m_ObjectHideFlags: 0
@@ -2746,7 +2764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textField: {fileID: 1672145210}
   playerSelection: {fileID: 261144881}
-  generator: {fileID: 224617006}
+  generator: {fileID: 1328236477}
 --- !u!114 &1672145210
 MonoBehaviour:
   m_ObjectHideFlags: 0
