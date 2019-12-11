@@ -85,8 +85,11 @@ namespace GameFrame.Networking.Server
 
             try
             {
-                NetworkConnector<TEnum>.UdpClient.Close();
-                NetworkConnector<TEnum>.UdpClient.Dispose();
+                if (NetworkConnector<TEnum>.UdpClient != null)
+                {
+                    NetworkConnector<TEnum>.UdpClient.Close();
+                    NetworkConnector<TEnum>.UdpClient.Dispose();
+                }
             }
             catch (System.Exception e)
             {
