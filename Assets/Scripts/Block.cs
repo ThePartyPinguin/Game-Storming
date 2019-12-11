@@ -182,7 +182,7 @@ public class Block : Draggable
         rigidBody.angularVelocity = 0f;
         transform.eulerAngles = new Vector3(0, 0, Mathf.Round(transform.eulerAngles.z / 90) * 90);
         Debug.Log(GetHeight());
-        transform.position = new Vector3(transform.position.x, -3.5f + GetHeight() / 2, 1);
+        transform.position = new Vector3(transform.position.x, GameManager.Instance.FoundationTop + GetHeight() / 2, 1);
 
         //Disable the rotatejoint
         towerJoint.enabled = false;
@@ -196,7 +196,7 @@ public class Block : Draggable
         rigidBody.isKinematic = false;
         GetComponent<Collider2D>().enabled = false;
 
-        yield return new WaitUntil(() => (transform.position.y >= (-3.45f + GetHeight()/2)));
+        yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2)));
         GetComponent<Collider2D>().enabled = true;
     }
 
