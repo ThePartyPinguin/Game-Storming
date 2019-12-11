@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BlockGenerator : MonoBehaviour
 {
@@ -51,6 +53,8 @@ public class BlockGenerator : MonoBehaviour
             blockbubble.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
             
             blockbubble.transform.parent = bubbleMover;
+
+            IdeaLogger.LogIdea(owner, ideaTitle);
         }
     }
 
@@ -81,5 +85,11 @@ public class BlockGenerator : MonoBehaviour
         Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
         return Vector2.zero;
     }
+
+    void OnApplicationQuit()
+    {
+        IdeaLogger.EndLogging();
+    }
+
     #endregion
 }
