@@ -699,6 +699,7 @@ MonoBehaviour:
   spawnPosMinMaxX: {x: -13, y: 13}
   spawnPosMinMaxY: {x: 7, y: 10}
   prefab: {fileID: 4683487841430045391, guid: d4d31243c26ab6747b4a11744b87b3aa, type: 3}
+  bubbleMover: {fileID: 0}
 --- !u!4 &224617007
 Transform:
   m_ObjectHideFlags: 0

@@ -11,6 +11,8 @@ public class BlockGenerator : MonoBehaviour
     private Vector2 spawnPosMinMaxY;
     [SerializeField]
     private Block prefab;
+    [SerializeField]
+    private Transform bubbleMover;
     #endregion
 
     #region methods
@@ -25,11 +27,24 @@ public class BlockGenerator : MonoBehaviour
         {
             Block blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
             blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.Color;
-
             blockbubble.Owner = owner;
             blockbubble.Idea = ideaTitle;
             owner.AddBlock(blockbubble);
+            Debug.Log("[BlockGenerator.SpawnBlock] Block Created: (Owner: " + owner.ToString() + ") (BlockTitle: " + ideaTitle + ")");
+            
+            blockbubble.transform.parent = bubbleMover;
         }
+    }
+
+    /// <summary>
+    /// updates the spawn area coordinates, only does the x coordinate
+    /// </summary>
+    /// <param name="position">Vector3 value representing the changed x value that needs to be updated. (can be used for y but currently isn't)</param>
+    public void UpdateSpawnArea(Vector3 position)
+    {
+        this.spawnPosMinMaxX.x += position.x;
+        this.spawnPosMinMaxX.y += position.x;
+        this.bubbleMover.position += new Vector3(position.x, this.bubbleMover.position.y, this.bubbleMover.position.z);
     }
 
     /// <summary>
