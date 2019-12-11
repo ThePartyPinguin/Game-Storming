@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BlockGenerator : MonoBehaviour
 {
@@ -15,7 +17,8 @@ public class BlockGenerator : MonoBehaviour
     private AnimationCurve blockSizeX;
     [SerializeField]
     private AnimationCurve blockSizeY;
-    private Transform bubbleMover;
+    [SerializeField]
+    public Transform bubbleMover;
     #endregion
 
     #region methods
@@ -50,6 +53,8 @@ public class BlockGenerator : MonoBehaviour
             blockbubble.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
             
             blockbubble.transform.parent = bubbleMover;
+
+            IdeaLogger.LogIdea(owner, ideaTitle);
         }
     }
 
@@ -59,8 +64,8 @@ public class BlockGenerator : MonoBehaviour
     /// <param name="position">Vector3 value representing the changed x value that needs to be updated. (can be used for y but currently isn't)</param>
     public void UpdateSpawnArea(Vector3 position)
     {
-        this.spawnPosMinMaxX.x += position.x;
-        this.spawnPosMinMaxX.y += position.x;
+        //this.spawnPosMinMaxX.x += position.x;
+        //this.spawnPosMinMaxX.y += position.x;
         this.bubbleMover.position += new Vector3(position.x, this.bubbleMover.position.y, this.bubbleMover.position.z);
     }
 
@@ -80,5 +85,11 @@ public class BlockGenerator : MonoBehaviour
         Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
         return Vector2.zero;
     }
+
+    void OnApplicationQuit()
+    {
+        IdeaLogger.EndLogging();
+    }
+
     #endregion
 }

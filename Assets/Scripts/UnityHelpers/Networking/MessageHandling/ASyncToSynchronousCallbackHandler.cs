@@ -14,12 +14,15 @@ public class ASyncToSynchronousCallbackHandler : MonoSingleton<ASyncToSynchronou
     }
     public void QueueCallbackToHandle(Action callback)
     {
+        if(_callbacksToHandle == null)
+            _callbacksToHandle = new Queue<Action>();
+
         _callbacksToHandle.Enqueue(callback);
     }
 
     void Update()
     {
-        if (!_coRoutineRunning && _callbacksToHandle.Count > 0)
+        if (!_coRoutineRunning && _callbacksToHandle != null && _callbacksToHandle.Count > 0)
         {
             _coRoutineRunning = true;
             StartCoroutine(HandleCoRoutine());
