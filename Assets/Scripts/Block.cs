@@ -72,10 +72,14 @@ public class Block : Draggable
             
             //Make block fall onto a side and then become static
             towerJoint.enabled = true;
+            
             Vector2 contactPoint = transform.InverseTransformPoint(collision.GetContact(0).point);
-            towerJoint.anchor = new Vector2(
+            Vector2 normalisedAnchor = new Vector2(
                 contactPoint.x < 1 ? Mathf.Max(contactPoint.x, -0.5f) : Mathf.Min(contactPoint.x, 0.5f),
                 contactPoint.y < 1 ? Mathf.Max(contactPoint.y, -0.5f) : Mathf.Min(contactPoint.y, 0.5f));
+            Vector2 sizeMultiplier = GetComponent<SpriteRenderer>().size;
+
+            towerJoint.anchor = Vector2.Scale(normalisedAnchor, sizeMultiplier);
             towerJoint.connectedBody = collision.rigidbody;
             StartCoroutine(SnapToFoundation());
 

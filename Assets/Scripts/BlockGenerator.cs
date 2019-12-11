@@ -45,7 +45,7 @@ public class BlockGenerator : MonoBehaviour
                 collider.size = newColliderSize;
             }
             blockbubble.GetComponentInChildren<TrailRenderer>().widthMultiplier = Mathf.Min(newSizeX, newSizeY);
-            blockbubble.GetComponentInChildren<BlockBubble>().transform.localScale *= Mathf.Max(newSizeX, newSizeY);
+            blockbubble.GetComponentInChildren<BlockBubble>().transform.localScale *= (Mathf.Max(newSizeX, newSizeY) * 0.75f);
             blockbubble.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
 
         }
