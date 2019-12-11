@@ -430,7 +430,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 40.35
+  m_fontSize: 67.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1024,6 +1024,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  bubbleMover: {fileID: 0}
 --- !u!4 &224617007
 Transform:
   m_ObjectHideFlags: 0
@@ -1504,9 +1505,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 334303977}
-  - component: {fileID: 334303976}
   - component: {fileID: 334303979}
   - component: {fileID: 334303978}
+  - component: {fileID: 334303976}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1523,7 +1524,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 334303975}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9243ccee11edc184f837b24a65cee2d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c3a89748215cb74195ca06aa66142e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   TcpPort: 5555
@@ -2886,6 +2887,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timer: {fileID: 1328236474}
+  foundationTop: {fileID: 0}
   newBuilderCalled:
     m_PersistentCalls:
       m_Calls:
