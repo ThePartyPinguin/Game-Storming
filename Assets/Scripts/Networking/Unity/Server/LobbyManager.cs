@@ -1,43 +1,65 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 
 public class LobbyManager : MonoBehaviour
 {
-    private List<Participant> participantsConnected;
+    private bool newPlayerJoined = false;
+    private float timer = 0;
+    private GameObject[] newJoinsBlocks;
+
+    static private List<Participant> participantsConnected;
+    private Dictionary<Guid, Button> participantButtons;
+    private Dictionary<Guid, GameObject> participantBlocks;
+    private List<Color> playerColors;
+
+    public Button btnadd;
 
     [SerializeField]
-    Text txtInstruction;
-    [SerializeField]
-    Image playersGrid;
-    [SerializeField]
-    Button playerBtn;
-    Text btnTextPlayerName;
+    GameObject participantBlock;
 
-    List<Color> playerColors;
+    Guid lastGuid;
     
-    public void Start()
+    void Start()
     {
-        btnTextPlayerName = playerBtn.GetComponentInChildren<Text>();
-
+        newJoinsBlocks = new GameObject[10];
         participantsConnected = new List<Participant>();
+        participantButtons = new Dictionary<Guid, Button>();
+        participantBlocks = new Dictionary<Guid, GameObject>();
         playerColors = new List<Color>();
 
         DeterminePossibleColors();
+    }
 
+    void Update()
+    {
+        timer += 0.1f;
+        if(timer > 1 && newJoinsBlocks.Length != 0)
+        {
+            timer = 0;
 
-        //for (int i = 0; i < 10; i++)
             
+        }
     }
 
     public void TestConnect()
     {
-        Guid g = new Guid();
+        Guid g = Guid.NewGuid();
         OnPlayerConnect(g, "yes");
+        Debug.Log(participantsConnected.Count);
+    }
+
+    public void TestDisconnect()
+    {
+        OnPlayerDisconnect(lastGuid);
+        Debug.Log(participantsConnected.Count);
     }
 
     public void OnPlayerConnect(Guid playerId, string playerName)
@@ -45,24 +67,42 @@ public class LobbyManager : MonoBehaviour
         CreateNewParticipant(playerId, playerName);
     }
 
+    public void OnPlayerDisconnect(Guid playerId)
+    {
+        RemoveParicipant(playerId);
+    }
     private void CreateNewParticipant(Guid playerId, string playerName)
     {
         //get new unique color for the player
         Color playerColor = AssignColor();
 
-        //button setting - name and color 
-        //colors in Button seems to not be a reference, so playerBtn.colors.normalColor = playerColor does not work.
-        btnTextPlayerName.text = playerName;
-        ColorBlock cb = playerBtn.colors;
-        cb.normalColor = playerColor;
-        playerBtn.colors = cb;
-
-        Instantiate(playerBtn, playersGrid.transform);
-
         Participant newPart = new Participant(playerId, playerName, playerColor);
-        participantsConnected.Add(newPart);
-    }
 
+        participantBlock.GetComponent<SpriteRenderer>().color = playerColor;
+        participantBlock.GetComponentInChildren<TextMeshPro>().text = playerName;
+        GameObject newPartBlock = Instantiate(participantBlock, transform.position, Quaternion.identity);
+        participantBlocks.Add(playerId, newPartBlock);
+
+        participantsConnected.Add(newPart);
+
+        lastGuid = playerId;
+    }
+    private void SpawnParticipantBlock()
+    {
+
+    }
+    private void RemoveParicipant(Guid playerId)
+    {
+        foreach (Participant p in participantsConnected.ToList())
+        {
+            if (p.GetId() == playerId)
+            {
+                participantsConnected.Remove(p);
+            }
+        }
+        Destroy(participantBlocks[playerId].gameObject);
+        participantBlocks.Remove(playerId);
+    }
     //A set of predefined colors for the players
     private void DeterminePossibleColors()
     {
@@ -89,4 +129,18 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
+    public void LoadGame(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+
+    static public List<Participant> GetParticipants()
+    {
+        return participantsConnected;
+    }
+
+    static public void ClearParticipantList()
+    {
+        participantsConnected.Clear();
+    }
 }
