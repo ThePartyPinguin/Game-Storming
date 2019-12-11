@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BlockGenerator : MonoBehaviour
 {
@@ -33,6 +35,16 @@ public class BlockGenerator : MonoBehaviour
             Debug.Log("[BlockGenerator.SpawnBlock] Block Created: (Owner: " + owner.ToString() + ") (BlockTitle: " + ideaTitle + ")");
             
             blockbubble.transform.parent = bubbleMover;
+
+            IdeaLogger.LogIdea(owner, ideaTitle);
+        }
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            SpawnBlock(new Participant(Guid.NewGuid(), "Joris", Color.green), "Test");
         }
     }
 
@@ -63,5 +75,11 @@ public class BlockGenerator : MonoBehaviour
         Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
         return Vector2.zero;
     }
+
+    void OnApplicationQuit()
+    {
+        IdeaLogger.EndLogging();
+    }
+
     #endregion
 }
