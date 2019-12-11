@@ -7,13 +7,13 @@ public class TextInput : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    InputField textField;
+    private InputField textField;
     [SerializeField]
-    Dropdown playerSelection;
+    private Dropdown playerSelection;
     [SerializeField]
-    BlockGenerator generator;
+    private BlockGenerator generator;
 
-    Participant[] mockParticipants = new Participant[5];
+    private Participant[] mockParticipants = new Participant[5];
     #endregion
 
     #region methods

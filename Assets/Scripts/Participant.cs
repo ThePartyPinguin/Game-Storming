@@ -9,31 +9,32 @@ using UnityEngine;
 public class Participant
 {
     #region fields
-    private Guid id;
+    public Guid Id { get; }
     private string name;
     private Color color;
     private int score;
     private List<Block> blocks;
     #endregion
 
+    #region properties
+    public string Name { get { return this.name; } }
+
+    public Color Color { get { return this.color; } }
+    #endregion
+
     #region methods
-    public Participant(Guid _id, string _name, Color _color)
+    public Participant(Guid id, string name, Color color)
     {
         blocks = new List<Block>();
-        this.id = _id;
-        this.name = _name;
-        this.color = _color;
+        this.Id = id;
+        this.name = name;
+        this.color = color;
         this.score = 0;
     }
 
-    public void addBlock(Block b)
+    public void AddBlock(Block b)
     {
         blocks.Add(b);
-    }
-
-    public Color GetColor()
-    {
-        return this.color;
     }
 
     public override string ToString()

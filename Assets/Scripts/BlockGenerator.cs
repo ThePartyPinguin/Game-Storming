@@ -10,25 +10,17 @@ public class BlockGenerator : MonoBehaviour
     [SerializeField]
     private Vector2 spawnPosMinMaxY;
     [SerializeField]
-    private GameObject prefab;
+    private Block prefab;
+    [SerializeField]
+    private AnimationCurve blockSizeX;
+    [SerializeField]
+    private AnimationCurve blockSizeY;
+    private Transform bubbleMover;
     #endregion
 
     #region methods
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-
     /// <summary>
-    /// 
+    /// Spawns a new block with given owner and idea in a new bubble at a random location.
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="ideaTitle"></param>
@@ -36,13 +28,40 @@ public class BlockGenerator : MonoBehaviour
     {
         if (owner != null && ideaTitle != "")
         {
-            GameObject blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
-            blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.GetColor();
-            blockbubble.GetComponentInChildren<Block>().setParticipant(owner);
-            blockbubble.GetComponentInChildren<Block>().setIdea(ideaTitle);
-            owner.addBlock(blockbubble.GetComponentInChildren<Block>());
-            Debug.Log("[BlockGenerator.SpawnBlock] Block Created: (Owner: " + owner.ToString() + ") (BlockTitle: " + ideaTitle + ")");
+            Block blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
+            blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.Color;
+            blockbubble.Owner = owner;
+            blockbubble.Idea = ideaTitle;
+            owner.AddBlock(blockbubble);
+
+            //Variable block size based on amount of characters in the idea
+            float newSizeX = blockSizeX.Evaluate(ideaTitle.Length);
+            float newSizeY = blockSizeY.Evaluate(ideaTitle.Length);
+            Vector2 newSize = new Vector2(newSizeX, newSizeY);
+            Vector2 newColliderSize = new Vector2(newSizeX - 0.05f, newSizeY - 0.05f);
+
+            blockbubble.GetComponent<SpriteRenderer>().size = newSize;
+            foreach (var collider in blockbubble.GetComponents<BoxCollider2D>())
+            {
+                collider.size = newColliderSize;
+            }
+            blockbubble.GetComponentInChildren<TrailRenderer>().widthMultiplier = Mathf.Min(newSizeX, newSizeY);
+            blockbubble.GetComponentInChildren<BlockBubble>().transform.localScale *= (Mathf.Max(newSizeX, newSizeY) * 0.75f);
+            blockbubble.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
+            
+            blockbubble.transform.parent = bubbleMover;
         }
+    }
+
+    /// <summary>
+    /// updates the spawn area coordinates, only does the x coordinate
+    /// </summary>
+    /// <param name="position">Vector3 value representing the changed x value that needs to be updated. (can be used for y but currently isn't)</param>
+    public void UpdateSpawnArea(Vector3 position)
+    {
+        this.spawnPosMinMaxX.x += position.x;
+        this.spawnPosMinMaxX.y += position.x;
+        this.bubbleMover.position += new Vector3(position.x, this.bubbleMover.position.y, this.bubbleMover.position.z);
     }
 
     /// <summary>
@@ -50,21 +69,16 @@ public class BlockGenerator : MonoBehaviour
     /// </summary>
     /// <returns>
     /// Vector3 With a randomly generated x and y value.
-    /// Returns a Vector3(-999999, -999999) on error combined with a console log.
+    /// Returns a Vector3.zero on error combined with a console log.
     /// </returns>
-    private Vector3 GenerateSpawnlocation()
+    private Vector2 GenerateSpawnlocation()
     {
-        //blame marco if its unreadable
-        if (spawnPosMinMaxX != null && spawnPosMinMaxY != null)
+        if (spawnPosMinMaxX.x < spawnPosMinMaxX.y && spawnPosMinMaxY.x < spawnPosMinMaxY.y)
         {
-            if (spawnPosMinMaxX.x < spawnPosMinMaxX.y && spawnPosMinMaxY.x < spawnPosMinMaxY.y)
-            {
-                return new Vector3(Random.Range(spawnPosMinMaxX.x, spawnPosMinMaxX.y), Random.Range(spawnPosMinMaxY.x, spawnPosMinMaxY.y));
-            }
+            return new Vector2(Random.Range(spawnPosMinMaxX.x, spawnPosMinMaxX.y), Random.Range(spawnPosMinMaxY.x, spawnPosMinMaxY.y));
         }
-        Debug.Log("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location.");
-       
-        return new Vector3(-999999, -999999);
+        Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
+        return Vector2.zero;
     }
     #endregion
 }

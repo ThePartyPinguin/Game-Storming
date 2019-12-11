@@ -6,27 +6,20 @@ public class TextRotator : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    private Transform parent, text;
+    private Transform parent;
+    [SerializeField]
+    private Transform text;
+    [SerializeField]
+    private float rotationLimit = 0.70f;
     #endregion
 
     #region methods
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {
-        if (this.parent.rotation.normalized.z >= 0.70f || this.parent.rotation.normalized.z <= -0.70f)
-        {
-            this.text.transform.localRotation = Quaternion.Euler(0, 0, 180);
-        }
-        else
-        {
-            this.text.transform.localRotation = Quaternion.Euler(0, 0, 0);
-        }
+        this.text.transform.localRotation = Mathf.Abs(this.parent.rotation.normalized.z) >= rotationLimit ? 
+            Quaternion.Euler(0, 0, 180) : 
+            Quaternion.Euler(0, 0, 0);
     }
     #endregion
 }
