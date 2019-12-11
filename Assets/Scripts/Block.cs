@@ -123,15 +123,21 @@ public class Block : Draggable
 
     public void Scaffold()
     {
-        if (BlockAbove())
-        {
-            
-        }
+        Debug.Log(BlockAbove());
     }
 
     public bool BlockAbove()
     {
-        return true;
+        Bounds b = this.GetComponent<SpriteRenderer>().bounds;
+        Vector2 topleftcorner = new Vector2(b.center.x - b.extents.x, (b.extents.y * 1.3f));
+        RaycastHit2D hit = Physics2D.Raycast(topleftcorner, Vector2.right, b.size.x);
+        if(hit.collider != null)
+        {
+            return true;
+        }else
+        {
+            return false;
+        }
     }
 
     /// <summary>
