@@ -111,6 +111,7 @@ public class Block : Draggable
     /// </summary>
     public void DetachFromTower()
     {
+        Scaffold();
         tower = null;
         this.isConnected = false;
         StartCoroutine(ReleaseFromFoundation());
@@ -118,6 +119,19 @@ public class Block : Draggable
         {
             this.transform.position = new Vector3(this.blockBubble.transform.position.x, this.blockBubble.transform.position.y, 0.1f);   
         }
+    }
+
+    public void Scaffold()
+    {
+        if (BlockAbove())
+        {
+            
+        }
+    }
+
+    public bool BlockAbove()
+    {
+        return true;
     }
 
     /// <summary>
