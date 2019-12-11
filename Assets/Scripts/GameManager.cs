@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -28,14 +29,28 @@ public class GameManager : MonoSingleton<GameManager>
     private void Start()
     {
         participants = new List<Participant>();
-        participants.Add(new Participant(1, "Player 1", Color.red));
-        participants.Add(new Participant(2, "Player 2", Color.green));
-        participants.Add(new Participant(3, "Player 3", Color.blue));
-        participants.Add(new Participant(4, "Player 4", Color.yellow));
-        participants.Add(new Participant(5, "Player 5", Color.magenta));
+        //participants.Add(new Participant(1, "Player 1", Color.red));
+        //participants.Add(new Participant(2, "Player 2", Color.green));
+        //participants.Add(new Participant(3, "Player 3", Color.blue));
+        //participants.Add(new Participant(4, "Player 4", Color.yellow));
+        //participants.Add(new Participant(5, "Player 5", Color.magenta));
 
         currentBuilderIndex = 0;
-        NotifyNextBuilder(currentBuilderIndex);
+        //NotifyNextBuilder(currentBuilderIndex);
+    }
+
+    /// <summary>
+    /// Registers a new participant in the list of participants, get's called from the StringNetworkMessageCallbackDatabase
+    /// </summary>
+    /// <param name="participant">the new participant</param>
+    public void RegisterNewParticipant(Participant participant)
+    {
+        Participants.Add(participant);
+    }
+
+    public Participant GetParticipant(Guid participantId)
+    {
+        return participants.Find(p => p.Id == participantId);
     }
 
     /// <summary>
