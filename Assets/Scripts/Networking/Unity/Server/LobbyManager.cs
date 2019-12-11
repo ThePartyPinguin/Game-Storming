@@ -47,6 +47,8 @@ public class LobbyManager : MonoBehaviour
 
     void Update()
     {
+
+        //setting a delay on spawning the participant blocks
         counter += 0.1f;
         if(counter > 3 && newJoins.Count != 0)
         {
@@ -129,7 +131,10 @@ public class LobbyManager : MonoBehaviour
         playerColors.Add(Color.yellow);
         playerColors.Add(Color.magenta);
         playerColors.Add(Color.cyan);
+        playerColors.Add(new Color32(255, 60, 0,255));
+        playerColors.Add(new Color32(128, 0, 128, 255));
         playerColors.Add(Color.gray);
+        
     }
 
     private Color AssignColor()
@@ -146,13 +151,14 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public void LoadGame(string sceneName)
+    public void StartGame(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }
 
     void OnDestroy()
     {
+        //passing nesessary info to StaticGameInfo before destroying the Lobby
         StaticGameInfo.participants = participantsConnected;
         StaticGameInfo.rounds = Convert.ToInt32(roundDropdown.options[roundDropdown.value].text);
     }

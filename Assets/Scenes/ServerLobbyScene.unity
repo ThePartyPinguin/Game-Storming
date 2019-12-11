@@ -1174,15 +1174,15 @@ MonoBehaviour:
   OnClientConnect:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: OnPlayerConnect
-        m_Mode: 0
+      - m_Target: {fileID: 267300161}
+        m_MethodName: StartGame
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: LobbyTestScene
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!1 &897513990
@@ -2873,6 +2873,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 267300161}
+    - target: {fileID: 3336130940362617022, guid: dc2b883ad752ea14183ef0df6aae18ad,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: StartGame
+      objectReference: {fileID: 0}
     - target: {fileID: 3336130941721701488, guid: dc2b883ad752ea14183ef0df6aae18ad,
         type: 3}
       propertyPath: m_text
