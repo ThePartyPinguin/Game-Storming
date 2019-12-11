@@ -57,14 +57,6 @@ public class BlockGenerator : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            SpawnBlock(new Participant(Guid.NewGuid(), "Joris", Color.green), "Test");
-        }
-    }
-
     /// <summary>
     /// updates the spawn area coordinates, only does the x coordinate
     /// </summary>
