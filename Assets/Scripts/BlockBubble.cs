@@ -6,7 +6,7 @@ public class BlockBubble : MonoBehaviour
 {
     #region fields
     private float timer;
-    private Vector2 startposition;
+    public Vector2 startposition;
     private Transform parentTransform;
     #endregion
 

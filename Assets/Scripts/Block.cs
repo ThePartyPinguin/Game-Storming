@@ -137,6 +137,7 @@ public class Block : Draggable
             //Render block in front of bubbleBlocks
             GetComponent<SpriteRenderer>().sortingOrder = 4;
             GetComponentInChildren<TextMeshPro>().sortingOrder = 5;
+            this.transform.parent = null;
         }
     }
 

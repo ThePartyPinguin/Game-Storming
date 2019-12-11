@@ -15,6 +15,7 @@ public class BlockGenerator : MonoBehaviour
     private AnimationCurve blockSizeX;
     [SerializeField]
     private AnimationCurve blockSizeY;
+    private Transform bubbleMover;
     #endregion
 
     #region methods
@@ -47,8 +48,20 @@ public class BlockGenerator : MonoBehaviour
             blockbubble.GetComponentInChildren<TrailRenderer>().widthMultiplier = Mathf.Min(newSizeX, newSizeY);
             blockbubble.GetComponentInChildren<BlockBubble>().transform.localScale *= (Mathf.Max(newSizeX, newSizeY) * 0.75f);
             blockbubble.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
-
+            
+            blockbubble.transform.parent = bubbleMover;
         }
+    }
+
+    /// <summary>
+    /// updates the spawn area coordinates, only does the x coordinate
+    /// </summary>
+    /// <param name="position">Vector3 value representing the changed x value that needs to be updated. (can be used for y but currently isn't)</param>
+    public void UpdateSpawnArea(Vector3 position)
+    {
+        this.spawnPosMinMaxX.x += position.x;
+        this.spawnPosMinMaxX.y += position.x;
+        this.bubbleMover.position += new Vector3(position.x, this.bubbleMover.position.y, this.bubbleMover.position.z);
     }
 
     /// <summary>
