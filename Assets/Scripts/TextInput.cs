@@ -20,11 +20,11 @@ public class TextInput : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //mockParticipants[0] = new Participant(1, "Player 1", Color.red);
-        //mockParticipants[1] = new Participant(2, "Player 2", Color.green);
-        //mockParticipants[2] = new Participant(3, "Player 3", Color.blue);
-        //mockParticipants[3] = new Participant(4, "Player 4", Color.yellow);
-        //mockParticipants[4] = new Participant(5, "Player 5", Color.magenta);
+        mockParticipants[0] = new Participant(System.Guid.NewGuid(), "Player 1", Color.red);
+        mockParticipants[1] = new Participant(System.Guid.NewGuid(), "Player 2", Color.green);
+        mockParticipants[2] = new Participant(System.Guid.NewGuid(), "Player 3", Color.blue);
+        mockParticipants[3] = new Participant(System.Guid.NewGuid(), "Player 4", Color.yellow);
+        mockParticipants[4] = new Participant(System.Guid.NewGuid(), "Player 5", Color.magenta);
     }
 
     // Update is called once per frame
