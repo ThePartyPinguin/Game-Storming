@@ -12,6 +12,9 @@ public class BlockGenerator : MonoBehaviour
     [SerializeField]
     private Block prefab;
     [SerializeField]
+    private AnimationCurve blockSizeX;
+    [SerializeField]
+    private AnimationCurve blockSizeY;
     private Transform bubbleMover;
     #endregion
 
@@ -30,7 +33,21 @@ public class BlockGenerator : MonoBehaviour
             blockbubble.Owner = owner;
             blockbubble.Idea = ideaTitle;
             owner.AddBlock(blockbubble);
-            Debug.Log("[BlockGenerator.SpawnBlock] Block Created: (Owner: " + owner.ToString() + ") (BlockTitle: " + ideaTitle + ")");
+
+            //Variable block size based on amount of characters in the idea
+            float newSizeX = blockSizeX.Evaluate(ideaTitle.Length);
+            float newSizeY = blockSizeY.Evaluate(ideaTitle.Length);
+            Vector2 newSize = new Vector2(newSizeX, newSizeY);
+            Vector2 newColliderSize = new Vector2(newSizeX - 0.05f, newSizeY - 0.05f);
+
+            blockbubble.GetComponent<SpriteRenderer>().size = newSize;
+            foreach (var collider in blockbubble.GetComponents<BoxCollider2D>())
+            {
+                collider.size = newColliderSize;
+            }
+            blockbubble.GetComponentInChildren<TrailRenderer>().widthMultiplier = Mathf.Min(newSizeX, newSizeY);
+            blockbubble.GetComponentInChildren<BlockBubble>().transform.localScale *= (Mathf.Max(newSizeX, newSizeY) * 0.75f);
+            blockbubble.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
             
             blockbubble.transform.parent = bubbleMover;
         }
