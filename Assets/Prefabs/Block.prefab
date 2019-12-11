@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54c0b6a42cd68534aace20e46b4c268a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  block: {fileID: 0}
+  startposition: {x: 0, y: 0}
 --- !u!212 &8587846466839081748
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -143,7 +143,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -195,7 +195,7 @@ TrailRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 1, a: 0}
-      key1: {r: 1, g: 1, b: 1, a: 0.39215687}
+      key1: {r: 1, g: 1, b: 1, a: 0.33333334}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -229,7 +229,7 @@ TrailRenderer:
     generateLightingData: 0
   m_MinVertexDistance: 0.5
   m_Autodestruct: 0
-  m_Emitting: 1
+  m_Emitting: 0
 --- !u!1 &4683487841430045387
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,6 +385,8 @@ MonoBehaviour:
           m_BoolArgument: 1
         m_CallState: 2
   idea: Idea
+  scaffoldPrefab: {fileID: 5927031806569056744, guid: 16b51d3694bd0574da5bb0afd2255802,
+    type: 3}
   textVisual: {fileID: 8657032305462905376}
   blockBubble: {fileID: 1731884626838366157}
   blockCollider: {fileID: 4683487841430045390}

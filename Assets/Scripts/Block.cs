@@ -11,6 +11,8 @@ public class Block : Draggable
     [SerializeField]
     private Tower tower;
     private Participant owner;
+    [SerializeField]
+    private GameObject scaffoldPrefab;
 
     [SerializeField]
     private TextMeshPro textVisual;
@@ -19,10 +21,12 @@ public class Block : Draggable
     [SerializeField]
     private BoxCollider2D blockCollider;
 
+    private SpriteRenderer spriteRenderer;
     private Rigidbody2D rigidBody;
     private HingeJoint2D towerJoint;
 
     private bool isConnected;
+    private bool isWaitingForSafeSpot;
     private Coroutine currentCoroutine;
     #endregion
 
@@ -50,6 +54,7 @@ public class Block : Draggable
     private void Start()
     {
         //Cache components
+        spriteRenderer = GetComponent<SpriteRenderer>();
         towerJoint = GetComponent<HingeJoint2D>();
         rigidBody = GetComponent<Rigidbody2D>();
         rigidBody.isKinematic = true;
@@ -77,7 +82,7 @@ public class Block : Draggable
             Vector2 normalisedAnchor = new Vector2(
                 contactPoint.x < 1 ? Mathf.Max(contactPoint.x, -0.5f) : Mathf.Min(contactPoint.x, 0.5f),
                 contactPoint.y < 1 ? Mathf.Max(contactPoint.y, -0.5f) : Mathf.Min(contactPoint.y, 0.5f));
-            Vector2 sizeMultiplier = GetComponent<SpriteRenderer>().size;
+            Vector2 sizeMultiplier = spriteRenderer.size;
 
             towerJoint.anchor = Vector2.Scale(normalisedAnchor, sizeMultiplier);
             towerJoint.connectedBody = collision.rigidbody;
@@ -101,9 +106,18 @@ public class Block : Draggable
     public float GetHeight()
     {
         float functionalRotation = (transform.eulerAngles.z % 180);
-        bool isHorizontal = 45 <= functionalRotation && functionalRotation < 135;
-        var renderer = GetComponent<SpriteRenderer>();
-        return (isHorizontal ? renderer.size.x : renderer.size.y);
+        bool isRotated = 45 <= functionalRotation && functionalRotation < 135;
+        return (isRotated ? spriteRenderer.size.x : spriteRenderer.size.y);
+    }
+
+    /// <summary>
+    /// Returns the current width of the block, taking into account the rotation.
+    /// </summary>
+    public float GetWidth()
+    {
+        float functionalRotation = (transform.eulerAngles.z % 180);
+        bool isRotated = 45 <= functionalRotation && functionalRotation < 135;
+        return (isRotated ? spriteRenderer.size.y : spriteRenderer.size.x);
     }
 
     /// <summary>
@@ -111,33 +125,46 @@ public class Block : Draggable
     /// </summary>
     public void DetachFromTower()
     {
-        Scaffold();
+        if (IsOtherBlockOnTop()) { Scaffold(); }
+
         tower = null;
         this.isConnected = false;
         StartCoroutine(ReleaseFromFoundation());
-        if(this.GetComponentInChildren<BlockBubble>() != null)
+
+
+
+        if (this.GetComponentInChildren<BlockBubble>() != null)
         {
             this.transform.position = new Vector3(this.blockBubble.transform.position.x, this.blockBubble.transform.position.y, 0.1f);   
         }
     }
 
+    /// <summary>
+    /// Places a scaffolding piece and initialises it to match the size of the original block it is replacing
+    /// </summary>
     public void Scaffold()
     {
-        Debug.Log(BlockAbove());
+        var scaffold = Instantiate(scaffoldPrefab, transform.position, Quaternion.identity);
+        scaffold.GetComponent<SpriteRenderer>().size *= new Vector2(GetWidth() - 0.05f, GetHeight() - 0.05f);
     }
 
-    public bool BlockAbove()
+    /// <summary>
+    /// Checks whether or not another block lies on top of this block
+    /// </summary>
+    /// <returns>True if another block lies on top of this block, false if not</returns>
+    public bool IsOtherBlockOnTop()
     {
-        Bounds b = this.GetComponent<SpriteRenderer>().bounds;
-        Vector2 topleftcorner = new Vector2(b.center.x - b.extents.x, (b.extents.y * 1.3f));
-        RaycastHit2D hit = Physics2D.Raycast(topleftcorner, Vector2.right, b.size.x);
-        if(hit.collider != null)
-        {
-            return true;
-        }else
-        {
-            return false;
-        }
+        if (rigidBody.velocity.magnitude > 0.1f || blockBubble) { return false; }
+
+        var checkHeight = 0.75f;
+        var checkWidthCutOff = 0.1f;
+
+        var checkBoxCenter = new Vector2(transform.position.x, transform.position.y + (GetHeight() / 2) + checkHeight);
+        var checkBoxHalfExtents = new Vector3(GetWidth()/2, GetHeight()/10);
+        var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
+        var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
+        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
+        return (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null);
     }
 
     /// <summary>
@@ -155,8 +182,9 @@ public class Block : Draggable
             blockCollider.enabled = true;
 
             //Render block in front of bubbleBlocks
-            GetComponent<SpriteRenderer>().sortingOrder = 4;
+            spriteRenderer.sortingOrder = 4;
             GetComponentInChildren<TextMeshPro>().sortingOrder = 5;
+            GetComponentInChildren<TrailRenderer>().emitting = true;
             this.transform.parent = null;
         }
     }
@@ -164,7 +192,37 @@ public class Block : Draggable
     public override void OnMouseDown()
     {
         this.DetachAndDestroyBubble();
+        isDragged = true;
         base.OnMouseDown();
+    }
+
+    protected override void OnMouseUp()
+    {
+        CheckIfBlockIsInSafeSpot();
+    }
+
+    private void CheckIfBlockIsInSafeSpot()
+    {
+        var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 2);
+        var checkBoxCornerA = new Vector2(transform.position.x - checkBoxHalfExtents.x, transform.position.y - checkBoxHalfExtents.y);
+        var checkBoxCornerB = new Vector2(transform.position.x + checkBoxHalfExtents.x, transform.position.y + checkBoxHalfExtents.y);
+        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.green, 2, false);
+        var layerMask = ~(1 << 9);
+        var hit = Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB, layerMask);
+        if (hit != null && hit.GetComponentInChildren<BlockBubble>() == null)
+        {
+            if (!isWaitingForSafeSpot)
+            {
+                UnityEditor.Selection.activeGameObject = hit.gameObject;
+                StartCoroutine(ActivateCollisionWhenSafe());
+            }
+        }
+        else
+        {
+            isDragged = false;
+            isWaitingForSafeSpot = false;
+            base.OnMouseUp();
+        }
     }
 
     public int CalculateScore()
@@ -215,10 +273,22 @@ public class Block : Draggable
     {
         rigidBody.isKinematic = false;
         GetComponent<Collider2D>().enabled = false;
-
+        
         yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2)));
         GetComponent<Collider2D>().enabled = true;
     }
+
+    private IEnumerator ActivateCollisionWhenSafe()
+    {
+        rigidBody.isKinematic = false;
+        GetComponent<Collider2D>().enabled = false;
+        isWaitingForSafeSpot = true;
+        InvokeRepeating("CheckIfBlockIsInSafeSpot", 0.5f, 0.5f);
+        yield return new WaitUntil(() => (isWaitingForSafeSpot == false));
+        GetComponent<Collider2D>().enabled = true;
+        CancelInvoke("CheckIfBlockIsInSafeSpot");
+    }
+
 
     /// <summary>
     /// Waits until the block lies still and then assigns it to the tower.
@@ -227,8 +297,8 @@ public class Block : Draggable
     private IEnumerator SnapToTower(Tower otherTower)
     {
         yield return new WaitUntil(() => (Mathf.Approximately(rigidBody.velocity.magnitude, 0f) && Mathf.Approximately(rigidBody.angularVelocity, 0f)));
-        this.tower = otherTower;
-        otherTower.AddBlock(this);
+        //this.tower = otherTower;
+        //otherTower.AddBlock(this);
         currentCoroutine = null;
         base.OnMouseUp();
     }

@@ -9,10 +9,11 @@ using UnityEngine.Events;
 public abstract class Draggable : MonoBehaviour
 {
     #region fields
-    private bool isDragged;
+    protected bool isDragged;
     private int dragId;
+    private int originalLayer;
 
-    private TargetJoint2D dragJoint;
+    protected TargetJoint2D dragJoint;
 
     [SerializeField]
     private UnityEvent onDragDown;
@@ -26,24 +27,35 @@ public abstract class Draggable : MonoBehaviour
     private void Awake()
     {
         //Caching values
+        originalLayer = gameObject.layer;
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
+    }
+
+    private void Update()
+    {
+        if (isDragged)
+        {
+            dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        }
     }
 
     public virtual void OnMouseDown()
     {
+        gameObject.layer = 9;
         dragJoint.enabled = true;
         onDragDown.Invoke();
     }
 
     private void OnMouseDrag()
     {
-        dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         GetComponent<Rigidbody2D>().angularVelocity = 0f;
         onDrag.Invoke();
     }
 
-    protected void OnMouseUp()
+    protected virtual void OnMouseUp()
     {
+        gameObject.layer = originalLayer;
         dragJoint.enabled = false;
         onDragUp.Invoke();
     }

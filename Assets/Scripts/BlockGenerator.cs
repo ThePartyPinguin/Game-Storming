@@ -66,6 +66,7 @@ public class BlockGenerator : MonoBehaviour
     {
         //this.spawnPosMinMaxX.x += position.x;
         //this.spawnPosMinMaxX.y += position.x;
+        transform.position += position;
         this.bubbleMover.position += new Vector3(position.x, this.bubbleMover.position.y, this.bubbleMover.position.z);
     }
 
@@ -80,7 +81,7 @@ public class BlockGenerator : MonoBehaviour
     {
         if (spawnPosMinMaxX.x < spawnPosMinMaxX.y && spawnPosMinMaxY.x < spawnPosMinMaxY.y)
         {
-            return new Vector2(Random.Range(spawnPosMinMaxX.x, spawnPosMinMaxX.y), Random.Range(spawnPosMinMaxY.x, spawnPosMinMaxY.y));
+            return new Vector2(transform.position.x + Random.Range(spawnPosMinMaxX.x, spawnPosMinMaxX.y), Random.Range(spawnPosMinMaxY.x, spawnPosMinMaxY.y));
         }
         Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
         return Vector2.zero;

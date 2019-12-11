@@ -17,6 +17,8 @@ public class GameManager : MonoSingleton<GameManager>
 
     [SerializeField]
     private StringBasedUnityEvent newBuilderCalled;
+
+    private bool need2Delete = true;
     #endregion
 
     #region properties
@@ -43,6 +45,20 @@ public class GameManager : MonoSingleton<GameManager>
 
         currentBuilderIndex = 0;
         //NotifyNextBuilder(currentBuilderIndex);
+    }
+
+    private void Update()
+    {
+        //TODO: Delete this
+        if (need2Delete && Input.GetKey(KeyCode.Delete))
+        {
+            var deleto = GameObject.FindGameObjectsWithTag("Block");
+            foreach (var go in deleto)
+            {
+                Destroy(go);
+            }
+            need2Delete = false;
+        }
     }
 
     /// <summary>
