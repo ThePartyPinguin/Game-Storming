@@ -15,15 +15,18 @@ public class LobbyManager : MonoBehaviour
     private float counter = 0;
     private Dictionary<Guid, string> newJoins;
 
-    static private List<Participant> participantsConnected;
+    private List<Participant> participantsConnected;
     private Dictionary<Guid, Button> participantButtons;
     private Dictionary<Guid, GameObject> participantBlocks;
     private List<Color> playerColors;
 
     public Button btnadd;
 
+
     [SerializeField]
     GameObject participantBlock;
+    [SerializeField]
+    TMP_Dropdown roundDropdown;
 
     Guid lastGuid;
     
@@ -72,17 +75,6 @@ public class LobbyManager : MonoBehaviour
     {
         // CreateNewParticipant(playerId, playerName);
         newJoins.Add(playerId, playerName);
-
-        if(participantsConnected.Count == 6)
-        {
-            blockSpawnPos.x += participantBlock.GetComponent<BoxCollider2D>().size.x * 2;
-            return;
-        }
-        if (participantsConnected.Count == 12)
-        {
-            blockSpawnPos.x -= participantBlock.GetComponent<BoxCollider2D>().size.x * 4;
-            return;
-        }
     }
 
     public void OnPlayerDisconnect(Guid playerId)
@@ -91,6 +83,7 @@ public class LobbyManager : MonoBehaviour
     }
     private void CreateNewParticipant(Guid playerId, string playerName)
     {
+
         //get new unique color for the player
         Color playerColor = AssignColor();
 
@@ -104,10 +97,16 @@ public class LobbyManager : MonoBehaviour
         participantsConnected.Add(newPart);
 
         lastGuid = playerId;
-    }
-    private void SpawnParticipantBlock()
-    {
-
+        if (participantsConnected.Count == 6)
+        {
+            blockSpawnPos.x += participantBlock.GetComponent<BoxCollider2D>().size.x * 2;
+            return;
+        }
+        if (participantsConnected.Count == 12)
+        {
+            blockSpawnPos.x -= participantBlock.GetComponent<BoxCollider2D>().size.x * 4;
+            return;
+        }
     }
     private void RemoveParicipant(Guid playerId)
     {
@@ -152,13 +151,9 @@ public class LobbyManager : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-    static public List<Participant> GetParticipants()
+    void OnDestroy()
     {
-        return participantsConnected;
-    }
-
-    static public void ClearParticipantList()
-    {
-        participantsConnected.Clear();
+        StaticGameInfo.participants = participantsConnected;
+        StaticGameInfo.rounds = Convert.ToInt32(roundDropdown.options[roundDropdown.value].text);
     }
 }
