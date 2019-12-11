@@ -11,9 +11,9 @@ using Random = UnityEngine.Random;
 
 public class LobbyManager : MonoBehaviour
 {
-    private bool newPlayerJoined = false;
-    private float timer = 0;
-    private GameObject[] newJoinsBlocks;
+    private Vector3 blockSpawnPos;
+    private float counter = 0;
+    private Dictionary<Guid, string> newJoins;
 
     static private List<Participant> participantsConnected;
     private Dictionary<Guid, Button> participantButtons;
@@ -29,23 +29,29 @@ public class LobbyManager : MonoBehaviour
     
     void Start()
     {
-        newJoinsBlocks = new GameObject[10];
+        blockSpawnPos = transform.position;
+
+        newJoins = new Dictionary<Guid, string>();
         participantsConnected = new List<Participant>();
         participantButtons = new Dictionary<Guid, Button>();
         participantBlocks = new Dictionary<Guid, GameObject>();
         playerColors = new List<Color>();
+
+        Debug.Log(participantsConnected.Count);
 
         DeterminePossibleColors();
     }
 
     void Update()
     {
-        timer += 0.1f;
-        if(timer > 1 && newJoinsBlocks.Length != 0)
+        counter += 0.1f;
+        if(counter > 3 && newJoins.Count != 0)
         {
-            timer = 0;
+            Guid temp = newJoins.Keys.First();
+            CreateNewParticipant(temp, newJoins[temp]);
+            newJoins.Remove(temp);
 
-            
+            counter = 0;
         }
     }
 
@@ -64,7 +70,19 @@ public class LobbyManager : MonoBehaviour
 
     public void OnPlayerConnect(Guid playerId, string playerName)
     {
-        CreateNewParticipant(playerId, playerName);
+        // CreateNewParticipant(playerId, playerName);
+        newJoins.Add(playerId, playerName);
+
+        if(participantsConnected.Count == 6)
+        {
+            blockSpawnPos.x += participantBlock.GetComponent<BoxCollider2D>().size.x * 2;
+            return;
+        }
+        if (participantsConnected.Count == 12)
+        {
+            blockSpawnPos.x -= participantBlock.GetComponent<BoxCollider2D>().size.x * 4;
+            return;
+        }
     }
 
     public void OnPlayerDisconnect(Guid playerId)
@@ -80,7 +98,7 @@ public class LobbyManager : MonoBehaviour
 
         participantBlock.GetComponent<SpriteRenderer>().color = playerColor;
         participantBlock.GetComponentInChildren<TextMeshPro>().text = playerName;
-        GameObject newPartBlock = Instantiate(participantBlock, transform.position, Quaternion.identity);
+        GameObject newPartBlock = Instantiate(participantBlock, blockSpawnPos, Quaternion.identity);
         participantBlocks.Add(playerId, newPartBlock);
 
         participantsConnected.Add(newPart);
