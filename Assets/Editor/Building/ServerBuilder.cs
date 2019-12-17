@@ -46,7 +46,7 @@ public static class ServerBuilder
         List<string> scenePaths = new List<string>();
         foreach (var scene in scenes)
         {
-            if (scene.enabled && scene.path.ToLower().Contains("server"))
+            if (scene.enabled && scene.path.ToLower().Contains("SceneBuildNetworking"))
                 scenePaths.Add(scene.path);
         }
 
