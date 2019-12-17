@@ -1166,25 +1166,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469ea6b19583dcd449595513e989262c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TcpPort: 5555
-  UdpRemoteSendPort: 12000
-  UdpReceivePort: 11000
-  MaxConnectedPlayers: 8
-  SerializationType: 0
-  OnClientConnect:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 267300161}
-        m_MethodName: StartGame
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: LobbyTestScene
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &897513990
 GameObject:
   m_ObjectHideFlags: 0
@@ -1221,7 +1202,7 @@ Camera:
   m_GameObject: {fileID: 897513990}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -2509,7 +2490,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2121529370
 MonoBehaviour:
   m_ObjectHideFlags: 0

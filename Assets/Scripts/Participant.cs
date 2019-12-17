@@ -49,7 +49,7 @@ public class Participant
 
     public Guid GetId()
     {
-        return this.id;
+        return this.Id;
     }
     #endregion
 }
