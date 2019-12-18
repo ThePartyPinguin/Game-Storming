@@ -11,7 +11,7 @@ public abstract class Draggable : MonoBehaviour
     #region fields
     protected bool isDragged;
     private int dragId;
-    private int originalLayer;
+    protected int originalLayer;
 
     protected TargetJoint2D dragJoint;
 
