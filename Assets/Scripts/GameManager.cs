@@ -49,6 +49,10 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.Insert))
+        {
+            timer.ResetTimer();
+        }
         //TODO: Delete this
         if (need2Delete && Input.GetKey(KeyCode.Delete))
         {

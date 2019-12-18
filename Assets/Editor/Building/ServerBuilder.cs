@@ -46,7 +46,7 @@ public static class ServerBuilder
         List<string> scenePaths = new List<string>();
         foreach (var scene in scenes)
         {
-            if (scene.enabled && scene.path.ToLower().Contains("SceneBuildNetworking"))
+            if (scene.enabled && scene.path.ToLower().Contains("RemoveTowerScene"))
                 scenePaths.Add(scene.path);
         }
 

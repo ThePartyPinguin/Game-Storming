@@ -213,7 +213,6 @@ public class Block : Draggable
         {
             if (!isWaitingForSafeSpot)
             {
-                UnityEditor.Selection.activeGameObject = hit.gameObject;
                 StartCoroutine(ActivateCollisionWhenSafe());
             }
         }
