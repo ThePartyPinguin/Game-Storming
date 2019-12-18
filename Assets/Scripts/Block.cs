@@ -128,7 +128,7 @@ public class Block : Draggable
         if (IsOtherBlockOnTop()) { Scaffold(); }
 
         tower = null;
-        this.isConnected = false;
+        //this.isConnected = false;
         StartCoroutine(ReleaseFromFoundation());
 
 
@@ -198,6 +198,10 @@ public class Block : Draggable
 
     protected override void OnMouseUp()
     {
+        if (this.isConnected) 
+        {
+            return;
+        }
         CheckIfBlockIsInSafeSpot();
     }
 
@@ -263,6 +267,8 @@ public class Block : Draggable
 
         //Disable the rotatejoint
         towerJoint.enabled = false;
+
+
     }
 
     /// <summary>
@@ -272,8 +278,12 @@ public class Block : Draggable
     {
         rigidBody.isKinematic = false;
         GetComponent<Collider2D>().enabled = false;
+
+        var minPos = transform.position.y - 0.5f ;
         
-        yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2)));
+        
+        yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2) || transform.position.y <= minPos));
+        this.isConnected = false;
         GetComponent<Collider2D>().enabled = true;
     }
 
