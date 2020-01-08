@@ -31,7 +31,7 @@ public abstract class Draggable : MonoBehaviour
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
     }
 
-    private void Update()
+    protected void Update()
     {
         if (isDragged)
         {

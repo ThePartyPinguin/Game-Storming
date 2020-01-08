@@ -13,6 +13,10 @@ public class Block : Draggable
     private Participant owner;
     [SerializeField]
     private GameObject scaffoldPrefab;
+    [SerializeField]
+    private TrailRenderer blockTrail;
+    [SerializeField]
+    private ParticleSystem teleportParticles;
 
     [SerializeField]
     private TextMeshPro textVisual;
@@ -26,6 +30,7 @@ public class Block : Draggable
     private HingeJoint2D towerJoint;
 
     private bool isConnected;
+    private float respawnHeight;
     private bool isWaitingForSafeSpot;
     private Coroutine currentCoroutine;
     #endregion
@@ -60,7 +65,24 @@ public class Block : Draggable
         rigidBody.isKinematic = true;
         tower = null;
         isConnected = false;
+        respawnHeight = Camera.main.orthographicSize + Camera.main.transform.position.y + (GetHeight()) + 1;
+
+        InvokeRepeating("CheckOutOfWorld", 1, 1);
     }
+
+    private new void Update()
+    {
+        if (blockCollider.enabled)
+        {
+            Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.green, 0.25f);
+        } else
+        {
+        Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.red, 0.25f);
+
+        }
+        base.Update();
+    }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -267,8 +289,6 @@ public class Block : Draggable
 
         //Disable the rotatejoint
         towerJoint.enabled = false;
-
-
     }
 
     /// <summary>
@@ -277,24 +297,24 @@ public class Block : Draggable
     private IEnumerator ReleaseFromFoundation()
     {
         rigidBody.isKinematic = false;
-        GetComponent<Collider2D>().enabled = false;
+        blockCollider.enabled = false;
 
         var minPos = transform.position.y - 0.5f ;
         
         
-        yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2) || transform.position.y <= minPos));
+        yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2) || transform.position.y <= minPos || transform.position.y < -10));
         this.isConnected = false;
-        GetComponent<Collider2D>().enabled = true;
+        blockCollider.enabled = true;
     }
 
     private IEnumerator ActivateCollisionWhenSafe()
     {
         rigidBody.isKinematic = false;
-        GetComponent<Collider2D>().enabled = false;
+        blockCollider.enabled = false;
         isWaitingForSafeSpot = true;
         InvokeRepeating("CheckIfBlockIsInSafeSpot", 0.5f, 0.5f);
         yield return new WaitUntil(() => (isWaitingForSafeSpot == false));
-        GetComponent<Collider2D>().enabled = true;
+        blockCollider.enabled = true;
         CancelInvoke("CheckIfBlockIsInSafeSpot");
     }
 
@@ -310,6 +330,33 @@ public class Block : Draggable
         //otherTower.AddBlock(this);
         currentCoroutine = null;
         base.OnMouseUp();
+    }
+
+    /// <summary>
+    /// Checks if the block is falling out of world and resets it if necessary
+    /// </summary>
+    private void CheckOutOfWorld()
+    {
+        if (transform.position.y < -10)
+        {
+            StartCoroutine(TeleportBlock());
+        }
+    }
+
+    private IEnumerator TeleportBlock()
+    {
+        blockTrail.enabled = false;
+        blockTrail.Clear();
+        teleportParticles.Play();
+        transform.rotation = Quaternion.identity;
+        transform.position = new Vector2(transform.position.x, respawnHeight);
+        rigidBody.velocity = Vector2.zero;
+        yield return new WaitForSeconds(0.4f);
+        blockCollider.enabled = true;
+        teleportParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+        blockTrail.Clear();
+        blockTrail.enabled = true;
+        isDragged = false;
     }
     #endregion
 }
