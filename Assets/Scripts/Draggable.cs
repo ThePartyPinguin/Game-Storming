@@ -13,7 +13,10 @@ public abstract class Draggable : MonoBehaviour
     private int dragId;
     protected int originalLayer;
 
+    private Rigidbody2D rigidBody;
     protected TargetJoint2D dragJoint;
+    private Camera cam;
+    private float lowestBoundary;
 
     [SerializeField]
     private UnityEvent onDragDown;
@@ -28,14 +31,19 @@ public abstract class Draggable : MonoBehaviour
     {
         //Caching values
         originalLayer = gameObject.layer;
+        rigidBody = GetComponent<Rigidbody2D>();
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
+        cam = Camera.main;
+        lowestBoundary = GameManager.Instance.FoundationTop + 0.5f;
     }
 
     protected void Update()
     {
         if (isDragged)
         {
-            dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.y = Mathf.Max(mousePos.y, lowestBoundary);
+            dragJoint.target = mousePos;
         }
     }
 
@@ -49,7 +57,7 @@ public abstract class Draggable : MonoBehaviour
     private void OnMouseDrag()
     {
         //dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        GetComponent<Rigidbody2D>().angularVelocity = 0f;
+        rigidBody.angularVelocity = 0f;
         onDrag.Invoke();
     }
 

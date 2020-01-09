@@ -67,7 +67,7 @@ public class Block : Draggable
         isConnected = false;
         respawnHeight = Camera.main.orthographicSize + Camera.main.transform.position.y + (GetHeight()) + 1;
 
-        InvokeRepeating("CheckOutOfWorld", 1, 1);
+        //InvokeRepeating("CheckOutOfWorld", 1, 1);
     }
 
     private new void Update()
@@ -95,20 +95,20 @@ public class Block : Draggable
             if (currentCoroutine != null) { StopCoroutine(currentCoroutine); }
             Tower newTower = new Tower(this);
             this.tower = newTower;
-            this.isConnected = true;
+            //this.isConnected = true;
             
-            //Make block fall onto a side and then become static
-            towerJoint.enabled = true;
+            ////Make block fall onto a side and then become static
+            //towerJoint.enabled = true;
             
-            Vector2 contactPoint = transform.InverseTransformPoint(collision.GetContact(0).point);
-            Vector2 normalisedAnchor = new Vector2(
-                contactPoint.x < 1 ? Mathf.Max(contactPoint.x, -0.5f) : Mathf.Min(contactPoint.x, 0.5f),
-                contactPoint.y < 1 ? Mathf.Max(contactPoint.y, -0.5f) : Mathf.Min(contactPoint.y, 0.5f));
-            Vector2 sizeMultiplier = spriteRenderer.size;
+            //Vector2 contactPoint = transform.InverseTransformPoint(collision.GetContact(0).point);
+            //Vector2 normalisedAnchor = new Vector2(
+            //    contactPoint.x < 1 ? Mathf.Max(contactPoint.x, -0.5f) : Mathf.Min(contactPoint.x, 0.5f),
+            //    contactPoint.y < 1 ? Mathf.Max(contactPoint.y, -0.5f) : Mathf.Min(contactPoint.y, 0.5f));
+            //Vector2 sizeMultiplier = spriteRenderer.size;
 
-            towerJoint.anchor = Vector2.Scale(normalisedAnchor, sizeMultiplier);
-            towerJoint.connectedBody = collision.rigidbody;
-            StartCoroutine(SnapToFoundation());
+            //towerJoint.anchor = Vector2.Scale(normalisedAnchor, sizeMultiplier);
+            //towerJoint.connectedBody = collision.rigidbody;
+            //StartCoroutine(SnapToFoundation());
 
             //Release mouse
             base.OnMouseUp();
@@ -151,7 +151,7 @@ public class Block : Draggable
 
         tower = null;
         //this.isConnected = false;
-        StartCoroutine(ReleaseFromFoundation());
+        //StartCoroutine(ReleaseFromFoundation());
 
 
 
@@ -230,12 +230,12 @@ public class Block : Draggable
     private void CheckIfBlockIsInSafeSpot()
     {
         var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 2);
-        var checkBoxCornerA = new Vector2(transform.position.x - checkBoxHalfExtents.x, transform.position.y - checkBoxHalfExtents.y);
-        var checkBoxCornerB = new Vector2(transform.position.x + checkBoxHalfExtents.x, transform.position.y + checkBoxHalfExtents.y);
+        var checkBoxCornerA = new Vector2(transform.position.x - checkBoxHalfExtents.x, transform.position.y - checkBoxHalfExtents.y + 0.1f);
+        var checkBoxCornerB = new Vector2(transform.position.x + checkBoxHalfExtents.x, transform.position.y + checkBoxHalfExtents.y + 0.1f);
         Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.green, 2, false);
         var layerMask = ~(1 << 9);
         var hit = Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB, layerMask);
-        if (hit != null && hit.GetComponentInChildren<BlockBubble>() == null)
+        if (hit != null && hit.GetComponentInChildren<BlockBubble>() == null && !hit.gameObject.Equals(this.gameObject))
         {
             if (!isWaitingForSafeSpot)
             {
@@ -265,48 +265,6 @@ public class Block : Draggable
         throw new System.NotImplementedException();
     }
 
-    /// <summary>
-    /// Snap block to ground so that it's a solid foundation for a tower.
-    /// Makes the block lay flat on the ground and be not affected by physics.
-    /// </summary>
-    private IEnumerator SnapToFoundation()
-    {
-        //Enable joint to make the block not move anymore, only rotate
-        GetComponent<TargetJoint2D>().enabled = false;
-        rigidBody.velocity = Vector2.zero;
-        rigidBody.angularVelocity = 0.1f;
-        
-        //Wait until the block lays flat on one of its sides
-        yield return new WaitUntil(() => (Mathf.Abs(transform.eulerAngles.z % 90) < 2f || Mathf.Abs(transform.eulerAngles.z % 90) > 88));
-
-        //Definitively rotate and position the block to negate small rotation and position errors
-        rigidBody.isKinematic = true;
-        rigidBody.velocity = Vector2.zero;
-        rigidBody.angularVelocity = 0f;
-        transform.eulerAngles = new Vector3(0, 0, Mathf.Round(transform.eulerAngles.z / 90) * 90);
-        Debug.Log(GetHeight());
-        transform.position = new Vector3(transform.position.x, GameManager.Instance.FoundationTop + GetHeight() / 2, 1);
-
-        //Disable the rotatejoint
-        towerJoint.enabled = false;
-    }
-
-    /// <summary>
-    /// Removes a block from foundation if there are no other blocks in the tower.
-    /// </summary>
-    private IEnumerator ReleaseFromFoundation()
-    {
-        rigidBody.isKinematic = false;
-        blockCollider.enabled = false;
-
-        var minPos = transform.position.y - 0.5f ;
-        
-        
-        yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2) || transform.position.y <= minPos || transform.position.y < -10));
-        this.isConnected = false;
-        blockCollider.enabled = true;
-    }
-
     private IEnumerator ActivateCollisionWhenSafe()
     {
         rigidBody.isKinematic = false;
@@ -332,31 +290,73 @@ public class Block : Draggable
         base.OnMouseUp();
     }
 
-    /// <summary>
-    /// Checks if the block is falling out of world and resets it if necessary
-    /// </summary>
-    private void CheckOutOfWorld()
-    {
-        if (transform.position.y < -10)
-        {
-            StartCoroutine(TeleportBlock());
-        }
-    }
+    ///// <summary>
+    ///// Snap block to ground so that it's a solid foundation for a tower.
+    ///// Makes the block lay flat on the ground and be not affected by physics.
+    ///// </summary>
+    //private IEnumerator SnapToFoundation()
+    //{
+    //    //Enable joint to make the block not move anymore, only rotate
+    //    GetComponent<TargetJoint2D>().enabled = false;
+    //    rigidBody.velocity = Vector2.zero;
+    //    rigidBody.angularVelocity = 0.1f;
 
-    private IEnumerator TeleportBlock()
-    {
-        blockTrail.enabled = false;
-        blockTrail.Clear();
-        teleportParticles.Play();
-        transform.rotation = Quaternion.identity;
-        transform.position = new Vector2(transform.position.x, respawnHeight);
-        rigidBody.velocity = Vector2.zero;
-        yield return new WaitForSeconds(0.4f);
-        blockCollider.enabled = true;
-        teleportParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
-        blockTrail.Clear();
-        blockTrail.enabled = true;
-        isDragged = false;
-    }
+    //    //Wait until the block lays flat on one of its sides
+    //    yield return new WaitUntil(() => (Mathf.Abs(transform.eulerAngles.z % 90) < 2f || Mathf.Abs(transform.eulerAngles.z % 90) > 88));
+
+    //    //Definitively rotate and position the block to negate small rotation and position errors
+    //    rigidBody.isKinematic = true;
+    //    rigidBody.velocity = Vector2.zero;
+    //    rigidBody.angularVelocity = 0f;
+    //    transform.eulerAngles = new Vector3(0, 0, Mathf.Round(transform.eulerAngles.z / 90) * 90);
+    //    Debug.Log(GetHeight());
+    //    transform.position = new Vector3(transform.position.x, GameManager.Instance.FoundationTop + GetHeight() / 2, 1);
+
+    //    //Disable the rotatejoint
+    //    towerJoint.enabled = false;
+    //}
+
+    ///// <summary>
+    ///// Removes a block from foundation if there are no other blocks in the tower.
+    ///// </summary>
+    //private IEnumerator ReleaseFromFoundation()
+    //{
+    //    rigidBody.isKinematic = false;
+    //    blockCollider.enabled = false;
+
+    //    var minPos = transform.position.y - 0.5f ;
+
+
+    //    yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2) || transform.position.y <= minPos || transform.position.y < -10));
+    //    this.isConnected = false;
+    //    blockCollider.enabled = true;
+    //}
+
+    ///// <summary>
+    ///// Checks if the block is falling out of world and resets it if necessary
+    ///// </summary>
+    //private void CheckOutOfWorld()
+    //{
+    //    if (transform.position.y < -10)
+    //    {
+    //        StartCoroutine(TeleportBlock());
+    //    }
+    //}
+
+    //private IEnumerator TeleportBlock()
+    //{
+    //    blockTrail.enabled = false;
+    //    blockTrail.Clear();
+    //    teleportParticles.Play();
+    //    transform.rotation = Quaternion.identity;
+    //    transform.position = new Vector2(transform.position.x, respawnHeight);
+    //    rigidBody.velocity = Vector2.zero;
+    //    yield return new WaitForSeconds(0.4f);
+    //    blockCollider.enabled = true;
+    //    teleportParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+    //    blockTrail.Clear();
+    //    blockTrail.enabled = true;
+    //    isDragged = false;
+    //}
     #endregion
 }
