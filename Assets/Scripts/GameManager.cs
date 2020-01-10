@@ -11,10 +11,14 @@ public class GameManager : MonoSingleton<GameManager>
     private int currentBuilderIndex;
     [SerializeField]
     private CountdownTimer timer;
-    
+
+    [SerializeField]
+    private Transform foundationTop;
 
     [SerializeField]
     private StringBasedUnityEvent newBuilderCalled;
+
+    private bool need2Delete = true;
     #endregion
 
     #region properties
@@ -23,20 +27,42 @@ public class GameManager : MonoSingleton<GameManager>
         get { return this.participants; }
         set { this.participants = value; }
     }
+
+    public float FoundationTop { get; set; }
     #endregion
 
     #region methods
     private void Start()
     {
         participants = new List<Participant>();
-        //participants.Add(new Participant(1, "Player 1", Color.red));
-        //participants.Add(new Participant(2, "Player 2", Color.green));
-        //participants.Add(new Participant(3, "Player 3", Color.blue));
-        //participants.Add(new Participant(4, "Player 4", Color.yellow));
-        //participants.Add(new Participant(5, "Player 5", Color.magenta));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 1", Color.red));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 2", Color.green));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 3", Color.blue));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 4", Color.yellow));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 5", Color.magenta));
+
+        FoundationTop = this.foundationTop.position.y + (this.foundationTop.GetComponent<SpriteRenderer>().size.y / 2);
 
         currentBuilderIndex = 0;
         //NotifyNextBuilder(currentBuilderIndex);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Insert))
+        {
+            timer.ResetTimer();
+        }
+        //TODO: Delete this
+        if (need2Delete && Input.GetKey(KeyCode.Delete))
+        {
+            var deleto = GameObject.FindGameObjectsWithTag("Block");
+            foreach (var go in deleto)
+            {
+                Destroy(go);
+            }
+            need2Delete = false;
+        }
     }
 
     /// <summary>

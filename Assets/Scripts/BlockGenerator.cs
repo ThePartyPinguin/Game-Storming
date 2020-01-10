@@ -17,7 +17,8 @@ public class BlockGenerator : MonoBehaviour
     private AnimationCurve blockSizeX;
     [SerializeField]
     private AnimationCurve blockSizeY;
-    private Transform bubbleMover;
+    [SerializeField]
+    public Transform bubbleMover;
     #endregion
 
     #region methods
@@ -63,8 +64,9 @@ public class BlockGenerator : MonoBehaviour
     /// <param name="position">Vector3 value representing the changed x value that needs to be updated. (can be used for y but currently isn't)</param>
     public void UpdateSpawnArea(Vector3 position)
     {
-        this.spawnPosMinMaxX.x += position.x;
-        this.spawnPosMinMaxX.y += position.x;
+        //this.spawnPosMinMaxX.x += position.x;
+        //this.spawnPosMinMaxX.y += position.x;
+        transform.position += position;
         this.bubbleMover.position += new Vector3(position.x, this.bubbleMover.position.y, this.bubbleMover.position.z);
     }
 
@@ -79,7 +81,7 @@ public class BlockGenerator : MonoBehaviour
     {
         if (spawnPosMinMaxX.x < spawnPosMinMaxX.y && spawnPosMinMaxY.x < spawnPosMinMaxY.y)
         {
-            return new Vector2(Random.Range(spawnPosMinMaxX.x, spawnPosMinMaxX.y), Random.Range(spawnPosMinMaxY.x, spawnPosMinMaxY.y));
+            return new Vector2(transform.position.x + Random.Range(spawnPosMinMaxX.x, spawnPosMinMaxX.y), Random.Range(spawnPosMinMaxY.x, spawnPosMinMaxY.y));
         }
         Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
         return Vector2.zero;
