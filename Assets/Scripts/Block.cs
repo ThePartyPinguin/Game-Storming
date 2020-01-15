@@ -67,7 +67,7 @@ public class Block : Draggable
         isConnected = false;
         respawnHeight = Camera.main.orthographicSize + Camera.main.transform.position.y + (GetHeight()) + 1;
 
-        //InvokeRepeating("CheckOutOfWorld", 1, 1);
+        InvokeRepeating("CheckOutOfWorld", 1, 1);
     }
 
     private new void Update()
@@ -95,11 +95,12 @@ public class Block : Draggable
             if (currentCoroutine != null) { StopCoroutine(currentCoroutine); }
             Tower newTower = new Tower(this);
             this.tower = newTower;
+
             //this.isConnected = true;
-            
+
             ////Make block fall onto a side and then become static
             //towerJoint.enabled = true;
-            
+
             //Vector2 contactPoint = transform.InverseTransformPoint(collision.GetContact(0).point);
             //Vector2 normalisedAnchor = new Vector2(
             //    contactPoint.x < 1 ? Mathf.Max(contactPoint.x, -0.5f) : Mathf.Min(contactPoint.x, 0.5f),
@@ -111,6 +112,7 @@ public class Block : Draggable
             //StartCoroutine(SnapToFoundation());
 
             //Release mouse
+
             base.OnMouseUp();
         }
 
@@ -152,8 +154,6 @@ public class Block : Draggable
         tower = null;
         //this.isConnected = false;
         //StartCoroutine(ReleaseFromFoundation());
-
-
 
         if (this.GetComponentInChildren<BlockBubble>() != null)
         {
@@ -265,17 +265,28 @@ public class Block : Draggable
         throw new System.NotImplementedException();
     }
 
+    /// <summary>
+    /// Activates a recurring check to see if the block is safe to be put at its location.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator ActivateCollisionWhenSafe()
     {
         rigidBody.isKinematic = false;
         blockCollider.enabled = false;
         isWaitingForSafeSpot = true;
-        InvokeRepeating("CheckIfBlockIsInSafeSpot", 0.5f, 0.5f);
+        InvokeRepeating("CheckIfBlockIsInSafeSpot", 0.5f, 0.25f);
         yield return new WaitUntil(() => (isWaitingForSafeSpot == false));
         blockCollider.enabled = true;
         CancelInvoke("CheckIfBlockIsInSafeSpot");
     }
 
+    /// <summary>
+    /// Stops all horizontal movement a block has so it can't be thrown into other towers
+    /// </summary>
+    public void StopHorizontalMovement()
+    {
+        rigidBody.velocity = new Vector2(rigidBody.velocity.x / 100, rigidBody.velocity.y / 10);
+    }
 
     /// <summary>
     /// Waits until the block lies still and then assigns it to the tower.
@@ -332,31 +343,31 @@ public class Block : Draggable
     //    blockCollider.enabled = true;
     //}
 
-    ///// <summary>
-    ///// Checks if the block is falling out of world and resets it if necessary
-    ///// </summary>
-    //private void CheckOutOfWorld()
-    //{
-    //    if (transform.position.y < -10)
-    //    {
-    //        StartCoroutine(TeleportBlock());
-    //    }
-    //}
+    /// <summary>
+    /// Checks if the block is falling out of world and resets it if necessary
+    /// </summary>
+    private void CheckOutOfWorld()
+    {
+        if (transform.position.y < -10)
+        {
+            StartCoroutine(TeleportBlock());
+        }
+    }
 
-    //private IEnumerator TeleportBlock()
-    //{
-    //    blockTrail.enabled = false;
-    //    blockTrail.Clear();
-    //    teleportParticles.Play();
-    //    transform.rotation = Quaternion.identity;
-    //    transform.position = new Vector2(transform.position.x, respawnHeight);
-    //    rigidBody.velocity = Vector2.zero;
-    //    yield return new WaitForSeconds(0.4f);
-    //    blockCollider.enabled = true;
-    //    teleportParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
-    //    blockTrail.Clear();
-    //    blockTrail.enabled = true;
-    //    isDragged = false;
-    //}
+    private IEnumerator TeleportBlock()
+    {
+        blockTrail.enabled = false;
+        blockTrail.Clear();
+        teleportParticles.Play();
+        transform.rotation = Quaternion.identity;
+        transform.position = new Vector2(transform.position.x, respawnHeight);
+        rigidBody.velocity = Vector2.zero;
+        yield return new WaitForSeconds(0.4f);
+        blockCollider.enabled = true;
+        teleportParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+        blockTrail.Clear();
+        blockTrail.enabled = true;
+        isDragged = false;
+    }
     #endregion
 }

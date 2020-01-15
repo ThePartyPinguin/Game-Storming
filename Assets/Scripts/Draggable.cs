@@ -56,7 +56,6 @@ public abstract class Draggable : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        //dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         rigidBody.angularVelocity = 0f;
         onDrag.Invoke();
     }
