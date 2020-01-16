@@ -35,6 +35,16 @@ namespace GameFrame.Networking.Server
             }
         }
 
+        public int ConnectedCount
+        {
+            get
+            {
+                if (_connectedClients != null)
+                    return _connectedClients.Count;
+                return 0;
+            }
+        }
+
         private readonly int _tcpPort;
         private readonly int _udpPort;
 
