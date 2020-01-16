@@ -24,6 +24,12 @@ public class Block : Draggable
     private GameObject blockBubble;
     [SerializeField]
     private BoxCollider2D blockCollider;
+    [SerializeField]
+    private float BlockReleaseHeight = 0.1f;
+    [SerializeField]
+    private float AutodropTimerValue = 2.0f;
+    [SerializeField]
+    private float BottomCheckSize = 0.2f;
 
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rigidBody;
@@ -33,6 +39,7 @@ public class Block : Draggable
     private float respawnHeight;
     private bool isWaitingForSafeSpot;
     private Coroutine currentCoroutine;
+    private float AutodropCheckDelayTimer;
     #endregion
 
     #region properties
@@ -68,6 +75,8 @@ public class Block : Draggable
         respawnHeight = Camera.main.orthographicSize + Camera.main.transform.position.y + (GetHeight()) + 1;
 
         InvokeRepeating("CheckOutOfWorld", 1, 1);
+
+
     }
 
     private new void Update()
@@ -80,8 +89,38 @@ public class Block : Draggable
         Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.red, 0.25f);
 
         }
+
+        if (AutodropCheckDelayTimer > 0f)
+        {
+            AutodropCheckDelayTimer -= Time.deltaTime;
+        }
+        else
+        {
+            if (this.isDragged)
+            {
+                if (CheckTowerUnderneath())
+                {
+                    this.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + BlockReleaseHeight);
+                    this.isDragged = false;
+                }
+                /*if (CheckTowerSides())
+                {
+                    this.isDragged = false;
+                }*/
+            }
+            else
+            {
+                if (CheckTowerUnderneath() /*|| CheckTowerSides()*/)
+                {
+                    AutodropCheckDelayTimer = AutodropTimerValue;
+                }
+            }
+        }
+
+
         base.Update();
     }
+
 
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -168,6 +207,41 @@ public class Block : Draggable
     {
         var scaffold = Instantiate(scaffoldPrefab, transform.position, Quaternion.identity);
         scaffold.GetComponent<SpriteRenderer>().size *= new Vector2(GetWidth() - 0.05f, GetHeight() - 0.05f);
+    }
+
+    /// <summary>
+    /// checks in a small area underneath the block to see if its hovering above a tower. 
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckTowerUnderneath()
+    {
+        RaycastHit2D h = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.2f)), Vector2.right / 5, BottomCheckSize);
+
+        if (h.collider != null && h.collider.tag == "Block" && h.transform.gameObject.layer != 9)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    /// <summary>
+    /// checks on the sides of the block if there are any blocks. 
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckTowerSides()
+    {
+        RaycastHit2D lefthit = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.min.x - 0.1f, spriteRenderer.bounds.min.y - 0.1f), Vector2.up, spriteRenderer.bounds.size.y);
+        RaycastHit2D righthit = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.max.x + 0.1f, spriteRenderer.bounds.max.y + 0.1f), Vector2.down, spriteRenderer.bounds.size.y);
+
+        if(lefthit.collider != null && lefthit.collider.tag == "Block" && lefthit.transform.gameObject.layer != 9)
+        {
+            return true;
+        }
+        if(righthit.collider != null && righthit.collider.tag == "Block" && righthit.transform.gameObject.layer != 9)
+        {
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -351,6 +425,15 @@ public class Block : Draggable
         if (transform.position.y < -10)
         {
             StartCoroutine(TeleportBlock());
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (this.isDragged)
+        {
+            Gizmos.DrawRay(new Vector2(spriteRenderer.bounds.min.x - 0.1f, spriteRenderer.bounds.min.y - 0.1f), Vector3.up);
+            Gizmos.DrawRay(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.2f)), Vector2.right / 5);
         }
     }
 
