@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(BlockWatcher))]
 public class BlockGenerator : MonoBehaviour
 {
     #region fields
@@ -14,11 +15,15 @@ public class BlockGenerator : MonoBehaviour
     [SerializeField]
     private Block prefab;
     [SerializeField]
+    private FollowEffect blockExistsEffectPrefab;
+    [SerializeField]
     private AnimationCurve blockSizeX;
     [SerializeField]
     private AnimationCurve blockSizeY;
     [SerializeField]
     public Transform bubbleMover;
+    [SerializeField]
+    private BlockWatcher blockWatcher;
     #endregion
 
     #region methods
@@ -26,35 +31,47 @@ public class BlockGenerator : MonoBehaviour
     /// Spawns a new block with given owner and idea in a new bubble at a random location.
     /// </summary>
     /// <param name="owner"></param>
-    /// <param name="ideaTitle"></param>
-    public void SpawnBlock(Participant owner, string ideaTitle)
+    /// <param name="ideaText"></param>
+    public void SpawnBlock(Participant owner, string ideaText)
     {
-        if (owner != null && ideaTitle != "")
+        //Parameter check
+        if (owner == null || ideaText == "") { return; }
+
+        var existingBlock = blockWatcher.CheckIdea(ideaText);
+
+        if (!existingBlock) //The idea doesn't exist on a block yet → spawn new block
         {
-            Block blockbubble = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
-            blockbubble.GetComponentsInParent<SpriteRenderer>()[0].color = owner.Color;
-            blockbubble.Owner = owner;
-            blockbubble.Idea = ideaTitle;
-            owner.AddBlock(blockbubble);
+            Block newBlock = Instantiate(prefab, GenerateSpawnlocation(), Quaternion.identity);
+            newBlock.GetComponentsInParent<SpriteRenderer>()[0].color = owner.Color;
+            newBlock.Owner = owner;
+            newBlock.Idea = ideaText;
+            owner.AddBlock(newBlock);
+            blockWatcher.AddIdea(newBlock);
 
             //Variable block size based on amount of characters in the idea
-            float newSizeX = blockSizeX.Evaluate(ideaTitle.Length);
-            float newSizeY = blockSizeY.Evaluate(ideaTitle.Length);
+            float newSizeX = blockSizeX.Evaluate(ideaText.Length);
+            float newSizeY = blockSizeY.Evaluate(ideaText.Length);
             Vector2 newSize = new Vector2(newSizeX, newSizeY);
             Vector2 newColliderSize = new Vector2(newSizeX - 0.05f, newSizeY - 0.05f);
 
-            blockbubble.GetComponent<SpriteRenderer>().size = newSize;
-            foreach (var collider in blockbubble.GetComponents<BoxCollider2D>())
+            newBlock.GetComponent<SpriteRenderer>().size = newSize;
+            foreach (var collider in newBlock.GetComponents<BoxCollider2D>())
             {
                 collider.size = newColliderSize;
             }
-            blockbubble.GetComponentInChildren<TrailRenderer>().widthMultiplier = Mathf.Min(newSizeX, newSizeY);
-            blockbubble.GetComponentInChildren<BlockBubble>().transform.localScale *= (Mathf.Max(newSizeX, newSizeY) * 0.75f);
-            blockbubble.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
-            
-            blockbubble.transform.parent = bubbleMover;
+            newBlock.GetComponentInChildren<TrailRenderer>().widthMultiplier = Mathf.Min(newSizeX, newSizeY);
+            newBlock.GetComponentInChildren<BlockBubble>().transform.localScale *= (Mathf.Max(newSizeX, newSizeY) * 0.75f);
+            newBlock.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
 
-            IdeaLogger.LogIdea(owner, ideaTitle);
+            newBlock.transform.parent = bubbleMover;
+
+            IdeaLogger.LogIdea(owner, ideaText);
+        }
+        else
+        {
+            FollowEffect followEffect = Instantiate(blockExistsEffectPrefab, GenerateSpawnlocation(), Quaternion.identity);
+            followEffect.SetTarget(existingBlock.transform);
+            existingBlock.IncreaseImportance();
         }
     }
 

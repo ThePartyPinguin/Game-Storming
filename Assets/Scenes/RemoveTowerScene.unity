@@ -1055,6 +1055,7 @@ GameObject:
   m_Component:
   - component: {fileID: 343184846}
   - component: {fileID: 343184845}
+  - component: {fileID: 343184847}
   m_Layer: 0
   m_Name: BlockGenerator
   m_TagString: Untagged
@@ -1077,6 +1078,8 @@ MonoBehaviour:
   spawnPosMinMaxX: {x: -13, y: 13}
   spawnPosMinMaxY: {x: 4, y: 8}
   prefab: {fileID: 4683487841430045391, guid: d4d31243c26ab6747b4a11744b87b3aa, type: 3}
+  blockExistsEffectPrefab: {fileID: 7493281648754861389, guid: 876ad1f7dbc159f4abe1c304b4a75ebb,
+    type: 3}
   blockSizeX:
     serializedVersion: 2
     m_Curve:
@@ -1234,6 +1237,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   bubbleMover: {fileID: 810480544}
+  blockWatcher: {fileID: 343184847}
 --- !u!4 &343184846
 Transform:
   m_ObjectHideFlags: 0
@@ -1248,6 +1252,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &343184847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 343184844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e50d238de51a72e41bbe6f55f1270900, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &466843775
 GameObject:
   m_ObjectHideFlags: 0
@@ -2946,7 +2962,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79a10bfa65ba314ba8a88c8ab62cb95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  countdownTime: 120
+  countdownTime: 10
   countdownTick:
     m_PersistentCalls:
       m_Calls:
