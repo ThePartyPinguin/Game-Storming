@@ -15,7 +15,7 @@ public class LobbyManager : MonoBehaviour
     private float counter = 0;
     private Dictionary<Guid, string> newJoins;
 
-    private List<Participant> participantsConnected;
+    public List<Participant> participantsConnected;
     private Dictionary<Guid, Button> participantButtons;
     private Dictionary<Guid, GameObject> participantBlocks;
     private List<Color> playerColors;
@@ -27,6 +27,9 @@ public class LobbyManager : MonoBehaviour
     GameObject participantBlock;
     [SerializeField]
     TMP_Dropdown roundDropdown;
+
+    [SerializeField] 
+    private ConnectedPlayers connectedPlayers;
 
     Guid lastGuid;
     
@@ -75,7 +78,7 @@ public class LobbyManager : MonoBehaviour
 
     public void OnPlayerConnect(Guid playerId, string playerName)
     {
-        // CreateNewParticipant(playerId, playerName);
+        //CreateNewParticipant(playerId, playerName);
         newJoins.Add(playerId, playerName);
     }
 
@@ -83,6 +86,7 @@ public class LobbyManager : MonoBehaviour
     {
         RemoveParicipant(playerId);
     }
+
     private void CreateNewParticipant(Guid playerId, string playerName)
     {
 
@@ -109,7 +113,10 @@ public class LobbyManager : MonoBehaviour
             blockSpawnPos.x -= participantBlock.GetComponent<BoxCollider2D>().size.x * 4;
             return;
         }
+        //newJoins.Add(playerId, playerName);
+        //connectedPlayers.AddConnectedPlayer(newPart);
     }
+
     private void RemoveParicipant(Guid playerId)
     {
         foreach (Participant p in participantsConnected.ToList())

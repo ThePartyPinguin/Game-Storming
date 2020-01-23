@@ -45,6 +45,8 @@ namespace GameFrame.Networking.Server
             }
         }
 
+        public bool IsStarted { get; private set; }
+
         private readonly int _tcpPort;
         private readonly int _udpPort;
 
@@ -70,6 +72,8 @@ namespace GameFrame.Networking.Server
 
         public void StartServer()
         {
+            if(IsStarted)
+                return;
             if (_serverListener == null)
             {
                 _serverListener = new ServerListener<TEnum>(_serverSettings.TcpPort);
@@ -78,6 +82,7 @@ namespace GameFrame.Networking.Server
             }
 
             _serverListener.StartListener(OnClientConnect);
+            IsStarted = true;
         }
 
         public void StopServer()

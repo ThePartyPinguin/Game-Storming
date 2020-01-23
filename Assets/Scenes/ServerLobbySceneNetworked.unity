@@ -459,6 +459,12 @@ PrefabInstance:
       propertyPath: roundDropdown
       value: 
       objectReference: {fileID: 111679991}
+    - target: {fileID: 5799866085717474884, guid: b8ebfd412c4444944a5b0928f0139b5c,
+        type: 3}
+      propertyPath: connnectedPlayers
+      value: 
+      objectReference: {fileID: 11400000, guid: c7db86e83ed1419448597ec07eb46fe1,
+        type: 2}
     - target: {fileID: 5799866085717474891, guid: b8ebfd412c4444944a5b0928f0139b5c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3312,7 +3318,7 @@ PrefabInstance:
     - target: {fileID: 3336130940362617022, guid: dc2b883ad752ea14183ef0df6aae18ad,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
-      value: SceneBuildNetworking
+      value: RemoveTowerScene
       objectReference: {fileID: 0}
     - target: {fileID: 3336130941721701488, guid: dc2b883ad752ea14183ef0df6aae18ad,
         type: 3}

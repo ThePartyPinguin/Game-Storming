@@ -40,13 +40,21 @@ namespace GameFrame.UnityHelpers.Networking.UnityMessageEventDatabase.BaseMessag
                     Debug.LogError("Event: " + callbackWrapper.EventType + " already can't be used twice for multiple events, was registered in: " + this.GetType());
                     continue;
                 }
-                callbackDatabase.RegisterCallBack<TBaseMessage>(callbackWrapper.EventType, (message, clientId) =>
+
+                try
                 {
-                    _aSyncToSynchronousMessageHandler.QueueCallbackToHandle(() =>
+                    callbackDatabase.RegisterCallBack<TBaseMessage>(callbackWrapper.EventType, (message, clientId) =>
                     {
-                        callbackWrapper.Callback.Invoke(message, clientId);
+                        _aSyncToSynchronousMessageHandler.QueueCallbackToHandle(() =>
+                        {
+                            callbackWrapper.Callback.Invoke(message, clientId);
+                        });
                     });
-                });
+                }
+                catch(Exception ex)
+                {
+                    Debug.Log(ex);
+                }
             }
         }
     }

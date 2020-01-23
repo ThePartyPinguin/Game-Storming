@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbb6855bcd53c264d82e8cb364a58665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _connectedPlayers: {fileID: 11400000, guid: c7db86e83ed1419448597ec07eb46fe1, type: 2}
   TopicEventCallbacks: {fileID: 542033833648885935}
 --- !u!114 &542033833648885935
 MonoBehaviour:

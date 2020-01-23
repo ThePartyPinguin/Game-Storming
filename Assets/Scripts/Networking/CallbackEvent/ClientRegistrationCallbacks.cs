@@ -10,10 +10,12 @@ using Random = UnityEngine.Random;
 
 public class ClientRegistrationCallbacks : MonoBehaviour
 {
+    [SerializeField]
+    private ConnectedPlayers _connectedPlayers;
+
     public TopicEventCallbacks TopicEventCallbacks;
 
     private BlockGenerator blockGenerator;
-    private GameManager gameManager;
     private UnityServerNetworkManager serverNetworkManager;
 
     private bool _topicReceived;
@@ -24,7 +26,6 @@ public class ClientRegistrationCallbacks : MonoBehaviour
 
     void Start()
     {
-        gameManager = GameManager.Instance;
         serverNetworkManager = UnityServerNetworkManager.Instance;
         _connectedClientsWaitingToSendName = new List<ServerConnectedClient<NetworkEvent>>();
     }
@@ -109,7 +110,9 @@ public class ClientRegistrationCallbacks : MonoBehaviour
 
         _lobbyManager.OnPlayerConnect(clientId, p.Name);
 
-        gameManager.RegisterNewParticipant(p);
+        //gameManager.RegisterNewParticipant(p);
+
+        _connectedPlayers.AddConnectedPlayer(p);
 
         var client = serverNetworkManager.GameServer.GetClientById(clientId);
 

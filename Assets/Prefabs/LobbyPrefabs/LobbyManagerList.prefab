@@ -44,7 +44,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   btnadd: {fileID: 0}
-  playersGrid: {fileID: 0}
-  playerBtn: {fileID: 3904959884131685382, guid: 0a28df41b6ca7d041a051f94e4e45343,
-    type: 3}
   participantBlock: {fileID: 0}
+  roundDropdown: {fileID: 0}
+  connectedPlayers: {fileID: 11400000, guid: c7db86e83ed1419448597ec07eb46fe1, type: 2}
