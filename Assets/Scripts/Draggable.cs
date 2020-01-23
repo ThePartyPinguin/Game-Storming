@@ -9,10 +9,14 @@ using UnityEngine.Events;
 public abstract class Draggable : MonoBehaviour
 {
     #region fields
-    private bool isDragged;
+    protected bool isDragged;
     private int dragId;
+    protected int originalLayer;
 
-    private TargetJoint2D dragJoint;
+    private Rigidbody2D rigidBody;
+    protected TargetJoint2D dragJoint;
+    private Camera cam;
+    private float lowestBoundary;
 
     [SerializeField]
     private UnityEvent onDragDown;
@@ -26,24 +30,40 @@ public abstract class Draggable : MonoBehaviour
     private void Awake()
     {
         //Caching values
+        originalLayer = gameObject.layer;
+        rigidBody = GetComponent<Rigidbody2D>();
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
+        cam = Camera.main;
+        lowestBoundary = GameManager.Instance.FoundationTop + 0.5f;
+    }
+
+    protected void Update()
+    {
+        if (isDragged)
+        {
+            var mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.y = Mathf.Max(mousePos.y, lowestBoundary);
+            dragJoint.target = mousePos;
+        }
     }
 
     public virtual void OnMouseDown()
     {
+        gameObject.layer = 9;
         dragJoint.enabled = true;
         onDragDown.Invoke();
     }
 
     private void OnMouseDrag()
     {
-        dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        GetComponent<Rigidbody2D>().angularVelocity = 0f;
+        //dragJoint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        rigidBody.angularVelocity = 0f;
         onDrag.Invoke();
     }
 
-    protected void OnMouseUp()
+    protected virtual void OnMouseUp()
     {
+        gameObject.layer = originalLayer;
         dragJoint.enabled = false;
         onDragUp.Invoke();
     }
