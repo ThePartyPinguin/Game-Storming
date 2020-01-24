@@ -38,11 +38,11 @@ public class GameManager : MonoSingleton<GameManager>
     private void Start()
     {
         participants = new List<Participant>();
-        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 1", Color.red));
-        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 2", Color.green));
-        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 3", Color.blue));
-        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 4", Color.yellow));
-        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 5", Color.magenta));
+        participants.Add(new Participant(System.Guid.NewGuid(), "Player 1", Color.red));
+        participants.Add(new Participant(System.Guid.NewGuid(), "Player 2", Color.green));
+        participants.Add(new Participant(System.Guid.NewGuid(), "Player 3", Color.blue));
+        participants.Add(new Participant(System.Guid.NewGuid(), "Player 4", Color.yellow));
+        participants.Add(new Participant(System.Guid.NewGuid(), "Player 5", Color.magenta));
 
         FoundationTop = this.foundationTop.position.y + (this.foundationTop.GetComponent<SpriteRenderer>().size.y / 2);
 

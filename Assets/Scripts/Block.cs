@@ -25,6 +25,7 @@ public class Block : Draggable
     [SerializeField]
     private BoxCollider2D blockCollider;
     [SerializeField]
+    private TextMeshPro importanceDisplay;
     private float BlockReleaseHeight = 0.1f;
     [SerializeField]
     private float AutodropTimerValue = 2.0f;
@@ -35,6 +36,7 @@ public class Block : Draggable
     private Rigidbody2D rigidBody;
     private HingeJoint2D towerJoint;
 
+    private int importance;
     private bool isConnected;
     private float respawnHeight;
     private bool isWaitingForSafeSpot;
@@ -77,6 +79,9 @@ public class Block : Draggable
         tower = null;
         isConnected = false;
         respawnHeight = Camera.main.orthographicSize + Camera.main.transform.position.y + (GetHeight()) + 1;
+
+        importance = 1;
+        importanceDisplay.transform.parent.localPosition = new Vector2(spriteRenderer.size.x / 2 - 0.175f, spriteRenderer.size.y /2 - 0.175f);
 
         InvokeRepeating("CheckOutOfWorld", 1, 1);
 
@@ -194,6 +199,18 @@ public class Block : Draggable
         float functionalRotation = (transform.eulerAngles.z % 180);
         bool isRotated = 45 <= functionalRotation && functionalRotation < 135;
         return (isRotated ? spriteRenderer.size.y : spriteRenderer.size.x);
+    }
+
+    /// <summary>
+    /// Increases the importance value of the block and visually updates it.
+    /// </summary>
+    public void IncreaseImportance()
+    {
+        //Activate the importancedisplay on first time
+        if (importance == 1) { importanceDisplay.transform.parent.gameObject.SetActive(true); }
+
+        ++importance;
+        importanceDisplay.text = importance.ToString();
     }
 
     /// <summary>

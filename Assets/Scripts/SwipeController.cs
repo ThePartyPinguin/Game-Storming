@@ -9,16 +9,18 @@ public class SwipeController : MonoBehaviour
     [SerializeField]
     public bool restrictSwipeArea = false;
     [SerializeField]
-    public Rigidbody2D cam;
-    [SerializeField]
     public float scrollSpeed;
     [SerializeField]
     public BlockGenerator blockGen;
     [SerializeField]
     public Transform bubbleMover;
 
-    private Vector2 touchStart;
-    private Vector2 touchEnd;
+    private Camera cam;
+    private Rigidbody2D rb;
+    private bool canMove;
+
+    private float touchStartX;
+    private float touchEndX;
     private Vector3 startPosition;
     #endregion
 
@@ -26,7 +28,10 @@ public class SwipeController : MonoBehaviour
 
     private void Start()
     {
+        cam = Camera.main;
+        rb = GetComponent<Rigidbody2D>();
         this.startPosition = this.transform.position;
+        canMove = false;
     }
 
 
@@ -35,27 +40,31 @@ public class SwipeController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D[] hits = Physics2D.RaycastAll(new Vector2(v.x, v.y), Vector2.zero);
-            if (restrictSwipeArea)
+            int layerMask = ~(1 << 5);
+
+            RaycastHit2D hit = Physics2D.Raycast(new Vector2(v.x, v.y), Vector2.zero, 100, layerMask);
+            var hitObject = hit? hit.collider.gameObject : null;
+            
+            if (hitObject && hitObject.layer == 8)
             {
-                if (!foundationHit(hits))
-                    return;
+                touchStartX = cam.ScreenToWorldPoint(Input.mousePosition).x;
+                canMove = true;
             }
-            else
-            {
-                if (blockHit(hits))
-                    return;
-            }
-            this.touchStart = Input.mousePosition;
+            return;
         }
 
-        if (Input.GetMouseButtonUp(0) && this.touchStart != Vector2.zero)
+        if (canMove && Input.GetMouseButton(0))
         {
-            this.touchEnd = Input.mousePosition;
-            cam.AddForce(new Vector2(touchStart.x - touchEnd.x, touchStart.y - touchEnd.y) * scrollSpeed);
-            touchStart = Vector2.zero;
+            touchEndX = cam.ScreenToWorldPoint(Input.mousePosition).x;
+            rb.AddForce(new Vector2((touchStartX - touchEndX) * scrollSpeed, 0));
+            
+            touchStartX = touchEndX;
         }
 
+        if (Input.GetMouseButtonUp(0))
+        {
+            canMove = false;
+        }
     }
 
     void LateUpdate()
@@ -65,51 +74,12 @@ public class SwipeController : MonoBehaviour
         //update the spawn area and move the blockbubbles with the new camera position
         blockGen.UpdateSpawnArea(v);
         //move each block bubbles startposition, this needs to be done in order to prevent it from snapping back.
+        var additionalPosition = new Vector2(v.x, v.y);
         foreach (BlockBubble blockBubble in bubbleMover.GetComponentsInChildren<BlockBubble>())
         {
-            blockBubble.startposition += new Vector2(v.x, v.y);
+            blockBubble.startposition += additionalPosition;
         }
         this.startPosition = this.transform.position;
-    }
-
-    /// <summary>
-    /// checks the list of raycast hits to see if a foundation layer was hit.
-    /// </summary>
-    /// <param name="hits">the list of raycast hits that needs to be checked</param>
-    /// <returns>bool thats true if a foundation has been hit</returns>
-    private bool foundationHit(RaycastHit2D[] hits)
-    {
-        if (hits.Length > 0)
-        {
-            for (int i = 0; i < hits.Length; i++)
-            {
-                if (hits[i].collider.gameObject.layer == 8)
-                {
-                    return true;
-                }
-            } 
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Checks the list of raycast hits to see if a block tag has been hit.
-    /// </summary>
-    /// <param name="hits">the list of raycast hits that needs to be checked</param>
-    /// <returns>bool thats true if a block has been hit</returns>
-    private bool blockHit(RaycastHit2D[] hits)
-    {
-        if (hits.Length > 0)
-        {
-            for (int i = 0; i < hits.Length; i++)
-            {
-                if (hits[i].collider.tag == "Block")
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     #endregion
