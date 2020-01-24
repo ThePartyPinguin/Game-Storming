@@ -35,6 +35,7 @@ public class Block : Draggable
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
     private HingeJoint2D towerJoint;
+    private GameObject bottomBlock;
 
     private int importance;
     private bool isConnected;
@@ -143,6 +144,12 @@ public class Block : Draggable
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //ensure the bottomBlock variable is cleared
+        if(collision.transform.position.y < this.transform.position.y && collision.gameObject != bottomBlock)
+        {
+            bottomBlock = null;
+        }
+
         //Shouldn't do anything if the block is connected to a tower
         if (isConnected) { return; }
 
@@ -172,12 +179,20 @@ public class Block : Draggable
 
             base.OnMouseUp();
         }
-
         //If the block hits a tower, it becomes part of that tower
         else if (collision.gameObject.CompareTag("Block") && collision.gameObject.GetComponent<Block>()) //Extra check for if it's done
         {
             Block otherBlock = collision.gameObject.GetComponent<Block>();
             currentCoroutine = StartCoroutine(SnapToTower(otherBlock.Tower));
+
+            //Debug.Log("ON THE PLAYGROUND IS WHERE I SPEND MOST OF MY DAYS");
+
+            //adding half the height to prevent bottomBlock being assigned a value when the collision block is in weird position
+            if(otherBlock.transform.position.y + otherBlock.GetHeight()/2 < this.transform.position.y)
+            {
+                //Debug.Log("CHILLIN, RELAXING ALL COOL");
+                bottomBlock = collision.gameObject;
+            }
         }
     }
 
@@ -294,6 +309,21 @@ public class Block : Draggable
         return (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null);
     }
 
+    public bool IsOtherBlockOnBottom()
+    {
+        if (rigidBody.velocity.magnitude > 0.1f || blockBubble) { return false; }
+
+        var checkHeight = 0.75f;
+        var checkWidthCutOff = 0.1f;
+
+        var checkBoxCenter = new Vector2(transform.position.x, transform.position.y - (GetHeight() / 2) + checkHeight);
+        var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 10);
+        var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
+        var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
+        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
+        return (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null);
+    }
+
     /// <summary>
     /// Destroy the bubble and activate the block physics so it can be dragged around.
     /// </summary>
@@ -362,6 +392,13 @@ public class Block : Draggable
         }
     }
 
+    public bool CheckIfBubblePopped()
+    {
+        if(blockBubble == null)
+            return true;
+        return false;
+    }
+
     public int CalculateScore()
     {
         throw new System.NotImplementedException();
@@ -374,7 +411,12 @@ public class Block : Draggable
 
     public bool IsDragged()
     {
-        throw new System.NotImplementedException();
+        return isDragged;
+    }
+
+    public GameObject BottomBlock()
+    {
+        return bottomBlock;
     }
 
     /// <summary>

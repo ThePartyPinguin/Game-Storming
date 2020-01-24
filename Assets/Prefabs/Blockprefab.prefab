@@ -220,6 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parent: {fileID: 3822940151930123501}
   text: {fileID: 183073625347873102}
+  rotationLimit: 0.7
 --- !u!1 &2156077586992408914
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,7 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54c0b6a42cd68534aace20e46b4c268a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  block: {fileID: 3822940151930123503}
+  startposition: {x: 0, y: 0}
 --- !u!212 &2156077586992408919
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -422,8 +423,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   idea: Idea
+  scaffoldPrefab: {fileID: 0}
+  blockTrail: {fileID: 0}
+  teleportParticles: {fileID: 0}
   textVisual: {fileID: 8846020864584606461}
-  blockbubble: {fileID: 2156077586992408914}
+  blockBubble: {fileID: 0}
+  blockCollider: {fileID: 0}
 --- !u!61 &3822940151930123502
 BoxCollider2D:
   m_ObjectHideFlags: 0
