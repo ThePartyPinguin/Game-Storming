@@ -17,6 +17,7 @@ public class SwipeController : MonoBehaviour
 
     private Camera cam;
     private Rigidbody2D rb;
+    private bool canMove;
 
     private float touchStartX;
     private float touchEndX;
@@ -30,6 +31,7 @@ public class SwipeController : MonoBehaviour
         cam = Camera.main;
         rb = GetComponent<Rigidbody2D>();
         this.startPosition = this.transform.position;
+        canMove = false;
     }
 
 
@@ -39,20 +41,29 @@ public class SwipeController : MonoBehaviour
         {
             Vector3 v = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             int layerMask = ~(1 << 5);
-            GameObject hit = Physics2D.Raycast(new Vector2(v.x, v.y), Vector2.zero, 100, layerMask).collider.gameObject;
-            if (hit && hit.layer == 8)
+
+            RaycastHit2D hit = Physics2D.Raycast(new Vector2(v.x, v.y), Vector2.zero, 100, layerMask);
+            var hitObject = hit? hit.collider.gameObject : null;
+            
+            if (hitObject && hitObject.layer == 8)
             {
                 touchStartX = cam.ScreenToWorldPoint(Input.mousePosition).x;
+                canMove = true;
             }
             return;
         }
 
-        if (Input.GetMouseButton(0))
+        if (canMove && Input.GetMouseButton(0))
         {
             touchEndX = cam.ScreenToWorldPoint(Input.mousePosition).x;
             rb.AddForce(new Vector2((touchStartX - touchEndX) * scrollSpeed, 0));
             
             touchStartX = touchEndX;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            canMove = false;
         }
     }
 
