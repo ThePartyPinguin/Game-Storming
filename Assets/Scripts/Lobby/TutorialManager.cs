@@ -99,7 +99,6 @@ public class TutorialManager : MonoBehaviour
         Rigidbody2D rb = draggedBlockObject.GetComponent<Rigidbody2D>();
         if(rb.velocity.magnitude < 0.1)
         {
-            Debug.Log("White people!");
             BeginBottomBlockScaffTutorial();
             draggedBlockObject = null;
             draggedBlock = null;

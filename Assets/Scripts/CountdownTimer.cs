@@ -14,6 +14,8 @@ public class CountdownTimer : MonoBehaviour
     private ProgressUnityEvent countdownTick;
     [SerializeField]
     private UnityEvent countdownCompleted;
+
+    private bool _isCountingDown;
     #endregion
 
     #region methods
@@ -22,26 +24,26 @@ public class CountdownTimer : MonoBehaviour
     /// </summary>
     public void ResetTimer()
     {
-        CancelInvoke();
         timer = countdownTime;
-        InvokeRepeating("CountDown", 0, 0.1f);
+        if (!_isCountingDown)
+            StartCoroutine(CountDownRoutine());
     }
 
-    /// <summary>
-    /// Counts 0.1 second down from the timer and notifies any listeners
-    /// </summary>
-    private void CountDown()
+    private IEnumerator CountDownRoutine()
     {
-        //Subtract 0.1 seconds from timer
-        timer -= 0.1f;
-        countdownTick.Invoke(countdownTime, timer);
+        _isCountingDown = true;
 
-        if (timer <= 0)
+        while (timer > 0)
         {
-            CancelInvoke();
-            countdownCompleted.Invoke();
+            timer -= 0.1f;
+            countdownTick.Invoke(countdownTime, timer);
+            yield return new WaitForSeconds(0.1f);
         }
+
+        countdownCompleted.Invoke();
+        _isCountingDown = false;
     }
+
     #endregion
 }
 

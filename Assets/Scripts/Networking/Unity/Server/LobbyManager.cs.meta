@@ -3,7 +3,12 @@ guid: fb9e24fdc5717bc46a073f2555c5004a
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - btnadd: {instanceID: 0}
+  - participantBlock: {instanceID: 0}
+  - roundDropdown: {instanceID: 0}
+  - connnectedPlayers: {fileID: 11400000, guid: c7db86e83ed1419448597ec07eb46fe1,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

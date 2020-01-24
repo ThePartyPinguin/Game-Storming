@@ -22,6 +22,7 @@ public class BlockGenerator : MonoBehaviour
     #endregion
 
     #region methods
+
     /// <summary>
     /// Spawns a new block with given owner and idea in a new bubble at a random location.
     /// </summary>
@@ -43,6 +44,7 @@ public class BlockGenerator : MonoBehaviour
             Vector2 newSize = new Vector2(newSizeX, newSizeY);
             Vector2 newColliderSize = new Vector2(newSizeX - 0.05f, newSizeY - 0.05f);
 
+            return;
             blockbubble.GetComponent<SpriteRenderer>().size = newSize;
             foreach (var collider in blockbubble.GetComponents<BoxCollider2D>())
             {

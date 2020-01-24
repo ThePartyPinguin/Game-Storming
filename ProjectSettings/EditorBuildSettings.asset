@@ -17,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LobbyTestScene.unity
     guid: fe74368c83b1ec8429afd964d040897f
+  - enabled: 1
+    path: Assets/Scenes/RemoveTowerScene.unity
+    guid: e47bad5ee2a6dfd42a66af06415e65f7
+  - enabled: 1
+    path: Assets/Scenes/ServerLobbySceneNetworked2.unity
+    guid: 6737d6d232a13a34c9b379ab766a2e84
   m_configObjects: {}

@@ -37,6 +37,9 @@ public class LobbyManager : MonoBehaviour
     [SerializeField]
     UnityEvent tutorialHighlighter;
 
+    [SerializeField] 
+    private ConnectedPlayers connectedPlayers;
+
     Guid lastGuid;
     
     void Start()
@@ -73,7 +76,6 @@ public class LobbyManager : MonoBehaviour
         Guid g = Guid.NewGuid();
         OnPlayerConnect(g, "yes");
         Debug.Log(participantsConnected.Count);
-        tutorialManager.SetPopVisible();
     }
 
     public void TestDisconnect()
@@ -83,7 +85,7 @@ public class LobbyManager : MonoBehaviour
 
     public void OnPlayerConnect(Guid playerId, string playerName)
     {
-        // CreateNewParticipant(playerId, playerName);
+        //CreateNewParticipant(playerId, playerName);
         newJoins.Add(playerId, playerName);
     }
 
@@ -91,9 +93,9 @@ public class LobbyManager : MonoBehaviour
     {
         RemoveParicipant(playerId);
     }
+
     private void CreateNewParticipant(Guid playerId, string playerName)
     {
-        Debug.Log("Nnnnkllll");
         //get new unique color for the player
         Color playerColor = AssignColor();
 
@@ -109,7 +111,6 @@ public class LobbyManager : MonoBehaviour
 
         tutorialManager.objectFloating.Add(newPartBlock.GetComponent<Block>());
 
-        //newPartBlock.GetComponent<ColorChanger>().GetColor(playerColor);
         participantsConnected.Add(newPart);
 
 
@@ -124,9 +125,10 @@ public class LobbyManager : MonoBehaviour
             blockSpawnPos.x -= participantBlock.GetComponent<BoxCollider2D>().size.x * 4;
             return;
         }
-        Debug.Log("this was after");
 
+        tutorialManager.SetPopVisible();
     }
+
     private void RemoveParicipant(Guid playerId)
     {
         foreach (Participant p in participantsConnected.ToList())
@@ -170,6 +172,12 @@ public class LobbyManager : MonoBehaviour
 
     public void StartGame(string sceneName)
     {
+        if (participantsConnected.Count != UnityServerNetworkManager.Instance.GameServer.ConnectedCount)
+        {
+            Debug.Log("Not all connected players submitted their name...");
+            return;
+        }
+        UnityServerNetworkManager.Instance.GetComponent<GameEvents>().SendStartGameEvent();
         SceneManager.LoadScene(sceneName);
     }
 
