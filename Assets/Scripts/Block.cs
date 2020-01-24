@@ -40,6 +40,10 @@ public class Block : Draggable
     private bool isWaitingForSafeSpot;
     private Coroutine currentCoroutine;
     private float AutodropCheckDelayTimer;
+    [SerializeField]
+    private bool InvalidSpotWarning;
+    [SerializeField]
+    private float WarningFlashSpeed = 0.5f;
     #endregion
 
     #region properties
@@ -115,6 +119,15 @@ public class Block : Draggable
                     AutodropCheckDelayTimer = AutodropTimerValue;
                 }
             }
+        }
+
+        if (InvalidSpotWarning)
+        {
+            this.spriteRenderer.color = Color.Lerp(Color.yellow, Color.red, Mathf.PingPong(Time.time, WarningFlashSpeed));
+        }
+        else
+        {
+            this.spriteRenderer.color = this.owner.Color;
         }
 
 
@@ -244,6 +257,7 @@ public class Block : Draggable
         return false;
     }
 
+
     /// <summary>
     /// Checks whether or not another block lies on top of this block
     /// </summary>
@@ -288,6 +302,13 @@ public class Block : Draggable
     public override void OnMouseDown()
     {
         this.DetachAndDestroyBubble();
+        //Block[] b = GameObject.FindObjectsOfType<Block>();
+        //for (int i = 0; i < b.Length; i++)
+        //{
+        //    b[i].isDragged = false;
+        //    gameObject.layer = originalLayer;
+        //    dragJoint.enabled = false;
+        //}
         isDragged = true;
         base.OnMouseDown();
     }
@@ -345,14 +366,17 @@ public class Block : Draggable
     /// <returns></returns>
     private IEnumerator ActivateCollisionWhenSafe()
     {
-        rigidBody.isKinematic = false;
+        rigidBody.isKinematic = false; 
         blockCollider.enabled = false;
         isWaitingForSafeSpot = true;
+        InvalidSpotWarning = true;
         InvokeRepeating("CheckIfBlockIsInSafeSpot", 0.5f, 0.25f);
         yield return new WaitUntil(() => (isWaitingForSafeSpot == false));
         blockCollider.enabled = true;
+        InvalidSpotWarning = false;
         CancelInvoke("CheckIfBlockIsInSafeSpot");
     }
+
 
     /// <summary>
     /// Stops all horizontal movement a block has so it can't be thrown into other towers

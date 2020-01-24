@@ -18,6 +18,9 @@ public class GameManager : MonoSingleton<GameManager>
     [SerializeField]
     private StringBasedUnityEvent newBuilderCalled;
 
+    [SerializeField]
+    public bool enableMultiTouch;
+
     private bool need2Delete = true;
     #endregion
 
@@ -44,11 +47,15 @@ public class GameManager : MonoSingleton<GameManager>
         FoundationTop = this.foundationTop.position.y + (this.foundationTop.GetComponent<SpriteRenderer>().size.y / 2);
 
         currentBuilderIndex = 0;
+        Input.multiTouchEnabled = enableMultiTouch;
         //NotifyNextBuilder(currentBuilderIndex);
     }
 
     private void Update()
     {
+        if(Input.touchCount > 0)
+        Debug.Log(Input.touchCount);
+
         if (Input.GetKey(KeyCode.Insert))
         {
             timer.ResetTimer();
