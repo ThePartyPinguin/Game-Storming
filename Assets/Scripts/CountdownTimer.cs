@@ -7,13 +7,13 @@ public class CountdownTimer : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    private int countdownTime;
+    private int countdownTime = default;
     private float timer;
 
     [SerializeField]
-    private ProgressUnityEvent countdownTick;
+    private ProgressUnityEvent countdownTick = default;
     [SerializeField]
-    private UnityEvent countdownCompleted;
+    private UnityEvent countdownCompleted = default;
 
     private bool _isCountingDown;
     #endregion

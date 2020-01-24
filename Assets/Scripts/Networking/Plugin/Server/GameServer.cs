@@ -55,7 +55,7 @@ namespace GameFrame.Networking.Server
 
         private ServerListener<TEnum> _serverListener;
 
-        private readonly SerializationType _serializationType;
+        private readonly SerializationType _serializationType = default;
 
         private readonly ServerSettings<TEnum> _serverSettings;
 

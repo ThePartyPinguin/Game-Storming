@@ -8,7 +8,7 @@ public class SimpleAnimationPlayer : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    private Animator animator;
+    private Animator animator = default;
     #endregion
 
     #region methods

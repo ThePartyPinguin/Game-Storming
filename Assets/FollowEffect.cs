@@ -8,7 +8,7 @@ public class FollowEffect : MonoBehaviour
     private float completionTime = 2f;
     private float time = 0;
     [SerializeField]
-    private AnimationCurve effectSpeed;
+    private AnimationCurve effectSpeed = default;
 
     private Transform target;
     private Vector2 startingPos;

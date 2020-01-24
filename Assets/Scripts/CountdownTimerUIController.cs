@@ -8,13 +8,13 @@ using UnityEngine.UI;
 public class CountdownTimerUIController : MonoBehaviour
 {
     [SerializeField]
-    private Image timerVisuals;
+    private Image timerVisuals = default;
     [SerializeField]
-    private TMP_Text timerText;
+    private TMP_Text timerText = default;
     [SerializeField]
-    private Gradient colorRange;
+    private Gradient colorRange = default;
     [SerializeField]
-    private Gradient alphaRange;
+    private Gradient alphaRange = default;
 
     /// <summary>
     /// Updates the timer UI to the progress of the timer.

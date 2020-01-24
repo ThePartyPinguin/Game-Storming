@@ -14,9 +14,9 @@ public class LobbyManager : MonoBehaviour
 {
     private Vector3 blockSpawnPos;
     [SerializeField]
-    private Vector2 spawnPosMinMaxX;
+    private Vector2 spawnPosMinMaxX = default;
     [SerializeField]
-    private Vector2 spawnPosMinMaxY;
+    private Vector2 spawnPosMinMaxY = default;
     private float counter = 0;
     private Dictionary<Guid, string> newJoins;
 
@@ -31,11 +31,11 @@ public class LobbyManager : MonoBehaviour
 
 
     [SerializeField]
-    GameObject participantBlock;
+    GameObject participantBlock = default;
     [SerializeField]
-    TMP_Dropdown roundDropdown;
+    TMP_Dropdown roundDropdown = default;
     [SerializeField]
-    UnityEvent tutorialHighlighter;
+    UnityEvent tutorialHighlighter = default;
 
     [SerializeField] 
     private ConnectedPlayers connectedPlayers;

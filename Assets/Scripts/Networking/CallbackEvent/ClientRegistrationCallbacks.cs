@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 public class ClientRegistrationCallbacks : MonoBehaviour
 {
     [SerializeField]
-    private ConnectedPlayers _connectedPlayers;
+    private ConnectedPlayers _connectedPlayers = default;
 
     public TopicEventCallbacks TopicEventCallbacks;
 

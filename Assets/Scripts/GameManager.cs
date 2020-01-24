@@ -12,18 +12,18 @@ public class GameManager : MonoSingleton<GameManager>
     private List<Participant> participants; 
     private int currentBuilderIndex;
     [SerializeField]
-    private CountdownTimer timer;
+    private CountdownTimer timer = default;
 
     [SerializeField]
-    private Transform foundationTop;
+    private Transform foundationTop = default;
 
     [SerializeField]
-    private StringBasedUnityEvent newBuilderCalled;
+    private StringBasedUnityEvent newBuilderCalled = default;
 
     [SerializeField]
     public bool enableMultiTouch;
     [SerializeField] 
-    private ConnectedPlayers connectedPlayers;
+    private ConnectedPlayers connectedPlayers = default;
 
     private bool need2Delete = true;
 

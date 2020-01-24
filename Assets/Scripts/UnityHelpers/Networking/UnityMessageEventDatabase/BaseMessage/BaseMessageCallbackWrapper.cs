@@ -12,7 +12,7 @@ namespace GameFrame.UnityHelpers.Networking.UnityMessageEventDatabase.BaseMessag
         public override NetworkEvent EventType => _eventType;
 
         [SerializeField]
-        private NetworkEvent _eventType;
+        private NetworkEvent _eventType = default;
 
         public override TBaseCallback Callback => _callback;
 

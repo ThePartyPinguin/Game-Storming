@@ -27,7 +27,7 @@ public class Scaffold : MonoBehaviour
         testBoundWidth = b.size.x;
         testBoundHeight = b.extents.y * 1.2f;
 
-        InvokeRepeating("CheckDeleteAllowed", 1, 1);
+        InvokeRepeating("CheckDeleteAllowed", timer, timer);
     }
 
     //// Update is called once per frame

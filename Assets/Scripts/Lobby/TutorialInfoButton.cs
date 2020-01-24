@@ -8,11 +8,11 @@ public class TutorialInfoButton : MonoBehaviour
 {
     public bool isOpened;
     [SerializeField]
-    private GameObject instructions;
+    private GameObject instructions = default;
     [SerializeField]
-    public TutorialManager tutorialManager;
+    public TutorialManager tutorialManager = default;
     [SerializeField]
-    public UnityEvent Highlighter;
+    public UnityEvent Highlighter = default;
 
     private void Start()
     {

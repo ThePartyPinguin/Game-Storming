@@ -6,9 +6,9 @@ public class TextRotator : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    private Transform parent;
+    private Transform parent = default;
     [SerializeField]
-    private Transform text;
+    private Transform text = default;
     [SerializeField]
     private float rotationLimit = 0.70f;
     #endregion

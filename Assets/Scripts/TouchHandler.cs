@@ -6,25 +6,25 @@ public class TouchHandler : MonoBehaviour
 {
    
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Touch t;
-    }
+    //// Start is called before the first frame update
+    //void Start()
+    //{
+    //    Touch t;
+    //}
 
-    // Update is called once per frame
-    void Update()
-    {
+    //// Update is called once per frame
+    //void Update()
+    //{
         
-    }
+    //}
 
-    public void AddTouch()
-    {
+    //public void AddTouch()
+    //{
 
-    }
+    //}
 
-    public void RemoveTouch()
-    {
+    //public void RemoveTouch()
+    //{
 
-    }
+    //}
 }

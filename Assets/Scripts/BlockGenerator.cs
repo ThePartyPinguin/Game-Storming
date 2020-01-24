@@ -9,21 +9,21 @@ public class BlockGenerator : MonoBehaviour
 {
     #region fields
     [SerializeField]
-    private Vector2 spawnPosMinMaxX; 
+    private Vector2 spawnPosMinMaxX = default; 
     [SerializeField]
-    private Vector2 spawnPosMinMaxY;
+    private Vector2 spawnPosMinMaxY = default;
     [SerializeField]
-    private Block prefab;
+    private Block prefab = default;
     [SerializeField]
-    private FollowEffect blockExistsEffectPrefab;
+    private FollowEffect blockExistsEffectPrefab = default;
     [SerializeField]
-    private AnimationCurve blockSizeX;
+    private AnimationCurve blockSizeX = default;
     [SerializeField]
-    private AnimationCurve blockSizeY;
+    private AnimationCurve blockSizeY = default;
     [SerializeField]
-    public Transform bubbleMover;
+    public Transform bubbleMover = default;
     [SerializeField]
-    private BlockWatcher blockWatcher;
+    private BlockWatcher blockWatcher = default;
     #endregion
 
     #region methods

@@ -12,20 +12,20 @@ public class Block : Draggable
     private Tower tower;
     private Participant owner;
     [SerializeField]
-    private GameObject scaffoldPrefab;
+    private GameObject scaffoldPrefab = default;
     [SerializeField]
-    private TrailRenderer blockTrail;
+    private TrailRenderer blockTrail = default;
     [SerializeField]
-    private ParticleSystem teleportParticles;
+    private ParticleSystem teleportParticles = default;
 
     [SerializeField]
-    private TextMeshPro textVisual;
+    private TextMeshPro textVisual = default;
     [SerializeField]
-    private GameObject blockBubble;
+    private GameObject blockBubble = default;
     [SerializeField]
-    private BoxCollider2D blockCollider;
+    private BoxCollider2D blockCollider = default;
     [SerializeField]
-    private TextMeshPro importanceDisplay;
+    private TextMeshPro importanceDisplay = default;
     private float BlockReleaseHeight = 0.1f;
     [SerializeField]
     private float AutodropTimerValue = 2.0f;
@@ -311,7 +311,7 @@ public class Block : Draggable
 
     public bool IsOtherBlockOnBottom()
     {
-        if (rigidBody.velocity.magnitude > 0.1f || blockBubble) { return false; }
+        if (rb.velocity.magnitude > 0.1f || blockBubble) { return false; }
 
         var checkHeight = 0.75f;
         var checkWidthCutOff = 0.1f;

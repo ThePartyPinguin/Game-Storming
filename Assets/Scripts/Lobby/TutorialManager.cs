@@ -7,13 +7,13 @@ using UnityEngine;
 public class TutorialManager : MonoBehaviour
 {
     [SerializeField]
-    private LobbyManager lobby;
+    private LobbyManager lobby = default;
     [SerializeField]
-    private TutorialInfoButton popTutorialButton;
+    private TutorialInfoButton popTutorialButton = default;
     [SerializeField]
-    private TutorialInfoButton removeBlockScaffoldingTutorialButton;
+    private TutorialInfoButton removeBlockScaffoldingTutorialButton = default;
     [SerializeField]
-    private TutorialInfoButton tutorialStackButton;
+    private TutorialInfoButton tutorialStackButton = default;
 
     public List<Block> objectFloating;
     public List<Block> objectsOnGround;

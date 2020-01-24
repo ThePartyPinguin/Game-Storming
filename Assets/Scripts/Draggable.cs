@@ -19,11 +19,11 @@ public abstract class Draggable : MonoBehaviour
     private float lowestBoundary;
 
     [SerializeField]
-    private UnityEvent onDragDown;
+    private UnityEvent onDragDown = default;
     [SerializeField]
-    private UnityEvent onDrag;
+    private UnityEvent onDrag = default;
     [SerializeField]
-    private UnityEvent onDragUp;
+    private UnityEvent onDragUp = default;
     #endregion
 
     #region methods
