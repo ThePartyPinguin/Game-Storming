@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 10602116357774319}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.325, y: 0.325, z: 0}
-  m_LocalScale: {x: 1.375, y: 1.375, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_Children:
   - {fileID: 2911518817181108465}
   m_Father: {fileID: 4683487841430045389}
@@ -487,6 +487,8 @@ MonoBehaviour:
   blockBubble: {fileID: 1731884626838366157}
   blockCollider: {fileID: 4683487841430045390}
   importanceDisplay: {fileID: 6693660519147040145}
+  AutodropTimerValue: 2
+  BottomCheckSize: 0.2
 --- !u!61 &4683487841430045390
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -640,7 +642,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.002, y: -0.011}
+  m_AnchoredPosition: {x: 0.0062, y: -0.011}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &629997745946270049
@@ -743,7 +745,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 2
+  m_fontSize: 2.35
   m_fontSizeBase: 2
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -781,7 +783,7 @@ MonoBehaviour:
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0.4236456, y: 0.3674558, z: 0.4266761, w: 0.40490282}
+  m_margin: {x: 0.4236456, y: 0.3522904, z: 0.4266761, w: 0.38215467}
   m_textInfo:
     textComponent: {fileID: 6693660519147040145}
     characterCount: 1
