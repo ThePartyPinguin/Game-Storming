@@ -46,6 +46,11 @@ public class Participant
     {
         this.score += amount;
     }
+
+    public Guid GetId()
+    {
+        return this.Id;
+    }
     #endregion
 }
 

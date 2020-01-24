@@ -27,6 +27,7 @@ public class BlockGenerator : MonoBehaviour
     #endregion
 
     #region methods
+
     /// <summary>
     /// Spawns a new block with given owner and idea in a new bubble at a random location.
     /// </summary>

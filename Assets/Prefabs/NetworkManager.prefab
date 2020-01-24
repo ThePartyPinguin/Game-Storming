@@ -1,0 +1,166 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &542033833648885924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 542033833648885930}
+  - component: {fileID: 542033833648885931}
+  - component: {fileID: 542033833648885928}
+  - component: {fileID: 542033833648885935}
+  - component: {fileID: 6433826525884059073}
+  - component: {fileID: 542033833648885929}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &542033833648885930
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542033833648885924}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -262.10394, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &542033833648885931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542033833648885924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9243ccee11edc184f837b24a65cee2d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TcpPort: 5555
+  UdpRemoteSendPort: 0
+  UdpReceivePort: 0
+  MaxConnectedPlayers: 8
+  SerializationType: 0
+  UseUdp: 0
+  OnClientConnect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 542033833648885928}
+        m_MethodName: OnClientConnected
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &542033833648885928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542033833648885924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbb6855bcd53c264d82e8cb364a58665, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _connectedPlayers: {fileID: 11400000, guid: c7db86e83ed1419448597ec07eb46fe1, type: 2}
+  TopicEventCallbacks: {fileID: 542033833648885935}
+--- !u!114 &542033833648885935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542033833648885924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 706d922c78a00f448b5b3ec6613d35c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ClientRegistrationCallbacks: {fileID: 542033833648885928}
+--- !u!114 &6433826525884059073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542033833648885924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c90e56c5de85e43ac0e3e7682f300d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &542033833648885929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542033833648885924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f29e84a2080ed745a343ecb2c3bb65b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _messageCallbackWrappers:
+  - _eventType: 2
+    _callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 542033833648885928}
+          m_MethodName: OnReceiveClientName
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - _eventType: 3
+    _callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 542033833648885928}
+          m_MethodName: SpawnBlock
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - _eventType: 4
+    _callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 542033833648885935}
+          m_MethodName: OnReceiveTopic
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2

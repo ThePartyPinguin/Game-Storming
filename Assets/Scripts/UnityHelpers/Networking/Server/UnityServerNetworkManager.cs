@@ -25,7 +25,9 @@ public class UnityServerNetworkManager : MonoSingleton<UnityServerNetworkManager
     void Start()
     {
         UnitySystemConsoleRedirector.Redirect();
-        Setup();
+
+        if(GameServer == null || !GameServer.IsStarted)
+            Setup();
     }
 
     public void Setup()

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameFrame.UnityHelpers.Networking;
+using UnityEditor.Networking.PlayerConnection;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,8 +22,12 @@ public class GameManager : MonoSingleton<GameManager>
 
     [SerializeField]
     public bool enableMultiTouch;
+    [SerializeField] 
+    private ConnectedPlayers connectedPlayers;
 
     private bool need2Delete = true;
+
+    private Participant _currentBuilder;
     #endregion
 
     #region properties
@@ -37,26 +43,28 @@ public class GameManager : MonoSingleton<GameManager>
     #region methods
     private void Start()
     {
-        participants = new List<Participant>();
-        participants.Add(new Participant(System.Guid.NewGuid(), "Player 1", Color.red));
-        participants.Add(new Participant(System.Guid.NewGuid(), "Player 2", Color.green));
-        participants.Add(new Participant(System.Guid.NewGuid(), "Player 3", Color.blue));
-        participants.Add(new Participant(System.Guid.NewGuid(), "Player 4", Color.yellow));
-        participants.Add(new Participant(System.Guid.NewGuid(), "Player 5", Color.magenta));
+        participants = connectedPlayers.GetConnectedPlayers();
+        Debug.Log("Connected players: " + participants.Count);
+        //participants = new List<Participant>();
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 1", Color.red));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 2", Color.green));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 3", Color.blue));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 4", Color.yellow));
+        //participants.Add(new Participant(System.Guid.NewGuid(), "Player 5", Color.magenta));
 
         FoundationTop = this.foundationTop.position.y + (this.foundationTop.GetComponent<SpriteRenderer>().size.y / 2);
 
         currentBuilderIndex = 0;
         Input.multiTouchEnabled = enableMultiTouch;
         //NotifyNextBuilder(currentBuilderIndex);
+
+        timer.ResetTimer();
+        
     }
 
     private void Update()
     {
-        if(Input.touchCount > 0)
-        Debug.Log(Input.touchCount);
-
-        if (Input.GetKey(KeyCode.Insert))
+        if (Input.GetKeyDown(KeyCode.Insert))
         {
             timer.ResetTimer();
         }
@@ -78,7 +86,10 @@ public class GameManager : MonoSingleton<GameManager>
     /// <param name="participant">the new participant</param>
     public void RegisterNewParticipant(Participant participant)
     {
-        Participants.Add(participant);
+        Debug.Log("Adding participant: " + participant.Name);
+        if (participants == null)
+            participants = new List<Participant>();
+        participants.Add(participant);
     }
 
     public Participant GetParticipant(Guid participantId)
@@ -92,17 +103,19 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     public void DetermineNextBuilder()
     {
+        Debug.Log("Determine next builder: " + currentBuilderIndex + "  " + participants.Count);
         //Call next builder
-        if (currentBuilderIndex != (participants.Count - 1))
+        if (currentBuilderIndex < participants.Count)
         {
-            ++currentBuilderIndex;
             //[PSEUDOCODE]
             NotifyNextBuilder(currentBuilderIndex);
+            ++currentBuilderIndex;
         }
         //All participants have had a turn, commence voting phase
         else
         {
-            StartVotingPhase();
+            EndGame();
+            //StartVotingPhase();
         }
     }
 
@@ -112,9 +125,18 @@ public class GameManager : MonoSingleton<GameManager>
     /// <param name="builderParticipantIndex"></param>
     private void NotifyNextBuilder(int builderParticipantIndex)
     {
-        var builderName = participants[builderParticipantIndex].Name;
-        newBuilderCalled.Invoke(builderName);
-        //TODO: Networking notify next builder phone
+        Participant newBuilder = participants[builderParticipantIndex];
+        Debug.Log("New builder = " + newBuilder.Name);
+        newBuilderCalled.Invoke(newBuilder.Name);
+
+        if (_currentBuilder != null)
+        {
+            UnityServerNetworkManager.Instance.SendMessageToPlayer(_currentBuilder.Id, new EventOnlyNetworkMessage(NetworkEvent.SERVER_STOP_BUILDER));
+        }
+        Debug.Log("NewBuilder command send to " + newBuilder.Name + "   " + newBuilder.Id);
+        UnityServerNetworkManager.Instance.SendMessageToPlayer(newBuilder.Id, new EventOnlyNetworkMessage(NetworkEvent.SERVER_ASSIGN_NEW_BUILDER));
+
+        _currentBuilder = newBuilder;
     }
 
     /// <summary>
@@ -132,7 +154,11 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private void StartVotingPhase()
     {
-        throw new System.NotImplementedException();
+    }
+
+    private void EndGame()
+    {
+        UnityServerNetworkManager.Instance.BroadcastMessage(new EventOnlyNetworkMessage(NetworkEvent.SERVER_END_GAME));
     }
 
     #endregion
