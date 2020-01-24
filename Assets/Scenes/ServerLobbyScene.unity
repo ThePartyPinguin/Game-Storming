@@ -2188,6 +2188,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3469316871332372532, guid: c342d220e6774b14fa2cfd086de37dab,
+        type: 3}
+      propertyPath: m_text
+      value: You can remove bottom blocks safely, scaffolding will appear!
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c342d220e6774b14fa2cfd086de37dab, type: 3}
 --- !u!1 &1320124043

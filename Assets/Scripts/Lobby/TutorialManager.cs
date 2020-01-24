@@ -260,8 +260,12 @@ public class TutorialManager : MonoBehaviour
                 // ColorChanger c = block.GetComponent<ColorChanger>();
                 // c.Toggle(true);
                 removeBlockScaffoldingTutorialButton.gameObject.SetActive(true);
-
-                removeBlockScaffoldingTutorialButton.transform.position = new Vector3(bottomBlock.GetWidth() * 2 + block.transform.position.x, block.transform.position.y);
+                float posy = block.transform.position.y;
+                if (posy < 3)
+                {
+                    posy = 3;
+                }
+                removeBlockScaffoldingTutorialButton.transform.position = new Vector3(bottomBlock.GetWidth() * 2 + block.transform.position.x, posy);
             }
             //Debug.Log("Sokka");
         }
