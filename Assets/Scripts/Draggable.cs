@@ -27,7 +27,7 @@ public abstract class Draggable : MonoBehaviour
     #endregion
 
     #region methods
-    private void Awake()
+    protected void Start()
     {
         //Caching values
         originalLayer = gameObject.layer;
@@ -35,21 +35,15 @@ public abstract class Draggable : MonoBehaviour
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
         cam = Camera.main;
         lowestBoundary = GameManager.Instance.FoundationTop + 0.5f;
+        Debug.Log("Lowest boundary: " + lowestBoundary);
     }
+    
 
     protected void Update()
     {
         if (isDragged)
         {
             var mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-            //if (Input.touchCount > 0)
-            //{
-            //    foreach(var touch in Input.touches)
-            //    {
-            //        touch.
-            //    }
-            //    mousePos = cam.ScreenToWorldPoint(Input.touches[Input.touchCount - 1].position);
-            //}
 
             mousePos.y = Mathf.Max(mousePos.y, lowestBoundary);
             dragJoint.target = mousePos;

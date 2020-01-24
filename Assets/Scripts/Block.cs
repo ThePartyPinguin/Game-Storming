@@ -33,7 +33,7 @@ public class Block : Draggable
     private float BottomCheckSize = 0.2f;
 
     private SpriteRenderer spriteRenderer;
-    private Rigidbody2D rigidBody;
+    private Rigidbody2D rb;
     private HingeJoint2D towerJoint;
 
     private int importance;
@@ -69,13 +69,13 @@ public class Block : Draggable
     #endregion
 
     #region methods
-    private void Start()
+    private new void Start()
     {
         //Cache components
         spriteRenderer = GetComponent<SpriteRenderer>();
         towerJoint = GetComponent<HingeJoint2D>();
-        rigidBody = GetComponent<Rigidbody2D>();
-        rigidBody.isKinematic = true;
+        rb = GetComponent<Rigidbody2D>();
+        rb.isKinematic = true;
         tower = null;
         isConnected = false;
         respawnHeight = Camera.main.orthographicSize + Camera.main.transform.position.y + (GetHeight()) + 1;
@@ -85,7 +85,7 @@ public class Block : Draggable
 
         InvokeRepeating("CheckOutOfWorld", 1, 1);
 
-
+        base.Start();
     }
 
     private new void Update()
@@ -281,7 +281,7 @@ public class Block : Draggable
     /// <returns>True if another block lies on top of this block, false if not</returns>
     public bool IsOtherBlockOnTop()
     {
-        if (rigidBody.velocity.magnitude > 0.1f || blockBubble) { return false; }
+        if (rb.velocity.magnitude > 0.1f || blockBubble) { return false; }
 
         var checkHeight = 0.75f;
         var checkWidthCutOff = 0.1f;
@@ -305,7 +305,7 @@ public class Block : Draggable
             Destroy(blockBubble);
 
             //Activate block physics
-            rigidBody.isKinematic = false;
+            rb.isKinematic = false;
             blockCollider.enabled = true;
 
             //Render block in front of bubbleBlocks
@@ -383,7 +383,7 @@ public class Block : Draggable
     /// <returns></returns>
     private IEnumerator ActivateCollisionWhenSafe()
     {
-        rigidBody.isKinematic = false; 
+        rb.isKinematic = false; 
         blockCollider.enabled = false;
         isWaitingForSafeSpot = true;
         InvalidSpotWarning = true;
@@ -400,7 +400,7 @@ public class Block : Draggable
     /// </summary>
     public void StopHorizontalMovement()
     {
-        rigidBody.velocity = new Vector2(rigidBody.velocity.x / 100, rigidBody.velocity.y / 10);
+        rb.velocity = new Vector2(rb.velocity.x / 100, rb.velocity.y / 10);
     }
 
     /// <summary>
@@ -409,7 +409,7 @@ public class Block : Draggable
     /// <param name="otherTower">The tower the block will snap to</param>
     private IEnumerator SnapToTower(Tower otherTower)
     {
-        yield return new WaitUntil(() => (Mathf.Approximately(rigidBody.velocity.magnitude, 0f) && Mathf.Approximately(rigidBody.angularVelocity, 0f)));
+        yield return new WaitUntil(() => (Mathf.Approximately(rb.velocity.magnitude, 0f) && Mathf.Approximately(rb.angularVelocity, 0f)));
         //this.tower = otherTower;
         //otherTower.AddBlock(this);
         currentCoroutine = null;
@@ -485,7 +485,7 @@ public class Block : Draggable
         teleportParticles.Play();
         transform.rotation = Quaternion.identity;
         transform.position = new Vector2(transform.position.x, respawnHeight);
-        rigidBody.velocity = Vector2.zero;
+        rb.velocity = Vector2.zero;
         yield return new WaitForSeconds(0.4f);
         blockCollider.enabled = true;
         teleportParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);

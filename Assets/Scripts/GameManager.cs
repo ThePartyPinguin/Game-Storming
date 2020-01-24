@@ -45,6 +45,8 @@ public class GameManager : MonoSingleton<GameManager>
     {
         participants = connectedPlayers.GetConnectedPlayers();
         Debug.Log("Connected players: " + participants.Count);
+
+        //Mock participants for offline testing:
         //participants = new List<Participant>();
         //participants.Add(new Participant(System.Guid.NewGuid(), "Player 1", Color.red));
         //participants.Add(new Participant(System.Guid.NewGuid(), "Player 2", Color.green));
