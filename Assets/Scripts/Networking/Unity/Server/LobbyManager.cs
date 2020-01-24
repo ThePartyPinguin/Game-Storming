@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -12,21 +13,29 @@ using Random = UnityEngine.Random;
 public class LobbyManager : MonoBehaviour
 {
     private Vector3 blockSpawnPos;
+    [SerializeField]
+    private Vector2 spawnPosMinMaxX;
+    [SerializeField]
+    private Vector2 spawnPosMinMaxY;
     private float counter = 0;
     private Dictionary<Guid, string> newJoins;
 
-    private List<Participant> participantsConnected;
+    public List<Participant> participantsConnected;
     private Dictionary<Guid, Button> participantButtons;
-    private Dictionary<Guid, GameObject> participantBlocks;
+    public Dictionary<Guid, GameObject> participantBlocks;
     private List<Color> playerColors;
 
     public Button btnadd;
+
+    public TutorialManager tutorialManager;
 
 
     [SerializeField]
     GameObject participantBlock;
     [SerializeField]
     TMP_Dropdown roundDropdown;
+    [SerializeField]
+    UnityEvent tutorialHighlighter;
 
     Guid lastGuid;
     
@@ -39,8 +48,6 @@ public class LobbyManager : MonoBehaviour
         participantButtons = new Dictionary<Guid, Button>();
         participantBlocks = new Dictionary<Guid, GameObject>();
         playerColors = new List<Color>();
-
-        Debug.Log(participantsConnected.Count);
 
         DeterminePossibleColors();
     }
@@ -55,6 +62,7 @@ public class LobbyManager : MonoBehaviour
             Guid temp = newJoins.Keys.First();
             CreateNewParticipant(temp, newJoins[temp]);
             newJoins.Remove(temp);
+            tutorialHighlighter.Invoke(); 
 
             counter = 0;
         }
@@ -65,12 +73,12 @@ public class LobbyManager : MonoBehaviour
         Guid g = Guid.NewGuid();
         OnPlayerConnect(g, "yes");
         Debug.Log(participantsConnected.Count);
+        tutorialManager.SetPopVisible();
     }
 
     public void TestDisconnect()
     {
         OnPlayerDisconnect(lastGuid);
-        Debug.Log(participantsConnected.Count);
     }
 
     public void OnPlayerConnect(Guid playerId, string playerName)
@@ -85,7 +93,7 @@ public class LobbyManager : MonoBehaviour
     }
     private void CreateNewParticipant(Guid playerId, string playerName)
     {
-
+        Debug.Log("Nnnnkllll");
         //get new unique color for the player
         Color playerColor = AssignColor();
 
@@ -93,10 +101,17 @@ public class LobbyManager : MonoBehaviour
 
         participantBlock.GetComponent<SpriteRenderer>().color = playerColor;
         participantBlock.GetComponentInChildren<TextMeshPro>().text = playerName;
-        GameObject newPartBlock = Instantiate(participantBlock, blockSpawnPos, Quaternion.identity);
+        GameObject newPartBlock = Instantiate(participantBlock, GenerateSpawnlocation(), Quaternion.identity);
         participantBlocks.Add(playerId, newPartBlock);
+        Debug.Log(participantBlocks.Count);
+        ColorChanger c = newPartBlock.GetComponent<ColorChanger>();
+        c.GetColor(playerColor);
 
+        tutorialManager.objectFloating.Add(newPartBlock.GetComponent<Block>());
+
+        //newPartBlock.GetComponent<ColorChanger>().GetColor(playerColor);
         participantsConnected.Add(newPart);
+
 
         lastGuid = playerId;
         if (participantsConnected.Count == 6)
@@ -109,6 +124,8 @@ public class LobbyManager : MonoBehaviour
             blockSpawnPos.x -= participantBlock.GetComponent<BoxCollider2D>().size.x * 4;
             return;
         }
+        Debug.Log("this was after");
+
     }
     private void RemoveParicipant(Guid playerId)
     {
@@ -161,5 +178,16 @@ public class LobbyManager : MonoBehaviour
         //passing nesessary info to StaticGameInfo before destroying the Lobby
         StaticGameInfo.participants = participantsConnected;
         StaticGameInfo.rounds = Convert.ToInt32(roundDropdown.options[roundDropdown.value].text);
+    }
+
+    // fuckin stole this from Marko's BlockGenerator class lmao
+    private Vector2 GenerateSpawnlocation()
+    {
+        if (spawnPosMinMaxX.x < spawnPosMinMaxX.y && spawnPosMinMaxY.x < spawnPosMinMaxY.y)
+        {
+            return new Vector2(transform.position.x + Random.Range(spawnPosMinMaxX.x, spawnPosMinMaxX.y), Random.Range(spawnPosMinMaxY.x, spawnPosMinMaxY.y));
+        }
+        Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
+        return Vector2.zero;
     }
 }
