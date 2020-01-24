@@ -42,14 +42,14 @@ public abstract class Draggable : MonoBehaviour
         if (isDragged)
         {
             var mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-            if (Input.touchCount > 0)
-            {
-                foreach(var touch in Input.touches)
-                {
-                    touch.
-                }
-                mousePos = cam.ScreenToWorldPoint(Input.touches[Input.touchCount - 1].position);
-            }
+            //if (Input.touchCount > 0)
+            //{
+            //    foreach(var touch in Input.touches)
+            //    {
+            //        touch.
+            //    }
+            //    mousePos = cam.ScreenToWorldPoint(Input.touches[Input.touchCount - 1].position);
+            //}
 
             mousePos.y = Mathf.Max(mousePos.y, lowestBoundary);
             dragJoint.target = mousePos;
