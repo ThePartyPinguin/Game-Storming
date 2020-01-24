@@ -111,6 +111,7 @@ public class GameManager : MonoSingleton<GameManager>
         //All participants have had a turn, commence voting phase
         else
         {
+            EndGame();
             //StartVotingPhase();
         }
     }
@@ -150,6 +151,11 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private void StartVotingPhase()
     {
+    }
+
+    private void EndGame()
+    {
+        UnityServerNetworkManager.Instance.BroadcastMessage(new EventOnlyNetworkMessage(NetworkEvent.SERVER_END_GAME));
     }
 
     #endregion

@@ -160,6 +160,12 @@ public class LobbyManager : MonoBehaviour
 
     public void StartGame(string sceneName)
     {
+        if (participantsConnected.Count != UnityServerNetworkManager.Instance.GameServer.ConnectedCount)
+        {
+            Debug.Log("Not all connected players submitted their name...");
+            return;
+        }
+        UnityServerNetworkManager.Instance.GetComponent<GameEvents>().SendStartGameEvent();
         SceneManager.LoadScene(sceneName);
     }
 
