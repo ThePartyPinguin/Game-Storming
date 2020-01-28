@@ -75,7 +75,7 @@ public class LobbyManager : MonoBehaviour
     {
         Guid g = Guid.NewGuid();
         OnPlayerConnect(g, "yes");
-        Debug.Log(participantsConnected.Count);
+       //Debug.Log(participantsConnected.Count);
     }
 
     public void TestDisconnect()
@@ -105,7 +105,7 @@ public class LobbyManager : MonoBehaviour
         participantBlock.GetComponentInChildren<TextMeshPro>().text = playerName;
         GameObject newPartBlock = Instantiate(participantBlock, GenerateSpawnlocation(), Quaternion.identity);
         participantBlocks.Add(playerId, newPartBlock);
-        Debug.Log(participantBlocks.Count);
+       //Debug.Log(participantBlocks.Count);
         ColorChanger c = newPartBlock.GetComponent<ColorChanger>();
         c.GetColor(playerColor);
 
@@ -174,7 +174,7 @@ public class LobbyManager : MonoBehaviour
     {
         if (participantsConnected.Count != UnityServerNetworkManager.Instance.GameServer.ConnectedCount)
         {
-            Debug.Log("Not all connected players submitted their name...");
+           //Debug.Log("Not all connected players submitted their name...");
             return;
         }
         UnityServerNetworkManager.Instance.GetComponent<GameEvents>().SendStartGameEvent();
@@ -195,7 +195,7 @@ public class LobbyManager : MonoBehaviour
         {
             return new Vector2(transform.position.x + Random.Range(spawnPosMinMaxX.x, spawnPosMinMaxX.y), Random.Range(spawnPosMinMaxY.x, spawnPosMinMaxY.y));
         }
-        Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
+       //Debug.LogError("[BlockGenerator.GenerateSpawnLocation] : Error generating spawn location. Defaulting to zero.");
         return Vector2.zero;
     }
 }

@@ -53,7 +53,7 @@ public class TutorialManager : MonoBehaviour
             draggedBlockTimer = 0;
             GetDraggedBlock();
             //Debug.Log(blocksDropped + " dropped");
-            Debug.Log(objectsOnGround.Count);
+           //Debug.Log(objectsOnGround.Count);
         }
 
         if(blocksDropped == 2)
@@ -81,7 +81,7 @@ public class TutorialManager : MonoBehaviour
                     removeBlockScaffoldingTutorialButton.HighlightControl(false);
                     removeBlockScaffoldingTutorialButton.gameObject.SetActive(false);
                 }
-                Debug.Log("Here it iisss");
+               //Debug.Log("Here it iisss");
                 draggedBlock = block;
                 draggedBlockObject = blockObject;
             }
@@ -129,14 +129,14 @@ public class TutorialManager : MonoBehaviour
     }
     public void HighlightPopTutorialBlocks()
     {
-        Debug.Log("I WAS IN HERE WHYYYYYYYYYYYY XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+       //Debug.Log("I WAS IN HERE WHYYYYYYYYYYYY XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         DisableBottom();
         removeBlockScaffoldingTutorialButton.HighlightControl(false);
         removeBlockScaffoldingTutorialButton.gameObject.SetActive(false);
         DisableOnGround();
         tutorialStackButton.HighlightControl(false);
-        Debug.Log("Takam");
+        //Debug.Log("Takam");
         for (int i = 0; i < objectFloating.Count; i++)
         {
             ToggleHaloBehaviour (popTutorialButton.isOpened, objectFloating[i].gameObject);
@@ -149,7 +149,7 @@ public class TutorialManager : MonoBehaviour
 
     public void BeginBlockStackingTutorial()
     {
-        Debug.Log("I WAS IN HERE WHYYYYYYYYYYYY !!!!!!!!!!!!!!!!!!");
+       //Debug.Log("I WAS IN HERE WHYYYYYYYYYYYY !!!!!!!!!!!!!!!!!!");
         DisableBottom();
         removeBlockScaffoldingTutorialButton.HighlightControl(false);
        removeBlockScaffoldingTutorialButton.gameObject.SetActive(false);
@@ -171,12 +171,12 @@ public class TutorialManager : MonoBehaviour
     }
     public void BottomScaffToggleTutorial()
     {
-        Debug.Log("Fuck me " + bottomBlock);
+       //Debug.Log("Fuck me " + bottomBlock);
         DisableOnGround();
         tutorialStackButton.HighlightControl(false);
         DisableFloatingBlocks();
         popTutorialButton.HighlightControl(false);
-        Debug.Log(removeBlockScaffoldingTutorialButton.isOpened + " is iiiiiiiiiiiiiiiiiiit");
+       //Debug.Log(removeBlockScaffoldingTutorialButton.isOpened + " is iiiiiiiiiiiiiiiiiiit");
         if (bottomBlockObj != null)
         {
             ToggleHaloBehaviour(removeBlockScaffoldingTutorialButton.isOpened, bottomBlockObj);
@@ -198,7 +198,7 @@ public class TutorialManager : MonoBehaviour
         }
         bottomBlock = null;
         bottomBlockObj = null;
-        Debug.Log("What the guck");
+       //Debug.Log("What the guck");
     }
 
     void DisableOnGround()
@@ -212,12 +212,12 @@ public class TutorialManager : MonoBehaviour
     private void ToggleHaloBehaviour(bool mode, GameObject block)
     {
         //Behaviour beh = (Behaviour)block.GetComponent("Halo");
-        Debug.Log(block);
-        Debug.Log(block.GetComponent<ColorChanger>());
+       //Debug.Log(block);
+       //Debug.Log(block.GetComponent<ColorChanger>());
         ColorChanger c = block.GetComponent<ColorChanger>();
         
         c.Toggle(mode);
-        Debug.Log("Toggled" + mode);
+       //Debug.Log("Toggled" + mode);
         //beh.enabled = mode;
     }
 
@@ -247,13 +247,13 @@ public class TutorialManager : MonoBehaviour
         foreach (Participant p in lobby.participantsConnected)
         {
             GameObject block = lobby.participantBlocks[p.Id];
-           // Debug.Log("IN WEST PHILADELPHIA BORN AND RASED " + draggedBlock.BottomBlock());
+           ////Debug.Log("IN WEST PHILADELPHIA BORN AND RASED " + draggedBlock.BottomBlock());
             if (draggedBlock.BottomBlock() == block)
             {
-                Debug.Log("what the fuck happened here");
+               //Debug.Log("what the fuck happened here");
                 bottomBlockObj = block;
                 bottomBlock = block.GetComponent<Block>();
-                //  Debug.Log("AWOOOOOOOOOOOO 5 6 7 O 9");
+                // //Debug.Log("AWOOOOOOOOOOOO 5 6 7 O 9");
                 //  //Behaviour beh = (Behaviour)block.GetComponent("Halo");
                 ////  beh.enabled = true;
                 // ColorChanger c = block.GetComponent<ColorChanger>();

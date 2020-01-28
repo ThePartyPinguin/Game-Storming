@@ -45,7 +45,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         currentDragObject = null;
         participants = connectedPlayers.GetConnectedPlayers();
-        Debug.Log("Connected players: " + participants.Count);
+       //Debug.Log("Connected players: " + participants.Count);
 
         //Mock participants for offline testing:
         //participants = new List<Participant>();
@@ -89,7 +89,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// <param name="participant">the new participant</param>
     public void RegisterNewParticipant(Participant participant)
     {
-        Debug.Log("Adding participant: " + participant.Name);
+       //Debug.Log("Adding participant: " + participant.Name);
         if (participants == null)
             participants = new List<Participant>();
         participants.Add(participant);
@@ -106,7 +106,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     public void DetermineNextBuilder()
     {
-        Debug.Log("Determine next builder: " + currentBuilderIndex + "  " + participants.Count);
+       //Debug.Log("Determine next builder: " + currentBuilderIndex + "  " + participants.Count);
         //Call next builder
         if (currentBuilderIndex < participants.Count)
         {
@@ -129,14 +129,14 @@ public class GameManager : MonoSingleton<GameManager>
     private void NotifyNextBuilder(int builderParticipantIndex)
     {
         Participant newBuilder = participants[builderParticipantIndex];
-        Debug.Log("New builder = " + newBuilder.Name);
+       //Debug.Log("New builder = " + newBuilder.Name);
         newBuilderCalled.Invoke(newBuilder.Name);
 
         if (_currentBuilder != null)
         {
             UnityServerNetworkManager.Instance.SendMessageToPlayer(_currentBuilder.Id, new EventOnlyNetworkMessage(NetworkEvent.SERVER_STOP_BUILDER));
         }
-        Debug.Log("NewBuilder command send to " + newBuilder.Name + "   " + newBuilder.Id);
+       //Debug.Log("NewBuilder command send to " + newBuilder.Name + "   " + newBuilder.Id);
         UnityServerNetworkManager.Instance.SendMessageToPlayer(newBuilder.Id, new EventOnlyNetworkMessage(NetworkEvent.SERVER_ASSIGN_NEW_BUILDER));
 
         _currentBuilder = newBuilder;

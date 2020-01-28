@@ -94,9 +94,9 @@ public class Block : Draggable
         if (SceneManager.GetActiveScene().buildIndex == 1)
         {
             isGameScene = true;
-            Debug.Log("Lowest boundary detecting...");
+           //Debug.Log("Lowest boundary detecting...");
             lowestBoundary = GameManager.Instance.FoundationTop + spriteRenderer.size.y / 2f;
-            Debug.DrawLine(new Vector2(-4, lowestBoundary), new Vector2(4, lowestBoundary), Color.cyan, 5f);
+           //Debug.DrawLine(new Vector2(-4, lowestBoundary), new Vector2(4, lowestBoundary), Color.cyan, 5f);
         }
         
 
@@ -107,10 +107,10 @@ public class Block : Draggable
     {
         if (blockCollider.enabled)
         {
-            Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.green, 0.25f);
+           //Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.green, 0.25f);
         } else
         {
-        Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.red, 0.25f);
+       //Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.red, 0.25f);
 
         }
 
@@ -306,7 +306,7 @@ public class Block : Draggable
         //{
         //    if (hit.collider != null && hit.collider.tag == "Block" && hit.transform.gameObject.GetComponent<Block>() != this)
         //    {
-        //        Debug.Log("Found middle");
+        //       //Debug.Log("Found middle");
         //        return false;
         //    }
         //}
@@ -349,7 +349,7 @@ public class Block : Draggable
         var checkBoxHalfExtents = new Vector3(GetWidth()/2, GetHeight()/10);
         var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
         var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
-        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
+       //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
         return (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null);
     }
 
@@ -364,7 +364,7 @@ public class Block : Draggable
         var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 10);
         var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
         var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
-        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
+       //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
         return (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null);
     }
 
@@ -397,7 +397,7 @@ public class Block : Draggable
             var currentDragObject = GameManager.Instance.GetCurrentDragObject();
             if (currentDragObject != null && currentDragObject != gameObject)
             {
-                Debug.Log("Other invalid block detected. Secure that one first!");
+               //Debug.Log("Other invalid block detected. Secure that one first!");
                 return;
             }
             GameManager.Instance.RestrictPickingUpBlocks(gameObject);
@@ -429,7 +429,7 @@ public class Block : Draggable
         var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 2);
         var checkBoxCornerA = new Vector2(transform.position.x - checkBoxHalfExtents.x, transform.position.y - checkBoxHalfExtents.y + 0.1f);
         var checkBoxCornerB = new Vector2(transform.position.x + checkBoxHalfExtents.x, transform.position.y + checkBoxHalfExtents.y + 0.1f);
-        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.green, 2, false);
+       //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.green, 2, false);
         var layerMask = ~(1 << 9);
         var hit = Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB, layerMask);
         if (hit != null && hit.GetComponentInChildren<BlockBubble>() == null && !hit.gameObject.Equals(this.gameObject))
@@ -554,7 +554,7 @@ public class Block : Draggable
     //    rigidBody.velocity = Vector2.zero;
     //    rigidBody.angularVelocity = 0f;
     //    transform.eulerAngles = new Vector3(0, 0, Mathf.Round(transform.eulerAngles.z / 90) * 90);
-    //    Debug.Log(GetHeight());
+    //   //Debug.Log(GetHeight());
     //    transform.position = new Vector3(transform.position.x, GameManager.Instance.FoundationTop + GetHeight() / 2, 1);
 
     //    //Disable the rotatejoint

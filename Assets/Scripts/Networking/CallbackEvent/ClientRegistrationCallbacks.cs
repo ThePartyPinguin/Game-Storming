@@ -102,7 +102,7 @@ public class ClientRegistrationCallbacks : MonoBehaviour
         if (_lobbyManager == null)
             _lobbyManager = FindObjectOfType<LobbyManager>();
 
-        Debug.Log("Name: " + networkMessage.Value + " received from: " + clientId);
+       //Debug.Log("Name: " + networkMessage.Value + " received from: " + clientId);
         string pName = networkMessage.Value;
         Color pColor = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
 
@@ -119,7 +119,7 @@ public class ClientRegistrationCallbacks : MonoBehaviour
         client.RemoveAllowedEvent(NetworkEvent.CLIENT_SEND_NAME);
         client.AddAllowedEvent(NetworkEvent.CLIENT_SEND_IDEA);
 
-        Debug.Log("Added client to gameManager");
+       //Debug.Log("Added client to gameManager");
         client.SecureSendMessage(new BaseNetworkMessage(NetworkEvent.SERVER_REGISTERED_CLIENT));
     }
 
@@ -132,7 +132,7 @@ public class ClientRegistrationCallbacks : MonoBehaviour
 
         if(p == null)
             return;
-        Debug.Log("Client: " + p.Name + " send a new idea: " + message.Value);
+       //Debug.Log("Client: " + p.Name + " send a new idea: " + message.Value);
 
         IdeaLogger.LogIdea(p, message.Value);
         blockGenerator.SpawnBlock(p, message.Value);
