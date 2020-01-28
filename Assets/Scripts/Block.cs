@@ -131,7 +131,7 @@ public class Block : Draggable
         {
             this.spriteRenderer.color = Color.Lerp(Color.yellow, Color.red, Mathf.PingPong(Time.time, WarningFlashSpeed));
         }
-        else
+        else if (this.owner != null)
         {
             this.spriteRenderer.color = this.owner.Color;
         }
@@ -250,6 +250,7 @@ public class Block : Draggable
     /// </summary>
     public void Scaffold()
     {
+        if (isWaitingForSafeSpot) { return; }
         var scaffold = Instantiate(scaffoldPrefab, transform.position, Quaternion.identity);
         scaffold.GetComponent<SpriteRenderer>().size *= new Vector2(GetWidth() - 0.05f, GetHeight() - 0.05f);
     }
@@ -261,6 +262,19 @@ public class Block : Draggable
     public bool CheckTowerUnderneath()
     {
         RaycastHit2D h = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.2f)), Vector2.right / 5, BottomCheckSize);
+
+        //var checkHeight = 0.75f;
+        //var checkWidthCutOff = 0.1f;
+
+        //var checkBoxCenter = new Vector2(transform.position.x, transform.position.y - (GetHeight() / 2) + checkHeight);
+        //var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 10);
+        //var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
+        //var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
+        //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
+        //if (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null)
+        //{
+        //    return false;
+        //}
 
         if (h.collider != null && h.collider.tag == "Block" && h.transform.gameObject.layer != 9)
         {

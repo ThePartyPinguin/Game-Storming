@@ -19,6 +19,6 @@ public class TopicLabelUpdater : MonoBehaviour
 
     public void UpdateTopic(string topic)
     {
-        _topicLabel.text = "Topic: "+ topic;
+        _topicLabel.text = topic;
     }
 }
