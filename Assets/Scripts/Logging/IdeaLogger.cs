@@ -11,27 +11,45 @@ public static class IdeaLogger
     private static string logFolderPath;
     private static string logFileName;
 
-    private static string gameStartTimeString;
+    //private static string gameStartTimeString;
     private static bool startedLogging;
-    public static void LogIdea(Participant p, string idea)
-    {
-        if (string.IsNullOrWhiteSpace(logFolderPath))
-            logFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/Game-Storming/Idea-logs";
 
-        if (string.IsNullOrWhiteSpace(logFileName))
-        {
-            gameStartTimeString = DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt").Replace('/', '-').Replace('\\', '-').Replace(' ', '-').Replace(':', '-');
-            logFileName = gameStartTimeString;
-        }
+    public static void StartLogging(string topic)
+    {
+        logFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "/Game-Storming/Idea-logs";
+        string gameStartTimeString = DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt").Replace('/', '-').Replace('\\', '-').Replace(' ', '-').Replace(':', '-');
+        logFileName = gameStartTimeString;
+
+        startedLogging = true;
 
         StringBuilder sb = new StringBuilder();
 
-        if (!startedLogging)
-        {
-            startedLogging = true;
-            sb.Append("Game started at: " + DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
-            sb.Append('\r');
-        }
+        startedLogging = true;
+        sb.Append("Game started at: " + DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
+        sb.Append('\r');
+
+        sb.Append("Topic:," + topic);
+        sb.Append('\r');
+
+        WriteToFile(logFolderPath, logFileName, Encoding.Unicode.GetBytes(sb.ToString()));
+    }
+
+    public static void LogIdea(Participant p, string idea)
+    {
+        if(!startedLogging)
+            return;
+
+        StringBuilder sb = new StringBuilder();
+
+        //if (!startedLogging)
+        //{
+        //    startedLogging = true;
+        //    sb.Append("Game started at: " + DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt"));
+        //    sb.Append('\r');
+            
+        //    sb.Append("Topic:," + topic);
+        //    sb.Append('\r');
+        //}
 
         sb.Append(p.Name);
         sb.Append(',');

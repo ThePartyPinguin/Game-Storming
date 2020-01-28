@@ -133,6 +133,8 @@ public class ClientRegistrationCallbacks : MonoBehaviour
         if(p == null)
             return;
         Debug.Log("Client: " + p.Name + " send a new idea: " + message.Value);
+
+        IdeaLogger.LogIdea(p, message.Value);
         blockGenerator.SpawnBlock(p, message.Value);
     }
 }

@@ -65,8 +65,6 @@ public class BlockGenerator : MonoBehaviour
             newBlock.GetComponentInChildren<RectTransform>().sizeDelta = newSize;
 
             newBlock.transform.parent = bubbleMover;
-
-            IdeaLogger.LogIdea(owner, ideaText);
         }
         else
         {

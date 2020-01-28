@@ -15,6 +15,7 @@ public class TopicTracker : Singleton<TopicTracker>
     {
         CurrentTopic = newTopic;
         OnTopicUpdated?.Invoke(newTopic);
+        IdeaLogger.StartLogging(newTopic);
     }
 }
 
