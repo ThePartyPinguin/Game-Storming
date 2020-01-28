@@ -3960,6 +3960,11 @@ PrefabInstance:
       propertyPath: countdownTick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 318730924}
+    - target: {fileID: 288473299078479393, guid: 36d070ebafa4151498db497d62bbb0cf,
+        type: 3}
+      propertyPath: countdownTime
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 288473299078479399, guid: 36d070ebafa4151498db497d62bbb0cf,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Block : Draggable
 {
@@ -36,6 +37,8 @@ public class Block : Draggable
     private Rigidbody2D rb;
     private HingeJoint2D towerJoint;
     private GameObject bottomBlock;
+    private int originalVisualLayer;
+    private bool isGameScene = false;
 
     private int importance;
     private bool isConnected;
@@ -84,7 +87,18 @@ public class Block : Draggable
         importance = 1;
         importanceDisplay.transform.parent.localPosition = new Vector2(spriteRenderer.size.x / 2 - 0.175f, spriteRenderer.size.y /2 - 0.175f);
 
+        originalVisualLayer = spriteRenderer.sortingOrder;
+
         InvokeRepeating("CheckOutOfWorld", 1, 1);
+
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            isGameScene = true;
+            Debug.Log("Lowest boundary detecting...");
+            lowestBoundary = GameManager.Instance.FoundationTop + spriteRenderer.size.y / 2f;
+            Debug.DrawLine(new Vector2(-4, lowestBoundary), new Vector2(4, lowestBoundary), Color.cyan, 5f);
+        }
+        
 
         base.Start();
     }
@@ -112,6 +126,7 @@ public class Block : Draggable
                 {
                     this.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + BlockReleaseHeight);
                     this.isDragged = false;
+                    GameManager.Instance.RestrictPickingUpBlocks(gameObject);
                 }
                 /*if (CheckTowerSides())
                 {
@@ -261,23 +276,14 @@ public class Block : Draggable
     /// <returns></returns>
     public bool CheckTowerUnderneath()
     {
-        RaycastHit2D h = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.2f)), Vector2.right / 5, BottomCheckSize);
+        RaycastHit2D h = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.1f)), Vector2.right / 5, BottomCheckSize);
         //RaycastHit2D hAbove = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.2f)), Vector2.right / 5, BottomCheckSize*2);
-        RaycastHit2D hAbove = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x), spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.2f), Vector2.right, spriteRenderer.bounds.size.x);
+        RaycastHit2D hAbove = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x), spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.1f), Vector2.right, spriteRenderer.bounds.size.x);
         RaycastHit2D hAbove2 = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x), spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.3f), Vector2.right, spriteRenderer.bounds.size.x);
         RaycastHit2D[] hinside = Physics2D.RaycastAll(spriteRenderer.bounds.center, Vector2.down);
         //var checkHeight = 0.75f;
         //var checkWidthCutOff = 0.1f;
-
-        //var checkBoxCenter = new Vector2(transform.position.x, transform.position.y - (GetHeight() / 2) + checkHeight);
-        //var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 10);
-        //var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
-        //var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
-        //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
-        //if (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null)
-        //{
-        //    return false;
-        //}
+        
         if (hAbove.collider != null && hAbove.collider.tag == "Block" && hAbove.transform.gameObject.layer != 9)
         {
             return false;
@@ -386,6 +392,17 @@ public class Block : Draggable
 
     public override void OnMouseDown()
     {
+        if (isGameScene)
+        {
+            var currentDragObject = GameManager.Instance.GetCurrentDragObject();
+            if (currentDragObject != null && currentDragObject != gameObject)
+            {
+                Debug.Log("Other invalid block detected. Secure that one first!");
+                return;
+            }
+            GameManager.Instance.RestrictPickingUpBlocks(gameObject);
+        }
+
         this.DetachAndDestroyBubble();
         //Block[] b = GameObject.FindObjectsOfType<Block>();
         //for (int i = 0; i < b.Length; i++)
@@ -426,6 +443,7 @@ public class Block : Draggable
         {
             isDragged = false;
             isWaitingForSafeSpot = false;
+            if (isGameScene && GameManager.Instance.GetCurrentDragObject() == gameObject) { GameManager.Instance.AllowPickingUpBlocks(); }
             base.OnMouseUp();
         }
     }
@@ -458,6 +476,25 @@ public class Block : Draggable
     }
 
     /// <summary>
+    /// Renders this block in front of other blocks
+    /// </summary>
+    public void SendToFrontVisually()
+    {
+        spriteRenderer.sortingOrder = 8;
+        textVisual.sortingOrder = 9;
+    }
+
+    /// <summary>
+    /// Renders this block at its original visual sorting layer
+    /// </summary>
+    public void SendToBackVisually()
+    {
+        if (isWaitingForSafeSpot) { return; }
+        spriteRenderer.sortingOrder = originalVisualLayer;
+        textVisual.sortingOrder = originalVisualLayer + 2;
+    }
+
+    /// <summary>
     /// Activates a recurring check to see if the block is safe to be put at its location.
     /// </summary>
     /// <returns></returns>
@@ -467,6 +504,8 @@ public class Block : Draggable
         blockCollider.enabled = false;
         isWaitingForSafeSpot = true;
         InvalidSpotWarning = true;
+        isDragged = false;
+        if (isGameScene) { GameManager.Instance.RestrictPickingUpBlocks(gameObject); }
         InvokeRepeating("CheckIfBlockIsInSafeSpot", 0.5f, 0.25f);
         yield return new WaitUntil(() => (isWaitingForSafeSpot == false));
         blockCollider.enabled = true;
@@ -573,6 +612,7 @@ public class Block : Draggable
         blockTrail.Clear();
         blockTrail.enabled = true;
         isDragged = false;
+        if (isGameScene) { GameManager.Instance.AllowPickingUpBlocks(); }
     }
     #endregion
 }

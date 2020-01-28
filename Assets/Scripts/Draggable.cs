@@ -16,7 +16,7 @@ public abstract class Draggable : MonoBehaviour
     private Rigidbody2D rigidBody;
     protected TargetJoint2D dragJoint;
     private Camera cam;
-    private float lowestBoundary;
+    protected float lowestBoundary;
 
     [SerializeField]
     private UnityEvent onDragDown = default;
@@ -34,8 +34,10 @@ public abstract class Draggable : MonoBehaviour
         rigidBody = GetComponent<Rigidbody2D>();
         dragJoint = gameObject.GetComponent<TargetJoint2D>();
         cam = Camera.main;
-        lowestBoundary = GameManager.Instance.FoundationTop + 0.5f;
-        Debug.Log("Lowest boundary: " + lowestBoundary);
+
+        
+        //lowestBoundary = GameManager.Instance.FoundationTop + 0.5f;
+        
     }
     
 

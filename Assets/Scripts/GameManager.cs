@@ -15,6 +15,7 @@ public class GameManager : MonoSingleton<GameManager>
 
     [SerializeField]
     private Transform foundationTop = default;
+    private GameObject currentDragObject;
 
     [SerializeField]
     private StringBasedUnityEvent newBuilderCalled = default;
@@ -22,7 +23,7 @@ public class GameManager : MonoSingleton<GameManager>
     [SerializeField]
     public bool enableMultiTouch;
     [SerializeField] 
-    private ConnectedPlayers connectedPlayers = default;
+    private ConnectedPlayers connectedPlayers;
 
     private bool need2Delete = true;
 
@@ -42,6 +43,7 @@ public class GameManager : MonoSingleton<GameManager>
     #region methods
     private void Start()
     {
+        currentDragObject = null;
         participants = connectedPlayers.GetConnectedPlayers();
         Debug.Log("Connected players: " + participants.Count);
 
@@ -77,7 +79,7 @@ public class GameManager : MonoSingleton<GameManager>
             {
                 Destroy(go);
             }
-            need2Delete = false;
+            //need2Delete = false;
         }
     }
 
@@ -151,6 +153,30 @@ public class GameManager : MonoSingleton<GameManager>
     }
 
     /// <summary>
+    /// Tells game that a draggable can be picked up.
+    /// </summary>
+    public void AllowPickingUpBlocks()
+    {
+        currentDragObject = null;
+    }
+
+    public GameObject GetCurrentDragObject()
+    {
+        return currentDragObject;
+    }
+
+    /// <summary>
+    /// Tells game that no new draggable can be picked up.
+    /// </summary>
+    /// <param name="currentDragObject"></param>
+    public void RestrictPickingUpBlocks(GameObject currentDragObject)
+    {
+        this.currentDragObject = currentDragObject;
+    }
+
+
+
+    /// <summary>
     /// Activates the voting phase
     /// </summary>
     private void StartVotingPhase()
@@ -160,6 +186,8 @@ public class GameManager : MonoSingleton<GameManager>
     private void EndGame()
     {
         UnityServerNetworkManager.Instance.BroadcastMessage(new EventOnlyNetworkMessage(NetworkEvent.SERVER_END_GAME));
+
+        Application.Quit();
     }
 
     #endregion
