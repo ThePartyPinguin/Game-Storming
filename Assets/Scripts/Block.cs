@@ -262,7 +262,10 @@ public class Block : Draggable
     public bool CheckTowerUnderneath()
     {
         RaycastHit2D h = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.2f)), Vector2.right / 5, BottomCheckSize);
-
+        //RaycastHit2D hAbove = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.2f)), Vector2.right / 5, BottomCheckSize*2);
+        RaycastHit2D hAbove = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x), spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.2f), Vector2.right, spriteRenderer.bounds.size.x);
+        RaycastHit2D hAbove2 = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x), spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.3f), Vector2.right, spriteRenderer.bounds.size.x);
+        RaycastHit2D[] hinside = Physics2D.RaycastAll(spriteRenderer.bounds.center, Vector2.down);
         //var checkHeight = 0.75f;
         //var checkWidthCutOff = 0.1f;
 
@@ -275,12 +278,33 @@ public class Block : Draggable
         //{
         //    return false;
         //}
-
-        if (h.collider != null && h.collider.tag == "Block" && h.transform.gameObject.layer != 9)
+        if (hAbove.collider != null && hAbove.collider.tag == "Block" && hAbove.transform.gameObject.layer != 9)
         {
-            return true;
+            return false;
         }
-        else return false;
+        else if(hAbove2.collider != null && hAbove2.collider.tag == "Block" && hAbove2.transform.gameObject.layer != 9)
+        {
+            return false;
+
+        }else
+        {
+
+            if (h.collider != null && h.collider.tag == "Block" && h.transform.gameObject.layer != 9)
+            {
+                return true;
+            }
+            else return false;
+        }
+
+        //foreach (RaycastHit2D hit in hinside)
+        //{
+        //    if (hit.collider != null && hit.collider.tag == "Block" && hit.transform.gameObject.GetComponent<Block>() != this)
+        //    {
+        //        Debug.Log("Found middle");
+        //        return false;
+        //    }
+        //}
+
     }
 
     /// <summary>
@@ -531,6 +555,7 @@ public class Block : Draggable
         {
             Gizmos.DrawRay(new Vector2(spriteRenderer.bounds.min.x - 0.1f, spriteRenderer.bounds.min.y - 0.1f), Vector3.up);
             Gizmos.DrawRay(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.2f)), Vector2.right / 5);
+            Gizmos.DrawRay(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.2f)), Vector2.right / 5);
         }
     }
 
