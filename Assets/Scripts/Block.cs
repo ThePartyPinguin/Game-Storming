@@ -105,15 +105,6 @@ public class Block : Draggable
 
     private new void Update()
     {
-        if (blockCollider.enabled)
-        {
-           //Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.green, 0.25f);
-        } else
-        {
-       //Debug.DrawLine(transform.position, new Vector2(transform.position.x + 1, transform.position.y + 1), Color.red, 0.25f);
-
-        }
-
         if (AutodropCheckDelayTimer > 0f)
         {
             AutodropCheckDelayTimer -= Time.deltaTime;
@@ -126,6 +117,7 @@ public class Block : Draggable
                 {
                     this.transform.position = new Vector2(this.transform.position.x, this.transform.position.y + BlockReleaseHeight);
                     this.isDragged = false;
+                    base.OnMouseUp();
                     GameManager.Instance.RestrictPickingUpBlocks(gameObject);
                 }
                 /*if (CheckTowerSides())
@@ -276,41 +268,30 @@ public class Block : Draggable
     /// <returns></returns>
     public bool CheckTowerUnderneath()
     {
-        RaycastHit2D h = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.1f)), Vector2.right / 5, BottomCheckSize);
-        //RaycastHit2D hAbove = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.2f)), Vector2.right / 5, BottomCheckSize*2);
-        RaycastHit2D hAbove = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x), spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.1f), Vector2.right, spriteRenderer.bounds.size.x);
-        RaycastHit2D hAbove2 = Physics2D.Raycast(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x), spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.3f), Vector2.right, spriteRenderer.bounds.size.x);
-        RaycastHit2D[] hinside = Physics2D.RaycastAll(spriteRenderer.bounds.center, Vector2.down);
-        //var checkHeight = 0.75f;
-        //var checkWidthCutOff = 0.1f;
-        
-        if (hAbove.collider != null && hAbove.collider.tag == "Block" && hAbove.transform.gameObject.layer != 9)
+        if (rb.velocity.y > -0.3f) { return false; }
+
+        var aboveCheckHit = CheckForOtherBlockAtRelativeHeight(0.2f, GetHeight() / 1.8f, Color.red);
+        var underCheckHit = CheckForOtherBlockAtRelativeHeight(-1 * (GetHeight() / 2 + 0.05f), 0.02f, Color.green);
+
+        if (underCheckHit != null && underCheckHit.gameObject != gameObject && !underCheckHit.gameObject.GetComponent<Block>().blockBubble && (aboveCheckHit == null || aboveCheckHit.gameObject == gameObject))
         {
-            return false;
+            // Tower detected
+            return true;
         }
-        else if(hAbove2.collider != null && hAbove2.collider.tag == "Block" && hAbove2.transform.gameObject.layer != 9)
-        {
-            return false;
+        return false;
+    }
 
-        }else
-        {
+    public Collider2D CheckForOtherBlockAtRelativeHeight(float relativeYPosition, float checkBoxHeight, Color debugColor)
+    {
+        var checkWidthCutOff = 0.1f;
 
-            if (h.collider != null && h.collider.tag == "Block" && h.transform.gameObject.layer != 9)
-            {
-                return true;
-            }
-            else return false;
-        }
-
-        //foreach (RaycastHit2D hit in hinside)
-        //{
-        //    if (hit.collider != null && hit.collider.tag == "Block" && hit.transform.gameObject.GetComponent<Block>() != this)
-        //    {
-        //       //Debug.Log("Found middle");
-        //        return false;
-        //    }
-        //}
-
+        var checkBoxCenter = new Vector2(transform.position.x, transform.position.y + relativeYPosition);
+        var checkBoxHalfExtents = new Vector3(GetWidth() / 2, checkBoxHeight);
+        var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
+        var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
+        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, debugColor, 1, false);
+        int layermask = 1 << 0;
+        return Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB, layermask);
     }
 
     /// <summary>
@@ -349,8 +330,14 @@ public class Block : Draggable
         var checkBoxHalfExtents = new Vector3(GetWidth()/2, GetHeight()/10);
         var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
         var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
-       //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
-        return (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null);
+        //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
+        var hit = Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB);
+
+        if (hit != null && hit.gameObject != gameObject)
+        {
+            return true;
+        }
+        return false;
     }
 
     public bool IsOtherBlockOnBottom()
@@ -364,8 +351,14 @@ public class Block : Draggable
         var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 10);
         var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
         var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
-       //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
-        return (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null);
+        //Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
+        var hit = Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB);
+
+        if (hit != null && hit.gameObject != gameObject)
+        {
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -535,48 +528,6 @@ public class Block : Draggable
         base.OnMouseUp();
     }
 
-    ///// <summary>
-    ///// Snap block to ground so that it's a solid foundation for a tower.
-    ///// Makes the block lay flat on the ground and be not affected by physics.
-    ///// </summary>
-    //private IEnumerator SnapToFoundation()
-    //{
-    //    //Enable joint to make the block not move anymore, only rotate
-    //    GetComponent<TargetJoint2D>().enabled = false;
-    //    rigidBody.velocity = Vector2.zero;
-    //    rigidBody.angularVelocity = 0.1f;
-
-    //    //Wait until the block lays flat on one of its sides
-    //    yield return new WaitUntil(() => (Mathf.Abs(transform.eulerAngles.z % 90) < 2f || Mathf.Abs(transform.eulerAngles.z % 90) > 88));
-
-    //    //Definitively rotate and position the block to negate small rotation and position errors
-    //    rigidBody.isKinematic = true;
-    //    rigidBody.velocity = Vector2.zero;
-    //    rigidBody.angularVelocity = 0f;
-    //    transform.eulerAngles = new Vector3(0, 0, Mathf.Round(transform.eulerAngles.z / 90) * 90);
-    //   //Debug.Log(GetHeight());
-    //    transform.position = new Vector3(transform.position.x, GameManager.Instance.FoundationTop + GetHeight() / 2, 1);
-
-    //    //Disable the rotatejoint
-    //    towerJoint.enabled = false;
-    //}
-
-    ///// <summary>
-    ///// Removes a block from foundation if there are no other blocks in the tower.
-    ///// </summary>
-    //private IEnumerator ReleaseFromFoundation()
-    //{
-    //    rigidBody.isKinematic = false;
-    //    blockCollider.enabled = false;
-
-    //    var minPos = transform.position.y - 0.5f ;
-
-
-    //    yield return new WaitUntil(() => (transform.position.y >= (GameManager.Instance.FoundationTop + 0.05f + GetHeight()/2) || transform.position.y <= minPos || transform.position.y < -10));
-    //    this.isConnected = false;
-    //    blockCollider.enabled = true;
-    //}
-
     /// <summary>
     /// Checks if the block is falling out of world and resets it if necessary
     /// </summary>
@@ -585,16 +536,6 @@ public class Block : Draggable
         if (transform.position.y < -10)
         {
             StartCoroutine(TeleportBlock());
-        }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (this.isDragged)
-        {
-            Gizmos.DrawRay(new Vector2(spriteRenderer.bounds.min.x - 0.1f, spriteRenderer.bounds.min.y - 0.1f), Vector3.up);
-            Gizmos.DrawRay(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y - spriteRenderer.bounds.extents.y - 0.2f)), Vector2.right / 5);
-            Gizmos.DrawRay(new Vector2(spriteRenderer.bounds.center.x - (spriteRenderer.bounds.extents.x / 5), (spriteRenderer.bounds.center.y + spriteRenderer.bounds.extents.y + 0.2f)), Vector2.right / 5);
         }
     }
 

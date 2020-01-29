@@ -10,61 +10,18 @@ public class Scaffold : MonoBehaviour
 
     private bool firstTap;
     private float lastTap;
-    private SpriteRenderer spriteRenderer;
 
-    private float testBoundOrigin;
-    private float testBoundWidth;
-    private float testBoundHeight;
+    private Vector2 actualSize;
     #endregion
 
     #region methods
     private void Start()
     {
-        spriteRenderer = this.GetComponent<SpriteRenderer>();
-
-        Bounds b = spriteRenderer.bounds;
-        testBoundOrigin = b.center.x - b.extents.x;
-        testBoundWidth = b.size.x;
-        testBoundHeight = b.extents.y * 1.2f;
+        var spriteRenderer = this.GetComponent<SpriteRenderer>();
+        actualSize = new Vector2((spriteRenderer.size.x + 0.2f) / 4f, (spriteRenderer.size.y + 0.2f) / 4f);
 
         InvokeRepeating("CheckDeleteAllowed", timer, timer);
     }
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    if (Input.GetMouseButtonDown(0))
-    //    {
-    //        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    //        Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-    //        //check with raycast to see what object is hit
-    //        RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
-    //        //if the object is the same, pass through to the rest of the method, else skip.
-    //        if (hit.collider == this.GetComponent<BoxCollider2D>())
-    //        {
-    //            if (firstTap)
-    //            {
-    //                firstTap = false;
-    //                if (!CheckDeleteAllowed())
-    //                {
-    //                    DestroyScaffold();
-    //                }
-    //            }
-    //            else
-    //            {
-    //                this.firstTap = true;
-    //                this.lastTap = timer;
-    //            }
-    //        }
-    //    }
-    //    //simple timer to check time between taps. if the alloted time has passed after the lasttap it will set firsttap back to false
-    //    this.lastTap -= Time.deltaTime;
-    //    if(this.lastTap <= 0f)
-    //    {
-    //        firstTap = false;
-    //    }
-
-    //}
 
 
     /// <summary>
@@ -74,7 +31,7 @@ public class Scaffold : MonoBehaviour
     {
         float functionalRotation = (transform.eulerAngles.z % 180);
         bool isRotated = 45 <= functionalRotation && functionalRotation < 135;
-        return (isRotated ? spriteRenderer.size.x : spriteRenderer.size.y);
+        return (isRotated ? actualSize.x : actualSize.y);
     }
 
     /// <summary>
@@ -84,7 +41,7 @@ public class Scaffold : MonoBehaviour
     {
         float functionalRotation = (transform.eulerAngles.z % 180);
         bool isRotated = 45 <= functionalRotation && functionalRotation < 135;
-        return (isRotated ? spriteRenderer.size.y : spriteRenderer.size.x);
+        return (isRotated ? actualSize.y : actualSize.x);
     }
 
     /// <summary>
@@ -93,15 +50,20 @@ public class Scaffold : MonoBehaviour
     /// <returns>True if another block lies on top of this block, false if not</returns>
     public bool IsOtherBlockOnTop()
     {
-        var checkHeight = 0.75f;
-        var checkWidthCutOff = 0.1f;
+        var checkHeight = 0.3f;
+        var checkWidthCutOff = 0.01f;
 
         var checkBoxCenter = new Vector2(transform.position.x, transform.position.y + (GetHeight() / 2) + checkHeight);
-        var checkBoxHalfExtents = new Vector3(GetWidth() / 2, GetHeight() / 10);
+        var checkBoxHalfExtents = new Vector3(GetWidth() / 2, 0.1f);
         var checkBoxCornerA = new Vector2(checkBoxCenter.x - checkBoxHalfExtents.x + checkWidthCutOff, checkBoxCenter.y - checkBoxHalfExtents.y);
         var checkBoxCornerB = new Vector2(checkBoxCenter.x + checkBoxHalfExtents.x - checkWidthCutOff, checkBoxCenter.y + checkBoxHalfExtents.y);
-        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.blue, 2, false);
-        return (Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB) != null);
+        Debug.DrawLine(checkBoxCornerA, checkBoxCornerB, Color.cyan, 1, false);
+        var hit = Physics2D.OverlapArea(checkBoxCornerA, checkBoxCornerB);
+        if (hit && hit.gameObject != gameObject && (hit.gameObject.GetComponent<Block>() || hit.gameObject.GetComponent<Scaffold>()) )
+        {
+            return true;
+        }
+        return false;
     }
 
     /// <summary>

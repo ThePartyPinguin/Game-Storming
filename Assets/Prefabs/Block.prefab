@@ -552,7 +552,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
   m_Mass: 1
-  m_LinearDrag: 2.5
+  m_LinearDrag: 2
   m_AngularDrag: 0.1
   m_GravityScale: 1
   m_Material: {fileID: 6200000, guid: 6ccc3af35ad7dd046a70aa3d5f1691cc, type: 2}
@@ -612,7 +612,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 4683487841430045387}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6ccc3af35ad7dd046a70aa3d5f1691cc, type: 2}
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
