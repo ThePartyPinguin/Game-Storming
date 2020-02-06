@@ -259,7 +259,7 @@ public class Block : Draggable
     {
         if (isWaitingForSafeSpot) { return; }
         var scaffold = Instantiate(scaffoldPrefab, transform.position, Quaternion.identity);
-        scaffold.GetComponent<SpriteRenderer>().size *= new Vector2(GetWidth() - 0.05f, GetHeight() - 0.05f);
+        scaffold.GetComponent<SpriteRenderer>().size *= new Vector2(GetWidth() - 0.10f, GetHeight() - 0.15f);
     }
 
     /// <summary>

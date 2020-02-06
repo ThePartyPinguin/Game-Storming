@@ -2,16 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using GameFrame.UnityHelpers.Networking;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoSingleton<GameManager>
 {
     #region fields
     private List<Participant> participants; 
     private int currentBuilderIndex;
-    [SerializeField]
-    private CountdownTimer timer = default;
+    //[SerializeField]
+    //private CountdownTimer timer = default;
 
     [SerializeField]
     private Transform foundationTop = default;
@@ -28,6 +30,19 @@ public class GameManager : MonoSingleton<GameManager>
     private bool need2Delete = true;
 
     private Participant _currentBuilder;
+
+
+    [SerializeField]
+    private TextMeshProUGUI brainstormTopic;
+
+    private string[] topics =
+    {
+        "Global warming",
+        "Plastic waste disposal",
+        "Stop smoking"
+    };
+    private int currentTopic = -1;
+
     #endregion
 
     #region properties
@@ -61,26 +76,63 @@ public class GameManager : MonoSingleton<GameManager>
         Input.multiTouchEnabled = enableMultiTouch;
         //NotifyNextBuilder(currentBuilderIndex);
 
-        timer.ResetTimer();
-        
+        //timer.ResetTimer();
+
+        brainstormTopic.text = GetRandomTopic();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Insert))
-        {
-            timer.ResetTimer();
-        }
+        //if (Input.GetKeyDown(KeyCode.Insert))
+        //{
+        //    timer.ResetTimer();
+        //}
         //TODO: Delete this
-        if (need2Delete && Input.GetKey(KeyCode.Delete))
+
+
+
+        //Call building time!
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            newBuilderCalled.Invoke("Start building!");
+        }
+
+        //Restart
+        if (Input.GetKeyDown(KeyCode.R))
         {
             var deleto = GameObject.FindGameObjectsWithTag("Block");
             foreach (var go in deleto)
             {
                 Destroy(go);
             }
-            //need2Delete = false;
+            deleto = GameObject.FindGameObjectsWithTag("Scaffolding");
+            foreach (var go in deleto)
+            {
+                Destroy(go);
+            }
+            brainstormTopic.text = GetRandomTopic();
         }
+
+        //Exit
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            EndGame();
+        }
+    }
+
+    /// <summary>
+    /// Gets a new random topic that isn't the current topic
+    /// </summary>
+    /// <returns>The string of the new topic</returns>
+    private string GetRandomTopic()
+    {
+        int result = currentTopic;
+        while (result == currentTopic)
+        {
+            result = Random.Range(0, topics.Length);
+        }
+        currentTopic = result;
+        return topics[result];
     }
 
     /// <summary>
@@ -115,11 +167,11 @@ public class GameManager : MonoSingleton<GameManager>
             ++currentBuilderIndex;
         }
         //All participants have had a turn, commence voting phase
-        else
-        {
-            EndGame();
-            //StartVotingPhase();
-        }
+        //else
+        //{
+        //    EndGame();
+        //    //StartVotingPhase();
+        //}
     }
 
     /// <summary>
@@ -130,7 +182,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         Participant newBuilder = participants[builderParticipantIndex];
        //Debug.Log("New builder = " + newBuilder.Name);
-        newBuilderCalled.Invoke(newBuilder.Name);
+        //newBuilderCalled.Invoke(newBuilder.Name);
 
         if (_currentBuilder != null)
         {
@@ -148,7 +200,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     public void StartNewBuilderTime()
     {
-        timer.ResetTimer();
+        //timer.ResetTimer();
         //TODO: other activation stuff probably (enable rigidbodies etc.)
     }
 
@@ -185,8 +237,8 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void EndGame()
     {
+        Debug.Log("Shutdown");
         UnityServerNetworkManager.Instance.BroadcastMessage(new EventOnlyNetworkMessage(NetworkEvent.SERVER_END_GAME));
-
         Application.Quit();
     }
 

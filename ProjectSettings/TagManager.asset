@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Block
   - Foundation
+  - Scaffolding
   layers:
   - Default
   - TransparentFX
